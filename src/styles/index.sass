@@ -19,17 +19,17 @@
   src: url(@/assets/fonts/DMSans-Regular.ttf)
 
 *
-  font-family: DMSansRegular
+  font-family: DMSansRegular !important
 
 .text-font-bold
-  font-family: DMSansBold
+  font-family: DMSansBold !important
   color: #020A1F
 
 .text-font-semi-bold
-  font-family: DMSansSemiBold
+  font-family: DMSansSemiBold !important
 
 .text-font-medium
-  font-family: DMSansMedium
+  font-family: DMSansMedium !important
 
 html, body
   background: theme("colors.gray.100")
@@ -159,3 +159,11 @@ html, body
   &:not(:last-child)
     .label, .value
       border-bottom-width: 0px !important
+
+.ant-modal
+  width: 700px !important
+  margin: auto
+  max-width: 90% !important
+
+.ant-avatar >img
+  object-fit: contain

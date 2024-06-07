@@ -26,7 +26,7 @@ const ErrorComponent = ({
     >
       <p
         className={cn(
-          type === "danger" ? "text-info-error-500" : "",
+          type === "danger" ? "text-red-500" : "",
           "text-center text-md"
         )}
       >

@@ -3,7 +3,10 @@ import moment from "moment";
 
 export const formatErrorMessage = (error: any): string => {
   return (
-    error?.response?.data?.message || error?.response?.data || error?.message
+    error?.response?.extras?.reason ||
+    error?.response?.data?.message ||
+    error?.response?.data ||
+    error?.message
   );
 };
 

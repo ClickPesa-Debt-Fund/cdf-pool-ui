@@ -14,14 +14,21 @@
     "@clickpesa/components-library.currency-logos": "^0.0.3",
     "@clickpesa/components-library.details-row": "^0.0.16",
     "@clickpesa/components-library.forms.exchange-form-item": "^0.0.15",
+    "@clickpesa/components-library.inputs.phone-input": "^0.0.5",
     "@clickpesa/components-library.inputs.select-input": "^0.0.14",
+    "@clickpesa/components-library.inputs.text-input": "^0.0.4",
     "@clickpesa/components-library.inputs.wizard-input": "^0.0.7",
     "@clickpesa/components-library.status-tag": "^0.0.7",
+    "@radix-ui/react-alert-dialog": "^1.0.5",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "axios": "^1.6.8",
+    "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.383.0",
+    "phone": "^3.1.44",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
@@ -29,7 +36,7 @@
     "recharts": "^2.12.7",
     "sass": "^1.75.0",
     "sonner": "^1.4.0",
-    "stellar-sdk": "^10.4.1",
+    "stellar-sdk": "10.4.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -50,6 +57,7 @@
     "terser": "^5.30.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
-    "vite-plugin-environment": "^1.1.3"
+    "vite-plugin-environment": "^1.1.3",
+    "vite-plugin-node-polyfills": "^0.22.0"
   }
 }

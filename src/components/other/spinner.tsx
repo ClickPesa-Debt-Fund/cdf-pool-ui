@@ -1,17 +1,23 @@
+import { cn } from "@/lib/utils";
 import Spin from "antd/lib/spin";
 
-const Spinner = ({ height }: { height?: number | string }) => (
+const Spinner = ({
+  height,
+  size,
+  className,
+}: {
+  height?: number | string;
+  size?: "default" | "small";
+  className?: string;
+}) => (
   <div
     style={{
       height: height ?? "100%",
       minHeight: height ?? "45vh",
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
     }}
+    className={cn("w-full flex items-center justify-center", className)}
   >
-    <Spin />
+    <Spin size={size} />
   </div>
 );
 

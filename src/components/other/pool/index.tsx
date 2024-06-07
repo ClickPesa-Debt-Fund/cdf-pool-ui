@@ -1,17 +1,18 @@
 import { pools } from "@/pages/pools/data";
 import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 import { StatusTag } from "@clickpesa/components-library.status-tag";
-import { useNavigate } from "react-router-dom";
 import { formatAmount, formatDate } from "@/utils";
-import FundingProgress from "./funding-progress";
+import FundingProgress from "../funding-progress";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { ArrowBgIcon } from "@/assets/icons";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { useState } from "react";
+import Modal from "antd/lib/modal";
+import Buy from "./buy";
 
 const Pool = ({
-  id,
   name,
   status,
   goal,
@@ -23,9 +24,10 @@ const Pool = ({
   first_repayment,
   issuance_date,
 }: (typeof pools)[0]) => {
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width <= 767;
+
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8 flex gap-8 md:flex-row flex-col">
       <div className="self-stretch flex-1 flex flex-col justify-between gap-8">
@@ -79,7 +81,7 @@ const Pool = ({
           <div className="flex flex-wrap gap-4">
             <Button
               onClick={() => {
-                navigate(`/pools/${id}`);
+                if (status === "RAISING") setOpen(true);
               }}
               className="flex-1"
             >
@@ -142,6 +144,19 @@ const Pool = ({
           isMobile={isMobile}
         />
       </div>
+      {status === "RAISING" && (
+        <Modal
+          open={open}
+          onCancel={() => setOpen(false)}
+          title="Buy CPYT Token"
+          footer={false}
+        >
+          <Buy
+            close={() => setOpen(false)}
+            open={open}
+          />
+        </Modal>
+      )}
     </div>
   );
 };
