@@ -7,13 +7,6 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
   root: "./",
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-      },
-    },
-  },
   plugins: [
     react(),
     nodePolyfills(),
