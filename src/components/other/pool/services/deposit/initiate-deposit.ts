@@ -58,7 +58,7 @@ export const initiateDeposit = async ({
 
 export const generateDepositInstructions = async ({
   assetCode,
-  publicKey,
+  // publicKey,
   amount,
   customer_id,
   transaction_id,
