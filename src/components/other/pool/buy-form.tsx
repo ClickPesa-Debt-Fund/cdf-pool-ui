@@ -1,5 +1,4 @@
 import Form from "antd/lib/form";
-import { useState } from "react";
 import Steps from "antd/lib/steps";
 import {
   useCreateAndActivateAccount,
@@ -13,14 +12,20 @@ import {
 import KycForm from "./kyc-form";
 import AmountAddressForm from "./amount-address-form";
 import DepositStatus from "./deposit-status";
+import { BuyFormProps } from "./buy";
 
 const assetCode = "CPYT";
-const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
+const BuyForm = ({
+  close,
+  amount,
+  amountError,
+  current,
+  updateAmount,
+  updateAmountError,
+  updateCurrent,
+  form,
+}: BuyFormProps) => {
   const { depositInfo } = useGetDepositInfo();
-  const [current, setCurrent] = useState(1);
-  const [amount, setAmount] = useState("");
-  const [amountError, setAmountError] = useState("");
-  const [form] = Form.useForm();
 
   //   step 01
   const { submitAddress, addressLoading, address } = useSubmitAddress();
@@ -48,7 +53,7 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
             (Number(amount) < depositInfo?.[assetCode]?.min_amount ||
               Number(amount) > depositInfo?.[assetCode]?.max_amount)
           ) {
-            setAmountError("Invalid amount");
+            updateAmountError("Invalid amount");
           }
           await form.validateFields();
           if (
@@ -64,7 +69,7 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
                   balance?.asset_code === assetCode
               )
             ) {
-              setCurrent(current + 1);
+              updateCurrent(current + 1);
             }
           });
         }
@@ -86,7 +91,7 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
                     publicKey: form.getFieldValue("address"),
                     customer_id: kycData?.id,
                   }).then(() => {
-                    setCurrent(current + 1);
+                    updateCurrent(current + 1);
                   });
                 });
               }
@@ -102,7 +107,7 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
                 publicKey: form.getFieldValue("address"),
                 customer_id: kycData?.id,
               }).then(() => {
-                setCurrent(current + 1);
+                updateCurrent(current + 1);
               });
             });
           }
@@ -114,7 +119,7 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
               publicKey: form.getFieldValue("address"),
               customer_id: kycData?.id,
             }).then(() => {
-              setCurrent(current + 1);
+              updateCurrent(current + 1);
             });
           }
         }
@@ -142,8 +147,8 @@ const BuyForm = ({ close }: { close: () => void; open: boolean }) => {
           amount={amount}
           amountError={amountError}
           assetCode={assetCode}
-          updateAmount={(amount) => setAmount(amount)}
-          updateAmountError={(error) => setAmountError(error)}
+          updateAmount={(amount) => updateAmount(amount)}
+          updateAmountError={(error) => updateAmountError(error)}
         />
       )}
       {current === 2 && (

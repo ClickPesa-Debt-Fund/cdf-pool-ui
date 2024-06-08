@@ -81,7 +81,7 @@ export const generateDepositInstructions = async ({
     currency: assetCode,
     deposit: {
       channel: "SEP24 WALLET",
-      account_address: publicKey,
+      // account_address: publicKey,
       account_currency: assetCode,
       deposited_amount: amount,
     },

@@ -1,12 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import legacy from "@vitejs/plugin-legacy";
-import path from "path";
+import { resolve } from "path";
 import EnvironmentPlugin from "vite-plugin-environment";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
   root: "./",
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+      },
+    },
+  },
   plugins: [
     react(),
     nodePolyfills(),
@@ -18,7 +25,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "./runtimeConfig": "./runtimeConfig.browser",
-      "@": path.resolve(__dirname, "./src"),
+      "@": resolve(__dirname, "./src"),
     },
   },
 });

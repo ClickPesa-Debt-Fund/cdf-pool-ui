@@ -9,8 +9,7 @@ import { ArrowBgIcon } from "@/assets/icons";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { useState } from "react";
-import Modal from "antd/lib/modal";
-import Buy from "./buy";
+import BuyModal from "./buy";
 
 const Pool = ({
   name,
@@ -145,17 +144,7 @@ const Pool = ({
         />
       </div>
       {status === "RAISING" && (
-        <Modal
-          open={open}
-          onCancel={() => setOpen(false)}
-          title="Buy CPYT Token"
-          footer={false}
-        >
-          <Buy
-            close={() => setOpen(false)}
-            open={open}
-          />
-        </Modal>
+        <BuyModal close={() => setOpen(false)} open={open} />
       )}
     </div>
   );
