@@ -61,7 +61,7 @@ const EarningGraph = ({ amount }: { amount: string }) => {
               Final Balance on 30 Sep, 2025:
             </span>{" "}
             <span className="text-font-bold font-bold !text-gray-500">
-              318.06 USDC
+              {formatAmount(amountPerQuarter * 3)} USDC
             </span>
           </div>
         </div>
@@ -69,7 +69,7 @@ const EarningGraph = ({ amount }: { amount: string }) => {
       <ResponsiveContainer
         width="100%"
         height="100%"
-        aspect={width > 992 ? 2.5 : 1.5}
+        aspect={width > 992 ? 3.5 : 2}
       >
         <BarChart
           data={data}

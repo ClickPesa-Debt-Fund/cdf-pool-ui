@@ -1,17 +1,12 @@
-import { InstagramIcon, LinkedInIcon, TwitterIcon } from "@/assets/icons";
-import { Link } from "react-router-dom";
+import { LinkedInIcon, TwitterIcon } from "@/assets/icons";
 
 const socials = [
   {
-    href: "https://instagram.com/",
-    icon: <InstagramIcon />,
-  },
-  {
-    href: "https://linkedin.com/in/",
+    href: "https://www.linkedin.com/company/clickpesadebtfund/",
     icon: <LinkedInIcon />,
   },
   {
-    href: "https://x.com/",
+    href: "https://x.com/CPDebtFund",
     icon: <TwitterIcon />,
   },
 ];
@@ -20,12 +15,12 @@ const links = [
   {
     links: [
       {
-        name: "Login",
-        to: "/login",
+        name: "MFIs",
+        to: "https://clickpesadebtfund.com/microfinance-funding/",
       },
       {
-        name: "Sign Up",
-        to: "/signup",
+        name: "Investors",
+        to: "https://clickpesadebtfund.com/for-investors/",
       },
     ],
   },
@@ -33,39 +28,31 @@ const links = [
     links: [
       {
         name: "About Us",
-        to: "/about",
+        to: "https://clickpesadebtfund.com",
       },
       {
         name: "Career",
-        to: "/career",
+        to: "https://clickpesa.com/jobs/",
       },
     ],
   },
   {
     links: [
       {
-        name: "Terms of Use",
-        to: "/terms",
+        name: "Blog",
+        to: "https://clickpesadebtfund.com/blog/",
       },
       {
-        name: "User Agreement",
-        to: "/user-agreement",
-      },
-      {
-        name: "Privacy Policy",
-        to: "/privacy",
+        name: "Portfolio",
+        to: "https://clickpesadebtfund.com/portfolio/",
       },
     ],
   },
   {
     links: [
-      {
-        name: "Help Center",
-        to: "/help",
-      },
       {
         name: "Support",
-        to: "/support",
+        to: "mailto:info@clickpesadebtfund.com",
       },
     ],
   },
@@ -91,9 +78,14 @@ const Footer = () => {
           {links.map(({ links }, index) => (
             <div key={index} className="flex flex-col gap-3">
               {links?.map(({ to, name }) => (
-                <Link key={to} to={to} className="text-font-medium">
+                <a
+                  key={to}
+                  href={to}
+                  target="_blank"
+                  className="text-font-medium"
+                >
                   {name}
-                </Link>
+                </a>
               ))}
             </div>
           ))}
@@ -108,7 +100,7 @@ const Footer = () => {
           ))}
         </div>
         <div className="text-gray-500 text-font-medium">
-          Copyright ClickPesa Debt Fund {new Date().getFullYear()}
+          ClickPesa Debt Fund &copy; {new Date().getFullYear()}
         </div>
       </div>
     </footer>

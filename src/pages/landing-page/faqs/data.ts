@@ -2,46 +2,41 @@ export const faqs = [
   {
     qn: "What is Debt Fund?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
+      "The Debt Fund is a dedicated financial initiative with the goal to provide crucial funding support to small and medium-sized enterprises (SMEs) and women-owned businesses in Tanzania and Africa in general.",
   },
   {
-    qn: "How is EarnPark different from competitors?",
+    qn: "How does Debt Fund makes DeFI work?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
+      "By providing DeFI with End-to-End transparency, accountability and traceability in the lending process.",
+  },
+  {
+    qn: "How do Lenders (CPYT Token Holders) benefit from Debt Fund",
+    answer:
+      "Lenders benefit from increased transparency, which reduces risk and provides clearer insight into how their funds are being utilized.",
+  },
+  {
+    qn: "How do MFIs benefits from Debt Fund",
+    answer:
+      "MFIs gain better access to funds through a transparent platform, enabling them to expand their operations and support more SMEs efficiently.",
+  },
+  {
+    qn: "How do SMEs (Borrowers) benefits from Debt Fund.",
+    answer:
+      "SMEs benefit from more readily available funding opportunities, facilitating growth and operational stability.",
   },
   {
     qn: "What are the risks?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
-  },
-  {
-    qn: "What is Debt Fund?",
-    answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
-  },
-  {
-    qn: "How is EarnPark different from competitors?",
-    answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
-  },
-  {
-    qn: "What are the risks?",
-    answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
+      "We create pools with various terms and risk profiles that provide one of the best returns on the current market.\nProfitability always comes with risk! While we don’t promise to be risk-free, our strategies focus on minimizing risk as much as possible.",
   },
   {
     qn: "Is Debt Fund secure?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
+      "Debt Fund platform follows all the industry best practices for IT security checks, data protection, access rights, and data encryption. We’re constantly raising the bar for our security standards.",
   },
   {
-    qn: "Will the company have its token?",
+    qn: "Are the APY rates guaranteed?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
-  },
-  {
-    qn: "Are the interest rates guaranteed?",
-    answer:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore rerum optio laboriosam voluptatibus sit iusto porro. Officiis placeat repudiandae dolores, magnam natus, deleniti, similique adipisci tenetur quam delectus laudantium autem!",
+      "Transparency-enhanced DeFi platform in each step in the lending chain—from disbursement to repayment—fully verifiable and transparent, is almost a guarantee. But No, APY is not guaranteed. We are committed to your stable profits. We will let you know if there are any changes in the expected APY. And we will continue listing more pools with different APY rates and creative terms based on the market.",
   },
 ];

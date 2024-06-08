@@ -19,10 +19,9 @@ const Hero = () => {
       <div className="order-1 md:order-2 flex-[1.6] self-stretch flex flex-col justify-between gap-10">
         <div className="space-y-4">
           <h1 className="font-bold text-font-bold [font-size:_clamp(24px,5vw,32px)] !text-white">
-            Earn 12% APY Funding Small Businesses in Africa
+            Support SMEs in Africa and Earn a 12% APY Return on Investment
           </h1>
           <p className="[font-size:_clamp(16px,5vw,18px)]">
-            Support SMEs in Africa and Earn a 12% APY Return on Investment!
             Invest in the Clickpesa Debt Fund, a fund dedicated to providing
             debt to SMEs and women-owned businesses across Africa. Make a
             positive impact while achieving significant returns.
@@ -32,13 +31,12 @@ const Hero = () => {
           <Button className="flex-1" onClick={() => navigate("/pools")}>
             Start Earning
           </Button>
-          <Button
-            variant={"ghost"}
-            className="text-primary flex-1 gap-3"
-            onClick={() => navigate("#learn-more")}
+          <a
+            href="#learn-more"
+            className="text-primary flex items-center justify-center flex-1 gap-3"
           >
             Learn More <ArrowBgIcon />
-          </Button>
+          </a>
         </div>
       </div>
     </section>

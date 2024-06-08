@@ -9,7 +9,7 @@ const Header = () => {
           <img src="/icons/logo.svg" alt="" />
         </Link>
         <Link to={"/pools"} className="text-primary">
-          <HomeIcon strokeWidth="0.5" />
+          <HomeIcon strokeWidth="1" size={32} />
         </Link>
       </div>
     </div>

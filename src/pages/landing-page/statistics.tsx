@@ -4,16 +4,15 @@ import { cn } from "@/lib/utils";
 const stats = [
   {
     title: "African-Based",
-    content:
-      "Outperforming staking profits and other crypto investment strategies.",
+    content: "Solving African funding problem, one token a time",
   },
   {
-    title: "USDC 1M+",
-    content: "Has been distributed to MFIs since 2023",
+    title: "USDC 250k+",
+    content: "Distributed to MFIs since 2023",
   },
   {
-    title: "200 SMEs",
-    content: "Have been able to lead money via MFIs from the fund",
+    title: "1200 SMEs",
+    content: "Benefiting from ClickPesa Debt Fund",
   },
 ];
 
