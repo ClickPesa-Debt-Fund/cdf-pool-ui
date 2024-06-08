@@ -15,14 +15,9 @@ const EarningCalculator = () => {
           <div className="flex items-center md:flex-row flex-col gap-8">
             <div className="space-y-2 flex-[1.3]">
               <h1 className="!text-white font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)]">
-                Earn 12% APY Supporting SMEs
+                Earnings Estimator
               </h1>
-              <p>
-                Support SMEs in Africa and Earn a 12% APY Return on Investment!
-                Invest in the Clickpesa Debt Fund, a fund dedicated to providing
-                debt to SMEs and women-owned businesses across Africa. Make a
-                positive impact while achieving significant returns.
-              </p>
+              <p>Potential Earnings from currently raising Pool</p>
             </div>
             <div className="flex-[1]" />
           </div>
