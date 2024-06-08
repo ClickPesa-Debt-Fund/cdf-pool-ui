@@ -1,3 +1,4 @@
+import { INVESTOR_ASSET } from "@/constants";
 import axios from "axios";
 
 export interface DepositResponse {
@@ -9,6 +10,14 @@ export interface DepositResponse {
   verification: {
     amount: string;
     currency: string;
+  };
+  deposit: {
+    channel: string;
+    channel_provider: string;
+    account_address: string;
+    account_currency: string;
+    deposited_amount: string;
+    expires_in: string;
   };
   confirmation: {
     amount: string;
@@ -58,7 +67,7 @@ export const initiateDeposit = async ({
 
 export const generateDepositInstructions = async ({
   assetCode,
-  // publicKey,
+  issuer,
   amount,
   customer_id,
   transaction_id,
@@ -67,7 +76,7 @@ export const generateDepositInstructions = async ({
   amount: string;
   transaction_id: string;
   assetCode: string;
-  publicKey: string;
+  issuer: string;
   transferServerUrl: string;
   customer_id: string;
 }) => {
@@ -81,8 +90,8 @@ export const generateDepositInstructions = async ({
     currency: assetCode,
     deposit: {
       channel: "SEP24 WALLET",
-      // account_address: publicKey,
-      account_currency: assetCode,
+      channel_provider: issuer,
+      account_currency: INVESTOR_ASSET,
       deposited_amount: amount,
     },
     hooks: {

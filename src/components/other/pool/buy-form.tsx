@@ -13,8 +13,10 @@ import KycForm from "./kyc-form";
 import AmountAddressForm from "./amount-address-form";
 import DepositStatus from "./deposit-status";
 import { BuyFormProps } from "./buy";
+import { ASSET_CODE } from "@/constants";
+import Spinner from "../spinner";
+import { delay } from "@/utils";
 
-const assetCode = "CPYT";
 const BuyForm = ({
   close,
   amount,
@@ -31,16 +33,54 @@ const BuyForm = ({
   const { submitAddress, addressLoading, address } = useSubmitAddress();
 
   //   step 02
-  const { generateToken, generateTokenLoading, generateTokenData } =
-    useCreateAndActivateAccount();
+  const {
+    generateToken,
+    generateTokenLoading,
+    generateTokenData,
+    generateTokenReset,
+  } = useCreateAndActivateAccount();
   const { kyc, kycData, kycLoading } = useSubmitKYC();
 
-  const { deposit, depositData, depositLoading } =
+  const { deposit, depositData, depositLoading, depositReset } =
     useGenerateDepositInstructions();
 
   const { kycRefetch } = useGetKYC(
     address ? form.getFieldValue("address") : ""
   );
+
+  const issuer_address = address?.balances?.find(
+    (balance: { asset_code: string }) => balance?.asset_code === ASSET_CODE
+  )?.asset_issuer;
+
+  const createDeposit = () => {
+    if (kycData && !generateTokenData) {
+      generateToken(ASSET_CODE).then((res) => {
+        kycRefetch();
+        deposit({
+          amount,
+          assetCode: ASSET_CODE,
+          JWTToken: res?.JWTToken,
+          issuer: issuer_address,
+          publicKey: form.getFieldValue("address"),
+          customer_id: kycData?.id,
+        }).then(() => {
+          if (current !== 3) updateCurrent(current + 1);
+        });
+      });
+    }
+    if (generateTokenData) {
+      deposit({
+        amount,
+        assetCode: ASSET_CODE,
+        JWTToken: generateTokenData?.JWTToken,
+        issuer: issuer_address,
+        publicKey: form.getFieldValue("address"),
+        customer_id: kycData?.id,
+      }).then(() => {
+        if (current !== 3) updateCurrent(current + 1);
+      });
+    }
+  };
 
   return (
     <Form
@@ -50,15 +90,15 @@ const BuyForm = ({
         if (current === 1) {
           if (
             depositInfo &&
-            (Number(amount) < depositInfo?.[assetCode]?.min_amount ||
-              Number(amount) > depositInfo?.[assetCode]?.max_amount)
+            (Number(amount) < depositInfo?.[ASSET_CODE]?.min_amount ||
+              Number(amount) > depositInfo?.[ASSET_CODE]?.max_amount)
           ) {
             updateAmountError("Invalid amount");
           }
           await form.validateFields();
           if (
-            Number(amount) < depositInfo?.[assetCode]?.min_amount ||
-            Number(amount) > depositInfo?.[assetCode]?.max_amount
+            Number(amount) < depositInfo?.[ASSET_CODE]?.min_amount ||
+            Number(amount) > depositInfo?.[ASSET_CODE]?.max_amount
           ) {
             return;
           }
@@ -66,7 +106,7 @@ const BuyForm = ({
             if (
               res?.balances?.find(
                 (balance: { asset_code?: string }) =>
-                  balance?.asset_code === assetCode
+                  balance?.asset_code === ASSET_CODE
               )
             ) {
               updateCurrent(current + 1);
@@ -82,12 +122,13 @@ const BuyForm = ({
             }).then((kycData) => {
               kycRefetch();
               if (!generateTokenData) {
-                generateToken(assetCode).then((res) => {
+                generateToken(ASSET_CODE).then((res) => {
                   kycRefetch();
                   deposit({
                     amount,
-                    assetCode,
+                    assetCode: ASSET_CODE,
                     JWTToken: res?.JWTToken,
+                    issuer: issuer_address,
                     publicKey: form.getFieldValue("address"),
                     customer_id: kycData?.id,
                   }).then(() => {
@@ -97,31 +138,7 @@ const BuyForm = ({
               }
             });
           }
-          if (kycData && !generateTokenData) {
-            generateToken(assetCode).then((res) => {
-              kycRefetch();
-              deposit({
-                amount,
-                assetCode,
-                JWTToken: res?.JWTToken,
-                publicKey: form.getFieldValue("address"),
-                customer_id: kycData?.id,
-              }).then(() => {
-                updateCurrent(current + 1);
-              });
-            });
-          }
-          if (generateTokenData) {
-            deposit({
-              amount,
-              assetCode,
-              JWTToken: generateTokenData?.JWTToken,
-              publicKey: form.getFieldValue("address"),
-              customer_id: kycData?.id,
-            }).then(() => {
-              updateCurrent(current + 1);
-            });
-          }
+          createDeposit();
         }
       }}
     >
@@ -146,7 +163,7 @@ const BuyForm = ({
           balances={address?.balances}
           amount={amount}
           amountError={amountError}
-          assetCode={assetCode}
+          assetCode={ASSET_CODE}
           updateAmount={(amount) => updateAmount(amount)}
           updateAmountError={(error) => updateAmountError(error)}
         />
@@ -157,14 +174,26 @@ const BuyForm = ({
           loading={generateTokenLoading || kycLoading || depositLoading}
         />
       )}
+      {current === 3 && !depositData && (
+        <div>
+          <Spinner />
+        </div>
+      )}
       {current === 3 && depositData && (
         <DepositStatus
           deposit={depositData?.deposit}
-          assetCode={assetCode}
+          assetCode={ASSET_CODE}
           id={depositData?.id}
           close={() => {
             form.resetFields();
             close();
+          }}
+          retry={async () => {
+            generateTokenReset();
+            await delay(100);
+            depositReset();
+            await delay(100);
+            createDeposit();
           }}
         />
       )}

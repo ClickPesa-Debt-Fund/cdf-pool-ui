@@ -33,6 +33,7 @@ type DepositInstructionPayload = {
   JWTToken: any;
   amount: string;
   publicKey: string;
+  issuer: string
   assetCode: string;
   customer_id: string;
 };
@@ -98,7 +99,7 @@ export const useGetDepositInfo = () => {
 
 export const useCreateAndActivateAccount = () => {
   const { toml } = useGetToml();
-  const { mutateAsync, data, isLoading } = useMutation(
+  const { mutateAsync, data, isLoading, reset } = useMutation(
     async (asset: string) => {
       const anchorIssuerAccount = toml?.CURRENCIES?.find(
         (currency) => currency.code === asset
@@ -144,16 +145,18 @@ export const useCreateAndActivateAccount = () => {
   );
   return {
     generateToken: mutateAsync,
+    generateTokenReset: reset,
     generateTokenData: data,
     generateTokenLoading: isLoading,
   };
 };
 
 export const useGenerateDepositInstructions = () => {
-  const { data, mutateAsync, isLoading } = useMutation(
+  const { data, mutateAsync, isLoading, reset } = useMutation(
     async ({
       amount,
       publicKey,
+      issuer,
       JWTToken,
       assetCode,
       customer_id,
@@ -166,7 +169,7 @@ export const useGenerateDepositInstructions = () => {
       });
       const depositInstructions = await generateDepositInstructions({
         amount,
-        publicKey,
+        issuer,
         assetCode,
         transaction_id: deposit?.id,
         customer_id,
@@ -184,6 +187,7 @@ export const useGenerateDepositInstructions = () => {
   );
   return {
     deposit: mutateAsync,
+    depositReset: reset,
     depositData: data,
     depositLoading: isLoading,
   };
