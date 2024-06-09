@@ -30,11 +30,11 @@ const Steps = () => {
               ))}
             </ul>
           </div>
-          <div className="bg-gray-100 p-1 rounded-lg md:rounded-xl overflow-hidden">
+          <div className="bg-primary/10 p-1 rounded-lg md:rounded-xl overflow-hidden">
             <img
               src={steps?.[active - 1]?.imgSrc}
               alt={steps?.[active - 1]?.title}
-              className="object-contain w-full h-full rounded-lg md:rounded-xl overflow-hidden"
+              className="object-cover object-center rota w-full h-full rounded-lg md:rounded-xl overflow-hidden"
             />
           </div>
         </div>

@@ -5,7 +5,6 @@ import { formatAmount, formatDate } from "@/utils";
 import FundingProgress from "../funding-progress";
 import { cn } from "@/lib/utils";
 import { Button } from "../../ui/button";
-import { ArrowBgIcon } from "@/assets/icons";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { useState } from "react";
@@ -13,6 +12,7 @@ import BuyModal from "./buy";
 import WithdrawModal from "./withdraw";
 import Modal from "antd/lib/modal";
 import { useFlags } from "flagsmith/react";
+import { ArrowUpCircle } from "lucide-react";
 
 const Pool = ({
   name,
@@ -110,7 +110,8 @@ const Pool = ({
               }}
               className="flex-1 border-primary text-primary gap-2"
             >
-              Verify Pool Contract <ArrowBgIcon />
+              Verify Pool Contract
+              <ArrowUpCircle className="rotate-45" size={14} />
             </Button>
           </div>
         </div>

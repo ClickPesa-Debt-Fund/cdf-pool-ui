@@ -1,6 +1,6 @@
-import { ArrowBgIcon } from "@/assets/icons";
 import FundingProgress from "@/components/other/funding-progress";
 import { Button } from "@/components/ui/button";
+import { ArrowUpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -35,7 +35,7 @@ const Hero = () => {
             href="#learn-more"
             className="text-primary flex items-center justify-center flex-1 gap-3"
           >
-            Learn More <ArrowBgIcon />
+            Learn More <ArrowUpCircle className="rotate-45" size={14} />
           </a>
         </div>
       </div>

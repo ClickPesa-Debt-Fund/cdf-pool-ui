@@ -3,7 +3,7 @@ export const steps = [
     title: "Prepare your wallet to receive ClickPesa Debt Fund Token",
     description:
       "Establish a Trustline with CPYT on your Stellar wallet to allow receiving tokens in your wallet",
-    imgSrc: "/images/step-1.png",
+    imgSrc: "/images/step-1.svg",
   },
   {
     title: "Browse list of available Pools on the dashboard",

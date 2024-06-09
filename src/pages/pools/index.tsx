@@ -35,6 +35,13 @@ const Pools = () => {
       {pools.map((pool) => (
         <Pool {...pool} key={pool?.id} />
       ))}
+      <div className="bg-white md:rounded-2xl rounded-lg p-4 md:p-6 flex gap-8 flex-wrap justify-between items-center">
+        <div>
+          Developed by ClickPesa and runs on Stellar &{" "}
+          <a href="https://www.blend.capital/">Blend</a>
+        </div>
+        <div>ClickPesa Debt Fund &copy; {new Date().getFullYear()}</div>
+      </div>
     </div>
   );
 };
