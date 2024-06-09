@@ -41,6 +41,7 @@ type DepositInstructionPayload = {
   issuer: string;
   assetCode: string;
   customer_id: string;
+  investor_asset: string;
 };
 
 type WithdrawInstructionPayload = {
@@ -174,6 +175,7 @@ export const useGenerateDepositInstructions = () => {
       JWTToken,
       assetCode,
       customer_id,
+      investor_asset,
     }: DepositInstructionPayload) => {
       const deposit = await initiateDeposit({
         assetCode,
@@ -188,6 +190,7 @@ export const useGenerateDepositInstructions = () => {
         transaction_id: deposit?.id,
         customer_id,
         transferServerUrl: coreApiURL,
+        investor_asset,
       });
       return { deposit: depositInstructions, id: deposit?.id };
     },

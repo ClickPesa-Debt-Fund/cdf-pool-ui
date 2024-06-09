@@ -17,7 +17,7 @@ import WithdrawStatus from "./withdraw-status";
 import { delay } from "@/utils";
 
 const WithdrawForm = ({
-  //   close,
+  close,
   amount,
   amountError,
   current,

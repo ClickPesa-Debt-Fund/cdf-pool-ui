@@ -8,7 +8,7 @@ import { formatAmount } from "@/utils";
 import Spinner from "../../spinner";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { StatusTag } from "@clickpesa/components-library.status-tag";
-import { INVESTOR_ASSET } from "@/constants";
+import { useFlags } from "flagsmith/react";
 import { Button } from "@/components/ui/button";
 import { PMT } from "@/pages/landing-page/earning-calculator/summary";
 
@@ -25,12 +25,13 @@ const WithdrawStatus = ({
   close: () => void;
   retry: () => void;
 }) => {
+  const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
   const [shouldRefetch, setRefetch] = useState(withdraw?.status !== "SUCCESS");
   const { withdrawStatus } = useGetWithdrawStatus(withdraw?.id, shouldRefetch);
   const withdrawInstructions = withdrawStatus || withdraw;
   const { walletInfo } = useGetWalletInfo();
   useEffect(() => {
-    if (["SUCCESS", "FAILED"].includes(withdraw?.status || "")) {
+    if (["SUCCESS", "FAILED"].includes(withdrawStatus?.status || "")) {
       setRefetch(false);
     }
   }, [withdrawStatus]);
@@ -38,6 +39,8 @@ const WithdrawStatus = ({
   const receiving_amount = PMT(+withdrawInstructions?.payout_info?.amount) * 3;
 
   const assetWithdrawInfo: CurrencyDetails = walletInfo?.withdraw?.[assetCode];
+
+  const INVESTOR_ASSET = debtfund_investor_asset?.value;
   return (
     <div className="space-y-6">
       {!["SUCCESS", "FAILED"].includes(withdrawInstructions?.status) && (
@@ -47,10 +50,9 @@ const WithdrawStatus = ({
               Now send your {withdrawInstructions?.payout_info?.currency} to the
               specified address. Once they are received, we will transfer&nbsp;
               <span className="text-font-bold font-bold">
-                {formatAmount(receiving_amount)}
+                {formatAmount(receiving_amount)} {INVESTOR_ASSET}
               </span>
-              &nbsp;
-              {INVESTOR_ASSET} to your Stellar Wallet
+              &nbsp; to your Stellar Wallet
             </p>
             <div className="space-y-4">
               <p className="flex gap-2">

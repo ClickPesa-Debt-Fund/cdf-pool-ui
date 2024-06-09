@@ -9,7 +9,7 @@ import { StatusTag } from "@clickpesa/components-library.status-tag";
 import Spinner from "../../spinner";
 import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { INVESTOR_ASSET } from "@/constants";
+import { useFlags } from "flagsmith/react";
 
 const DepositStatus = ({
   deposit,
@@ -24,6 +24,7 @@ const DepositStatus = ({
   close: () => void;
   retry: () => void;
 }) => {
+  const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
   const [timeLeft, setTimeLeft] = useState(
     +deposit?.deposit?.expires_in / 1000
   );
@@ -54,6 +55,8 @@ const DepositStatus = ({
   };
 
   const assetDepositInfo: CurrencyDetails = walletInfo?.deposit?.[assetCode];
+
+  const INVESTOR_ASSET = debtfund_investor_asset?.value;
 
   return (
     <div className="space-y-6">

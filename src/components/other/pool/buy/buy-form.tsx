@@ -16,6 +16,7 @@ import { BuyFormProps } from ".";
 import { ASSET_CODE } from "@/constants";
 import Spinner from "../../spinner";
 import { delay } from "@/utils";
+import { useFlags } from "flagsmith/react";
 
 const BuyForm = ({
   close,
@@ -27,6 +28,10 @@ const BuyForm = ({
   updateCurrent,
   form,
 }: BuyFormProps) => {
+  const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
+
+  const INVESTOR_ASSET = debtfund_investor_asset?.value as string;
+
   const { walletInfo } = useGetWalletInfo();
 
   //   step 01
@@ -49,7 +54,7 @@ const BuyForm = ({
   );
 
   const issuer_address = address?.balances?.find(
-    (balance: { asset_code: string }) => balance?.asset_code === ASSET_CODE
+    (balance: { asset_code: string }) => balance?.asset_code === INVESTOR_ASSET
   )?.asset_issuer;
 
   const createDeposit = () => {
@@ -63,6 +68,7 @@ const BuyForm = ({
           issuer: issuer_address,
           publicKey: form.getFieldValue("address"),
           customer_id: kycData?.id,
+          investor_asset: INVESTOR_ASSET,
         }).then(() => {
           if (current !== 3) updateCurrent(current + 1);
         });
@@ -76,6 +82,7 @@ const BuyForm = ({
         issuer: issuer_address,
         publicKey: form.getFieldValue("address"),
         customer_id: kycData?.id,
+        investor_asset: INVESTOR_ASSET,
       }).then(() => {
         if (current !== 3) updateCurrent(current + 1);
       });
@@ -131,6 +138,7 @@ const BuyForm = ({
                     issuer: issuer_address,
                     publicKey: form.getFieldValue("address"),
                     customer_id: kycData?.id,
+                    investor_asset: INVESTOR_ASSET,
                   }).then(() => {
                     updateCurrent(current + 1);
                   });

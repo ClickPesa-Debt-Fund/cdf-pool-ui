@@ -1,4 +1,3 @@
-import { INVESTOR_ASSET } from "@/constants";
 import axios from "axios";
 
 export interface DepositResponse {
@@ -72,6 +71,7 @@ export const generateDepositInstructions = async ({
   customer_id,
   transaction_id,
   transferServerUrl,
+  investor_asset,
 }: {
   amount: string;
   transaction_id: string;
@@ -79,6 +79,7 @@ export const generateDepositInstructions = async ({
   issuer: string;
   transferServerUrl: string;
   customer_id: string;
+  investor_asset: string;
 }) => {
   const REQUEST_URL_STR: string = `${transferServerUrl}/deposit-request/sep24`;
 
@@ -91,7 +92,7 @@ export const generateDepositInstructions = async ({
     deposit: {
       channel: "SEP24 WALLET",
       channel_provider: issuer,
-      account_currency: INVESTOR_ASSET,
+      account_currency: investor_asset,
       deposited_amount: amount,
     },
     hooks: {
