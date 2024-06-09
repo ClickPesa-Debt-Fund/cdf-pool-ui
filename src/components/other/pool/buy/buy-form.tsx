@@ -3,18 +3,18 @@ import Steps from "antd/lib/steps";
 import {
   useCreateAndActivateAccount,
   useGenerateDepositInstructions,
-  useGetDepositInfo,
+  useGetWalletInfo,
   useGetKYC,
   useSubmitAddress,
   useSubmitKYC,
-} from "./services";
+} from "../services";
 
-import KycForm from "./kyc-form";
+import KycForm from "../kyc-form";
 import AmountAddressForm from "./amount-address-form";
 import DepositStatus from "./deposit-status";
-import { BuyFormProps } from "./buy";
+import { BuyFormProps } from ".";
 import { ASSET_CODE } from "@/constants";
-import Spinner from "../spinner";
+import Spinner from "../../spinner";
 import { delay } from "@/utils";
 
 const BuyForm = ({
@@ -27,7 +27,7 @@ const BuyForm = ({
   updateCurrent,
   form,
 }: BuyFormProps) => {
-  const { depositInfo } = useGetDepositInfo();
+  const { walletInfo } = useGetWalletInfo();
 
   //   step 01
   const { submitAddress, addressLoading, address } = useSubmitAddress();
@@ -89,16 +89,16 @@ const BuyForm = ({
       onFinish={async (data) => {
         if (current === 1) {
           if (
-            depositInfo &&
-            (Number(amount) < depositInfo?.[ASSET_CODE]?.min_amount ||
-              Number(amount) > depositInfo?.[ASSET_CODE]?.max_amount)
+            walletInfo &&
+            (Number(amount) < walletInfo?.deposit?.[ASSET_CODE]?.min_amount ||
+              Number(amount) > walletInfo?.deposit?.[ASSET_CODE]?.max_amount)
           ) {
             updateAmountError("Invalid amount");
           }
           await form.validateFields();
           if (
-            Number(amount) < depositInfo?.[ASSET_CODE]?.min_amount ||
-            Number(amount) > depositInfo?.[ASSET_CODE]?.max_amount
+            Number(amount) < walletInfo?.deposit?.[ASSET_CODE]?.min_amount ||
+            Number(amount) > walletInfo?.deposit?.[ASSET_CODE]?.max_amount
           ) {
             return;
           }

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useGetDepositInfo, useGetDepositStatus } from "./services";
+import { useGetWalletInfo, useGetDepositStatus } from "../services";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { formatAmount } from "@/utils";
-import { CurrencyDetails } from "./services/deposit/retrieve-info";
-import { DepositResponse } from "./services/deposit/initiate-deposit";
-import IdContainer from "../id-container";
+import { CurrencyDetails } from "../services/deposit/retrieve-info";
+import { DepositResponse } from "../services/deposit/initiate-deposit";
+import IdContainer from "../../id-container";
 import { StatusTag } from "@clickpesa/components-library.status-tag";
-import Spinner from "../spinner";
+import Spinner from "../../spinner";
 import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { INVESTOR_ASSET } from "@/constants";
@@ -30,7 +30,7 @@ const DepositStatus = ({
   const [shouldRefetch, setRefetch] = useState(deposit?.status !== "SUCCESS");
   const { depositStatus } = useGetDepositStatus(deposit?.id, shouldRefetch);
   const depositIntsruction = depositStatus || deposit;
-  const { depositInfo } = useGetDepositInfo();
+  const { walletInfo } = useGetWalletInfo();
   useEffect(() => {
     if (["SUCCESS", "FAILED"].includes(depositStatus?.status || "")) {
       setRefetch(false);
@@ -53,7 +53,7 @@ const DepositStatus = ({
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  const assetDepositInfo: CurrencyDetails = depositInfo?.[assetCode];
+  const assetDepositInfo: CurrencyDetails = walletInfo?.deposit?.[assetCode];
 
   return (
     <div className="space-y-6">

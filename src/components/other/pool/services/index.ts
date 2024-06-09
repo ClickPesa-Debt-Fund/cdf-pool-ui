@@ -22,6 +22,11 @@ import {
   retrieveDepositStatus,
 } from "./deposit/retrieve-info";
 import retrieveKYCInfo from "./kyc/retrieve-required-fields";
+import {
+  generateWithdrawInstructions,
+  initiateWithdraw,
+} from "./withdraw/initiate-withdraw";
+import { retrieveWithdrawStatus } from "./withdraw/retrieve-info";
 
 const horizonURL = process.env.VITE_HORIZON_URL as string;
 const coreApiURL = process.env.VITE_CORE_API_URL as string;
@@ -33,7 +38,16 @@ type DepositInstructionPayload = {
   JWTToken: any;
   amount: string;
   publicKey: string;
-  issuer: string
+  issuer: string;
+  assetCode: string;
+  customer_id: string;
+};
+
+type WithdrawInstructionPayload = {
+  JWTToken: any;
+  amount: string;
+  publicKey: string;
+  issuer: string;
   assetCode: string;
   customer_id: string;
 };
@@ -70,16 +84,16 @@ export const useGetToml = () => {
   };
 };
 
-export const useGetDepositInfo = () => {
+export const useGetWalletInfo = () => {
   const { toml } = useGetToml();
   const { data, isLoading, refetch, isRefetching, error } = useQuery(
     ["deposit info"],
     async () => {
       const anchorTransferServer = toml?.TRANSFER_SERVER as string;
-      const { deposit } = await retrieveSEPInfo({
+      const { deposit, withdraw } = await retrieveSEPInfo({
         transferServerUrl: anchorTransferServer,
       });
-      return deposit;
+      return { deposit, withdraw };
     },
     {
       enabled: !!toml,
@@ -89,11 +103,11 @@ export const useGetDepositInfo = () => {
     }
   );
   return {
-    depositInfo: data,
-    depositInfoLoading: isLoading,
-    depositInfoError: error as ApiError,
-    depositInfoRefetch: refetch,
-    depositInfoRefetching: isRefetching,
+    walletInfo: data,
+    walletInfoLoading: isLoading,
+    walletInfoError: error as ApiError,
+    walletInfoRefetch: refetch,
+    walletInfoRefetching: isRefetching,
   };
 };
 
@@ -193,6 +207,48 @@ export const useGenerateDepositInstructions = () => {
   };
 };
 
+export const useGenerateWithdrawInstructions = () => {
+  const { data, mutateAsync, isLoading, reset } = useMutation(
+    async ({
+      amount,
+      publicKey,
+      issuer,
+      JWTToken,
+      assetCode,
+      customer_id,
+    }: WithdrawInstructionPayload) => {
+      const withdraw = await initiateWithdraw({
+        assetCode,
+        publicKey: publicKey,
+        transferServerUrl: anchorDomain,
+        token: JWTToken,
+      });
+      const withdrawInstructions = await generateWithdrawInstructions({
+        amount,
+        issuer,
+        assetCode,
+        transaction_id: withdraw?.id,
+        customer_id,
+        transferServerUrl: coreApiURL,
+      });
+      return { withdraw: withdrawInstructions, id: withdraw?.id };
+    },
+    {
+      onError: (error) => {
+        toast.error(formatErrorMessage(error), {
+          duration: 5000,
+        });
+      },
+    }
+  );
+  return {
+    withdraw: mutateAsync,
+    withdrawReset: reset,
+    withdrawData: data,
+    withdrawLoading: isLoading,
+  };
+};
+
 export const useGetKYC = (publicKey: string) => {
   const { data, isLoading, refetch, isRefetching, error } = useQuery(
     ["retrieve kyc", publicKey],
@@ -270,6 +326,31 @@ export const useGetDepositStatus = (id: string, interval?: boolean) => {
   };
 };
 
+export const useGetWithdrawStatus = (id: string, interval?: boolean) => {
+  const { data, isLoading, error, refetch, isRefetching } = useQuery(
+    ["deposit status", id],
+    async () => {
+      const data = await retrieveWithdrawStatus({
+        id,
+        transferServerUrl: coreApiURL,
+      });
+      return data;
+    },
+    {
+      enabled: !!id,
+      refetchOnMount: false,
+      ...(interval ? { refetchInterval: 5000 } : {}),
+      refetchOnWindowFocus: false,
+    }
+  );
+  return {
+    withdrawStatus: data,
+    withdrawStatusLoading: isLoading,
+    withdrawStatusError: error as ApiError,
+    withdrawStatusRefetch: refetch,
+    withdrawStatusRefetching: isRefetching,
+  };
+};
 export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
   const { data, isLoading, error, refetch, isRefetching } = useQuery(
     ["account balance", publicKey],

@@ -2,10 +2,10 @@ import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
 import Modal from "antd/lib/modal";
 import { formatErrorMessage } from "@/utils";
-import ErrorComponent from "../error-component";
-import Spinner from "../spinner";
+import ErrorComponent from "../../error-component";
+import Spinner from "../../spinner";
 import BuyForm from "./buy-form";
-import { useGetDepositInfo, useGetToml } from "./services";
+import { useGetWalletInfo, useGetToml } from "../services";
 
 export type BuyFormProps = {
   close: () => void;
@@ -62,12 +62,12 @@ const Buy = ({
     useGetToml();
 
   const {
-    depositInfo,
-    depositInfoError,
-    depositInfoLoading,
-    depositInfoRefetch,
-    depositInfoRefetching,
-  } = useGetDepositInfo();
+    walletInfo,
+    walletInfoError,
+    walletInfoLoading,
+    walletInfoRefetch,
+    walletInfoRefetching,
+  } = useGetWalletInfo();
 
   if (tomlLoading || tomlRefetching)
     return (
@@ -86,24 +86,24 @@ const Buy = ({
       />
     );
 
-  if (depositInfoLoading || depositInfoRefetching)
+  if (walletInfoLoading || walletInfoRefetching)
     return (
       <div className="flex items-center justify-center h-24">
         <Spinner />
       </div>
     );
 
-  if (depositInfoError)
+  if (walletInfoError)
     return (
       <ErrorComponent
-        message={formatErrorMessage(depositInfoError)}
+        message={formatErrorMessage(walletInfoError)}
         onClick={() => {
-          depositInfoRefetch();
+          walletInfoRefetch();
         }}
       />
     );
 
-  if (!toml && !depositInfo) return null;
+  if (!toml && !walletInfo) return null;
 
   return (
     <BuyForm

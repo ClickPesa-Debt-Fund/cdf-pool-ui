@@ -1,9 +1,9 @@
 import { formatAmount } from "@/utils";
-import { currencies } from "./data";
+import { currencies } from "../data";
 import { ExchangeFormItem } from "@clickpesa/components-library.forms.exchange-form-item";
 import { WizardInput } from "@clickpesa/components-library.inputs.wizard-input";
 import { Button } from "@/components/ui/button";
-import { useGetDepositInfo } from "./services";
+import { useGetWalletInfo } from "../services";
 
 const AmountAddressForm = ({
   amount,
@@ -22,7 +22,8 @@ const AmountAddressForm = ({
   updateAmount: (amount: string) => void;
   updateAmountError: (error: string) => void;
 }) => {
-  const { depositInfo } = useGetDepositInfo();
+  const { walletInfo } = useGetWalletInfo();
+
   return (
     <div className="space-y-6">
       <ExchangeFormItem
@@ -33,8 +34,8 @@ const AmountAddressForm = ({
         handleAmountChange={(amount) => {
           updateAmount(amount || "");
           if (
-            Number(amount) < depositInfo?.[assetCode]?.min_amount ||
-            Number(amount) > depositInfo?.[assetCode]?.max_amount
+            Number(amount) < walletInfo?.withdraw?.[assetCode]?.min_amount ||
+            Number(amount) > walletInfo?.withdraw?.[assetCode]?.max_amount
           ) {
             updateAmountError("Invalid amount");
           } else {
@@ -47,10 +48,10 @@ const AmountAddressForm = ({
         amountError={amountError}
         label=""
         isMobile={false}
-        message={`Min deposit amount ${formatAmount(
-          depositInfo?.[assetCode]?.min_amount
+        message={`Min withdrawal amount ${formatAmount(
+          walletInfo?.withdraw?.[assetCode]?.min_amount
         )} ${assetCode}. Max amount is ${formatAmount(
-          depositInfo?.[assetCode]?.max_amount
+          walletInfo?.withdraw?.[assetCode]?.max_amount
         )} ${assetCode}.`}
       />
       <div>

@@ -10,6 +10,8 @@ import { DetailsRow } from "@clickpesa/components-library.details-row";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { useState } from "react";
 import BuyModal from "./buy";
+import WithdrawModal from "./withdraw";
+import Modal from "antd/lib/modal";
 
 const Pool = ({
   name,
@@ -80,7 +82,7 @@ const Pool = ({
           <div className="flex flex-wrap gap-4">
             <Button
               onClick={() => {
-                if (status === "RAISING") setOpen(true);
+                setOpen(true);
               }}
               className="flex-1"
             >
@@ -145,6 +147,16 @@ const Pool = ({
       </div>
       {status === "RAISING" && (
         <BuyModal close={() => setOpen(false)} open={open} />
+      )}
+      {status === "COMPLETED" && (
+        <WithdrawModal close={() => setOpen(false)} open={open} />
+      )}
+      {status === "EARNING" && (
+        <Modal open={open} onCancel={() => setOpen(false)} footer={false}>
+          <p className="w-fit">
+            <StatusTag name="Coming Soon" color="gold" />
+          </p>
+        </Modal>
       )}
     </div>
   );
