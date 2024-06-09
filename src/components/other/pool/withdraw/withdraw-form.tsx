@@ -14,7 +14,7 @@ import AmountAddressForm from "./amount-address-form";
 import KycForm from "../kyc-form";
 import Spinner from "../../spinner";
 import WithdrawStatus from "./withdraw-status";
-import { delay } from "@/utils";
+import { delay, formatAmount } from "@/utils";
 
 const WithdrawForm = ({
   close,
@@ -113,9 +113,14 @@ const WithdrawForm = ({
                   balance?.asset_code === ASSET_CODE
               )?.balance;
 
-              const withdrawableAmount = balance;
-              if (+withdrawableAmount >= +amount) {
+              if (+balance >= +amount) {
                 updateCurrent(current + 1);
+              } else {
+                updateAmountError(
+                  `Balance not enough, maximum withdrawable amount is ${formatAmount(
+                    balance
+                  )} ${ASSET_CODE}`
+                );
               }
             }
           });
