@@ -16,7 +16,7 @@ const Steps = () => {
           <div>
             <ul className="space-y-8">
               {steps.map((_, index) => (
-                <li>
+                <li key={index}>
                   <button
                     onClick={() => setActive(index + 1)}
                     className={cn(
@@ -41,7 +41,7 @@ const Steps = () => {
         <div className="md:order-2 order-1 flex-[1.3]">
           <ul>
             {steps?.map(({ title, description }, index) => (
-              <li>
+              <li key={index}>
                 <Accordion
                   active={active === index + 1}
                   updateActive={() => {

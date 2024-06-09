@@ -23,7 +23,7 @@ const Statistics = () => {
       {stats.map(({ title, content }, index) => {
         return (
           <>
-            <div key={index} className={cn("max-w-[250px] space-y-2")}>
+            <div key={title} className={cn("max-w-[250px] space-y-2")}>
               <h3 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)] !text-white">
                 {title}
               </h3>
