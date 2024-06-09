@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clickpesa/components-library.alert": "^0.0.6",
     "@clickpesa/components-library.currency-logos": "^0.0.3",
     "@clickpesa/components-library.details-row": "^0.0.16",
     "@clickpesa/components-library.forms.exchange-form-item": "^0.0.15",

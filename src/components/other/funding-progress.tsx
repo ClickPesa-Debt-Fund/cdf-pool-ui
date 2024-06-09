@@ -8,7 +8,7 @@ const FundingProgress = ({
 }: {
   goal: number;
   collected: number;
-  currency?: "USDC";
+  currency?: string;
   showText?: boolean;
 }) => {
   return (

@@ -1010,6 +1010,15 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
+"@clickpesa/components-library.alert@^0.0.6":
+  version "0.0.6"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.alert/-/components-library.alert-0.0.6.tgz#603e44290514fb85b2ad591940ad2d3a36365da1"
+  integrity sha512-KJF605DX+HXBgdSZ+6wUn0BfJFN/luFs6MztTa/VlyX1cAp1Ybufx1TnonF6X3Pt+IyDWP6z4rlaRE/Btn65Og==
+  dependencies:
+    "@clickpesa/components-library.close-x" "0.0.4"
+    "@clickpesa/components-library.icon-button" "0.0.5"
+    core-js "^3.0.0"
+
 "@clickpesa/components-library.button@0.0.5":
   version "0.0.5"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.button/-/components-library.button-0.0.5.tgz#48597101615328e572760afe717b5a0d8f1f9401"
@@ -1019,6 +1028,13 @@
     antd "5.3.2"
     core-js "^3.0.0"
     react-router-dom "6.9.0"
+
+"@clickpesa/components-library.close-x@0.0.4":
+  version "0.0.4"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.close-x/-/components-library.close-x-0.0.4.tgz#e0558f598144e382658089c7655e1b3b6112f819"
+  integrity sha512-/oyDlEuVEzT4a5nrpR+EFOEix8UPrCcQmt/23/jO9gb8cKtO1DmUfewHTJ4oqdf6d6hLBvsbqrzY3SChU83rPg==
+  dependencies:
+    core-js "^3.0.0"
 
 "@clickpesa/components-library.currency-logos@0.0.3", "@clickpesa/components-library.currency-logos@^0.0.3":
   version "0.0.3"
@@ -1054,6 +1070,13 @@
     "@clickpesa/components-library.inputs.currency-selector" "0.0.6"
     "@clickpesa/components-library.shared.shared-functions" "0.0.4"
     antd "5.3.2"
+    core-js "^3.0.0"
+
+"@clickpesa/components-library.icon-button@0.0.5":
+  version "0.0.5"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.icon-button/-/components-library.icon-button-0.0.5.tgz#e67afc8e382aa6a582228139ee8d6489d930e7b2"
+  integrity sha512-1Y7D4WHmNjoi87B1eX0at6WvJPT5GRrtAFwrGEURdD6s0FTJ6EyEvbK1t82e4hAJW1fKx47rdrmejc6uMlFz1A==
+  dependencies:
     core-js "^3.0.0"
 
 "@clickpesa/components-library.inputs.amount-input@0.0.7":

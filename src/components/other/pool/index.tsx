@@ -12,6 +12,7 @@ import { useState } from "react";
 import BuyModal from "./buy";
 import WithdrawModal from "./withdraw";
 import Modal from "antd/lib/modal";
+import { useFlags } from "flagsmith/react";
 
 const Pool = ({
   name,
@@ -25,16 +26,21 @@ const Pool = ({
   first_repayment,
   issuance_date,
 }: (typeof pools)[0]) => {
+  const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
   const [open, setOpen] = useState(false);
+  const [contractOpen, setContractOpen] = useState(false);
   const { width } = useWindowSize();
   const isMobile = width <= 767;
+
+  const asset =
+    status === "EARNING" ? "USDC" : (debtfund_investor_asset?.value as any);
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8 flex gap-8 md:flex-row flex-col">
       <div className="self-stretch flex-1 flex flex-col justify-between gap-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
-            <CurrencyLogos name="USDC" />
+            <CurrencyLogos name={asset} />
             <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
               <img
                 src="/icons/logo.svg"
@@ -42,7 +48,7 @@ const Pool = ({
                 className="md:h-[34px] h-[34px]"
               />
             </span>
-            {name}
+            {asset}/{name}
           </div>
           <StatusTag
             name={status}
@@ -65,7 +71,7 @@ const Pool = ({
             {status !== "COMPLETED" && (
               <span>
                 {status === "EARNING" ? "Earned" : "Raised"}&nbsp;
-                {formatAmount(raised, 0)} USDC
+                {formatAmount(raised, 0)} {asset}
               </span>
             )}
             <span>
@@ -75,10 +81,15 @@ const Pool = ({
                 ? "Total Earnings"
                 : "Goal"}
               &nbsp;
-              {formatAmount(goal, 0)} USDC
+              {formatAmount(goal, 0)} {asset}
             </span>
           </div>
-          <FundingProgress goal={goal} collected={raised} showText={false} />
+          <FundingProgress
+            goal={goal}
+            collected={raised}
+            showText={false}
+            currency={asset}
+          />
           <div className="flex flex-wrap gap-4">
             <Button
               onClick={() => {
@@ -94,6 +105,9 @@ const Pool = ({
             </Button>
             <Button
               variant={"outline"}
+              onClick={() => {
+                setContractOpen(true);
+              }}
               className="flex-1 border-primary text-primary gap-2"
             >
               Verify Pool Contract <ArrowBgIcon />
@@ -158,6 +172,15 @@ const Pool = ({
           </p>
         </Modal>
       )}
+      <Modal
+        open={contractOpen}
+        onCancel={() => setContractOpen(false)}
+        footer={false}
+      >
+        <p className="w-fit">
+          <StatusTag name="Coming Soon" color="gold" />
+        </p>
+      </Modal>
     </div>
   );
 };

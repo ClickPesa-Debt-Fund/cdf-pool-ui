@@ -1,6 +1,6 @@
 export const pools = [
   {
-    name: "USDC/CPYT",
+    name: "CPYT",
     status: "RAISING",
     duration: 9,
     APY: 12,
@@ -13,7 +13,7 @@ export const pools = [
     id: "1",
   },
   {
-    name: "USDC/CPYT",
+    name: "CPYT",
     status: "EARNING",
     duration: 9,
     APY: 12,
@@ -26,7 +26,7 @@ export const pools = [
     id: "2",
   },
   {
-    name: "USDC/CPYT",
+    name: "CPYT",
     status: "COMPLETED",
     duration: 9,
     APY: 12,
