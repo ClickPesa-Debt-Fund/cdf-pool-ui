@@ -2,10 +2,13 @@ import Pool from "@/components/other/pool";
 import { pools } from "./data";
 import { useFlags } from "flagsmith/react";
 import { Alert } from "@clickpesa/components-library.alert";
+import { useEffect } from "react";
 
 const Pools = () => {
   const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <>
       <div className="md:space-y-[77px] space-y-[50px] md:py-[100px] py-[50px] container max-w-[1080px] min-h-full">

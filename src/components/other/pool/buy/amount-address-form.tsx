@@ -4,6 +4,7 @@ import { ExchangeFormItem } from "@clickpesa/components-library.forms.exchange-f
 import { WizardInput } from "@clickpesa/components-library.inputs.wizard-input";
 import { Button } from "@/components/ui/button";
 import { useGetWalletInfo } from "../services";
+import { Link } from "react-router-dom";
 
 const AmountAddressForm = ({
   amount,
@@ -72,14 +73,10 @@ const AmountAddressForm = ({
           ) && (
             <span className="text-red-500">
               Please add {assetCode} trustline to your Stellar account before
-              starting the swap process.{" "}
-              <a
-                href="https://medium.com/clickpesa"
-                target="_blank"
-                className="text-primary"
-              >
+              proceeding the swap process.{" "}
+              <Link to="/trustline" target="_blank" className="text-primary">
                 Learn More
-              </a>
+              </Link>
             </span>
           )}
       </div>

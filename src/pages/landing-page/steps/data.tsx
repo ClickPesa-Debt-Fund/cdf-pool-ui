@@ -4,6 +4,7 @@ export const steps = [
     description:
       "Establish a Trustline with CPYT on your Stellar wallet to allow receiving tokens in your wallet",
     imgSrc: "/images/step-1.svg",
+    link: "/trustline",
   },
   {
     title: "Browse list of available Pools on the dashboard",

@@ -6,6 +6,8 @@ import ErrorComponent from "../../error-component";
 import Spinner from "../../spinner";
 import BuyForm from "./buy-form";
 import { useGetWalletInfo, useGetToml } from "../services";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export type BuyFormProps = {
   close: () => void;
@@ -31,7 +33,31 @@ const BuyModal = ({ close, open }: { close: () => void; open: boolean }) => {
     close();
   };
   return (
-    <Modal open={open} onCancel={onClose} title="Buy CPYT Token" footer={false}>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      title={
+        <span className="inline-flex items-center gap-3">
+          {current > 1 && (
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              className="-ml-4"
+              type="button"
+              onClick={() => {
+                setCurrent(current - 1);
+              }}
+            >
+              <ArrowLeft />
+            </Button>
+          )}
+          Buy CPYT Token
+        </span>
+      }
+      footer={false}
+      destroyOnClose
+      maskClosable={false}
+    >
       {open && (
         <Buy
           form={form}

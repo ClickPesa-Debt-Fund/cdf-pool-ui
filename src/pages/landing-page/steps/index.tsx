@@ -2,6 +2,7 @@ import { useState } from "react";
 import { steps } from "./data";
 import { cn } from "@/lib/utils";
 import Accordion from "./accordion";
+import { Link } from "react-router-dom";
 
 const Steps = () => {
   const [active, setActive] = useState(1);
@@ -40,7 +41,7 @@ const Steps = () => {
         </div>
         <div className="md:order-2 order-1 flex-[1.3]">
           <ul>
-            {steps?.map(({ title, description }, index) => (
+            {steps?.map(({ title, description, link }, index) => (
               <li key={index}>
                 <Accordion
                   active={active === index + 1}
@@ -61,7 +62,19 @@ const Steps = () => {
                     </div>
                   }
                 >
-                  <div>{description}</div>
+                  <div>
+                    {description}
+                    {link ? (
+                      <>
+                        .{" "}
+                        <Link to={link} className="text-primary">
+                          Lean More
+                        </Link>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </Accordion>
               </li>
             ))}

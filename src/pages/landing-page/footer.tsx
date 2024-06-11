@@ -54,6 +54,10 @@ const links = [
         name: "Support",
         to: "mailto:info@clickpesadebtfund.com",
       },
+      {
+        name: "How to Add Trustline",
+        to: "/trustline",
+      },
     ],
   },
 ];
