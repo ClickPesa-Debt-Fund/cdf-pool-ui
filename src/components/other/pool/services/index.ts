@@ -14,7 +14,7 @@ import {
   generateDepositInstructions,
   initiateDeposit,
 } from "./deposit/initiate-deposit";
-import { useMutation, useQuery } from "react-query";
+import { UseQueryResult, useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { formatErrorMessage } from "@/utils";
 import {
@@ -28,11 +28,29 @@ import {
 } from "./withdraw/initiate-withdraw";
 import { retrieveWithdrawStatus } from "./withdraw/retrieve-info";
 
-const horizonURL = process.env.VITE_HORIZON_URL as string;
-const coreApiURL = process.env.VITE_CORE_API_URL as string;
-const networkPassphrase = process.env.VITE_STELLAR_NETWORK_PASSPHRASE as string;
+import {
+  Backstop,
+  // BackstopPool,
+  // BackstopPoolUser,
+  // Pool,
+  // PoolOracle,
+  // PoolUser,
+  // Positions,
+  // Reserve,
+  // UserBalance,
+} from "@blend-capital/blend-sdk";
+// import { Address, Asset, Horizon, SorobanRpc } from "@stellar/stellar-sdk";
+import { useSettings } from "@/contexts/settings";
 
-const anchorDomain = process.env.VITE_API_URL as string;
+const horizonURL =
+  (import.meta.env.VITE_HORIZON_URL as string) ||
+  "https://horizon-testnet.stellar.org";
+const coreApiURL = import.meta.env.VITE_CORE_API_URL as string;
+const networkPassphrase = import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE as string;
+const BACKSTOP_ID = import.meta.env.VITE_BACKSTOP || "";
+const DEFAULT_STALE_TIME = 30 * 1000;
+
+const anchorDomain = import.meta.env.VITE_API_URL as string;
 
 type DepositInstructionPayload = {
   JWTToken: any;
@@ -62,6 +80,28 @@ type KYCPayload = {
   city?: string;
   country?: string;
 };
+
+/**
+ * Fetches the backstop data.
+ * @param enabled - Whether the query is enabled (optional - defaults to true)
+ * @returns Query result with the backstop data.
+ */
+export function useBackstop(
+  enabled: boolean = true
+): UseQueryResult<Backstop, Error> {
+  const { network } = useSettings();
+  return useQuery({
+    staleTime: DEFAULT_STALE_TIME,
+    queryKey: ["backstop"],
+    retry: false,
+    enabled,
+    queryFn: async () => {
+      console.log("before data", BACKSTOP_ID);
+      const data = await Backstop.load(network, BACKSTOP_ID);
+      console.log(data, "after data");
+    },
+  });
+}
 
 export const useGetToml = () => {
   const { data, isLoading, refetch, isRefetching, error } = useQuery(

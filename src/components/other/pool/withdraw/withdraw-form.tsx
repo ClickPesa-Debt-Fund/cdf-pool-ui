@@ -59,7 +59,7 @@ const WithdrawForm = ({
           amount,
           assetCode: ASSET_CODE,
           JWTToken: res?.JWTToken,
-          issuer: issuer_address,
+          issuer: issuer_address || "",
           publicKey: form.getFieldValue("address"),
           customer_id: kycData?.id,
         }).then(() => {
@@ -72,7 +72,7 @@ const WithdrawForm = ({
         amount,
         assetCode: ASSET_CODE,
         JWTToken: generateTokenData?.JWTToken,
-        issuer: issuer_address,
+        issuer: issuer_address || "",
         publicKey: form.getFieldValue("address"),
         customer_id: kycData?.id,
       }).then(() => {
@@ -108,10 +108,12 @@ const WithdrawForm = ({
                   balance?.asset_code === ASSET_CODE
               )
             ) {
-              const balance = +res?.balances?.find(
-                (balance: { asset_code?: string }) =>
-                  balance?.asset_code === ASSET_CODE
-              )?.balance;
+              const balance = +(
+                res?.balances?.find(
+                  (balance: { asset_code?: string }) =>
+                    balance?.asset_code === ASSET_CODE
+                )?.balance || 0
+              );
 
               if (+balance >= +amount) {
                 updateCurrent(current + 1);
@@ -140,7 +142,7 @@ const WithdrawForm = ({
                     amount,
                     assetCode: ASSET_CODE,
                     JWTToken: res?.JWTToken,
-                    issuer: issuer_address,
+                    issuer: issuer_address || "",
                     publicKey: form.getFieldValue("address"),
                     customer_id: kycData?.id,
                   }).then(() => {

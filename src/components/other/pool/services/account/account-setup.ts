@@ -56,7 +56,20 @@ const createTrustline = async ({
 };
 
 const getAccountBalance = async (horizonURL: string, publicKey: string) => {
-  const account = await new StellarSdk.Server(horizonURL)
+  const account: {
+    balances: {
+      balance: string;
+      limit: string;
+      buying_liabilities: string;
+      selling_liabilities: string;
+      last_modified_ledger: number;
+      is_authorized: boolean;
+      is_authorized_to_maintain_liabilities: boolean;
+      asset_type: "credit_alphanum4" | "native";
+      asset_code: string;
+      asset_issuer: string;
+    }[];
+  } = await new StellarSdk.Server(horizonURL)
     .accounts()
     .accountId(publicKey)
     .call();

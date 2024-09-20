@@ -28,7 +28,7 @@ const Hero = () => {
           </p>
         </div>
         <div className="max-w-[450px] w-full flex flex-wrap gap-3">
-          <Button className="flex-1" onClick={() => navigate("/pools")}>
+          <Button className="flex-1" onClick={() => navigate("/dashboard")}>
             Start Earning
           </Button>
           <a

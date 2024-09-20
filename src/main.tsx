@@ -8,6 +8,8 @@ import { FlagsmithProvider } from "flagsmith/react";
 import ErrorBoundary from "@/pages/error-boundary";
 import App from "@/app.tsx";
 import "@/styles/index.sass";
+import { SettingsProvider } from "./contexts/settings";
+import { WalletProvider } from "./contexts/wallet";
 
 const queryClient = new QueryClient();
 
@@ -15,16 +17,20 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FlagsmithProvider
       options={{
-        environmentID: process.env.VITE_FLAGSMITH_ENVIRONMENT_KEY ?? "",
+        environmentID: import.meta.env.VITE_FLAGSMITH_ENVIRONMENT_KEY ?? "",
       }}
       flagsmith={flagsmith}
     >
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <ErrorBoundary>
-            <App />
-            <Toaster />
-          </ErrorBoundary>
+          <SettingsProvider>
+            <WalletProvider>
+              <ErrorBoundary>
+                <App />
+                <Toaster />
+              </ErrorBoundary>
+            </WalletProvider>
+          </SettingsProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </FlagsmithProvider>

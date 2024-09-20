@@ -3,12 +3,17 @@ import { pools } from "./data";
 import { useFlags } from "flagsmith/react";
 import { Alert } from "@clickpesa/components-library.alert";
 import { useEffect } from "react";
+import { useBackstop } from "@/components/other/pool/services";
 
 const Pools = () => {
   const { debtfund_investor_asset } = useFlags(["debtfund_investor_asset"]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  const backstop = useBackstop();
+
+  console.log(backstop?.error);
+
   return (
     <>
       <div className="md:space-y-[77px] space-y-[50px] md:py-[100px] py-[50px] container max-w-[1080px] min-h-full">

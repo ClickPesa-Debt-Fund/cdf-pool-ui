@@ -36,7 +36,7 @@ const EarningCalculator = () => {
             <div className="flex-[1.3] w-full">
               <Button
                 className="bg-[#020A1F] hover:bg-[#020A1F]/80 w-full"
-                onClick={() => navigate("/pools")}
+                onClick={() => navigate("/dashboard")}
               >
                 Earn Now
               </Button>
