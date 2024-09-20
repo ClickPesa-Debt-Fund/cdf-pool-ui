@@ -1057,6 +1057,14 @@
   dependencies:
     core-js "^3.0.0"
 
+"@clickpesa/components-library.data-display.detail-content-item@^0.0.2":
+  version "0.0.2"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.data-display.detail-content-item/-/components-library.data-display.detail-content-item-0.0.2.tgz#e6ee6f472387f5bec4de337c6606d52fb79b905c"
+  integrity sha512-erBBQd92C6n97/QpwqbTt4CNo4PWqLC5zbHiDjm6fuIwG7Jse6/LbiotbbrL0ZtsayQ3Cigpv5ZcQqaVkSfscg==
+  dependencies:
+    antd "5.3.2"
+    core-js "^3.0.0"
+
 "@clickpesa/components-library.details-row@^0.0.16":
   version "0.0.16"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.details-row/-/components-library.details-row-0.0.16.tgz#174bdf3f15e0b4d0d00f737d7aa22e8158d78730"

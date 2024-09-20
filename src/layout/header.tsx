@@ -22,7 +22,7 @@ const Header = () => {
   const pathname = useLocation().pathname;
   const { connect, disconnect, connected, walletAddress, isLoading } =
     useWallet();
-  const { balance } = useGetAccountBalance(walletAddress || "", true);
+  const { balance } = useGetAccountBalance(walletAddress || "");
   const handleConnectWallet = (successful: boolean) => {
     if (successful) {
       notification.success({
@@ -51,6 +51,16 @@ const Header = () => {
     });
   };
 
+  const supportedBalances = balance?.balances?.filter((balance) => {
+    return (
+      (balance?.asset_issuer === BLND_ISSURER ||
+        balance?.asset_issuer === USDC_ISSURER) &&
+      (balance?.asset_code === "USDC" ||
+        balance?.asset_code === "CPYT" ||
+        balance?.asset_code === "BLND")
+    );
+  });
+
   return (
     <div className="bg-white fixed top-0 left-0 w-full z-10">
       <div className="container max-w-[1270px] flex flex-wrap justify-between gap-5 items-center py-3">
@@ -61,30 +71,33 @@ const Header = () => {
           <>
             {connected ? (
               <div className="flex items-center gap-5 flex-wrap">
-                <div className="text-sm ">
-                  Balances
-                  <div className="flex flex-wrap items-center gap-2">
-                    {balance?.balances
-                      ?.filter((balance) => {
-                        return (
-                          (balance?.asset_issuer === BLND_ISSURER ||
-                            balance?.asset_issuer === USDC_ISSURER) &&
-                          (balance?.asset_code === "USDC" ||
-                            balance?.asset_code === "CPYT")
-                        );
-                      })
-                      ?.map((balance, index) => {
-                        return (
-                          <span key={index} className="text-font-semi-bold">
-                            {formatAmount(balance?.balance)}{" "}
-                            {balance?.asset_type === "native"
-                              ? "XLM"
-                              : balance?.asset_code}
-                          </span>
-                        );
-                      })}
+                {supportedBalances?.length ? (
+                  <div className="text-sm ">
+                    Balances
+                    <div className="flex flex-wrap items-center gap-2">
+                      {balance?.balances
+                        ?.filter((balance) => {
+                          return (
+                            (balance?.asset_issuer === BLND_ISSURER ||
+                              balance?.asset_issuer === USDC_ISSURER) &&
+                            (balance?.asset_code === "USDC" ||
+                              balance?.asset_code === "CPYT" ||
+                              balance?.asset_code === "BLND")
+                          );
+                        })
+                        ?.map((balance, index) => {
+                          return (
+                            <span key={index} className="text-font-semi-bold">
+                              {formatAmount(balance?.balance)}{" "}
+                              {balance?.asset_type === "native"
+                                ? "XLM"
+                                : balance?.asset_code}
+                            </span>
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
+                ) : null}
                 <Dropdown
                   trigger={["click"]}
                   menu={{

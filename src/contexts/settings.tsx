@@ -91,8 +91,6 @@ export const SettingsProvider = ({ children = null as any }) => {
     }
   }
 
-  console.log(network, lastPool);
-
   return (
     <SettingsContext.Provider
       value={{

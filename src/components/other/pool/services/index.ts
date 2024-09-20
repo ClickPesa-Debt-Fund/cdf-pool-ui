@@ -46,7 +46,8 @@ const horizonURL =
   (import.meta.env.VITE_HORIZON_URL as string) ||
   "https://horizon-testnet.stellar.org";
 const coreApiURL = import.meta.env.VITE_CORE_API_URL as string;
-const networkPassphrase = import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE as string;
+const networkPassphrase = import.meta.env
+  .VITE_STELLAR_NETWORK_PASSPHRASE as string;
 const BACKSTOP_ID = import.meta.env.VITE_BACKSTOP || "";
 const DEFAULT_STALE_TIME = 30 * 1000;
 
@@ -96,9 +97,7 @@ export function useBackstop(
     retry: false,
     enabled,
     queryFn: async () => {
-      console.log("before data", BACKSTOP_ID);
-      const data = await Backstop.load(network, BACKSTOP_ID);
-      console.log(data, "after data");
+      return await Backstop.load(network, BACKSTOP_ID);
     },
   });
 }
@@ -394,7 +393,7 @@ export const useGetWithdrawStatus = (id: string, interval?: boolean) => {
     withdrawStatusRefetching: isRefetching,
   };
 };
-export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
+export const useGetAccountBalance = (publicKey: string) => {
   const { data, isLoading, error, refetch, isRefetching } = useQuery(
     ["account balance", publicKey],
     async () => {
@@ -404,7 +403,7 @@ export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
     {
       enabled: !!publicKey,
       refetchOnMount: false,
-      ...(interval ? { refetchInterval: 10000 } : {}),
+      // ...(interval ? { refetchInterval: 10000 } : {}),
       refetchOnWindowFocus: false,
     }
   );

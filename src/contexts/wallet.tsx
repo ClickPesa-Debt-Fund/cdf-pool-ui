@@ -654,7 +654,10 @@ export const WalletProvider = ({ children = null as any }) => {
   }
 
   async function faucet(): Promise<undefined> {
-    if (connected && import.meta.env.VITE_PASSPHRASE === Networks.TESTNET) {
+    if (
+      connected &&
+      import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
+    ) {
       const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=${walletAddress}`;
       try {
         setTxStatus(TxStatus.BUILDING);
@@ -670,6 +673,7 @@ export const WalletProvider = ({ children = null as any }) => {
           network.passphrase
         );
         const result = await sendTransaction(signedTx);
+
         if (result) {
           cleanWalletCache();
         }
