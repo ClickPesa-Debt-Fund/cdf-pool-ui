@@ -20,7 +20,7 @@ const Pool = ({
   goal,
   raised,
   duration,
-  APY,
+  APR,
   payback,
   last_repayment,
   first_repayment,
@@ -126,8 +126,8 @@ const Pool = ({
         />
         <DetailsRow
           text={{
-            label: "Annual Percentage Yield (APY)",
-            value: APY + "%",
+            label: "Annual Percentage Yield (APR)",
+            value: APR + "%",
           }}
           isMobile={isMobile}
         />

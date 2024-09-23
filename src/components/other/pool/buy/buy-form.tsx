@@ -81,7 +81,7 @@ const BuyForm = ({
         JWTToken: generateTokenData?.JWTToken,
         issuer: issuer_address || "",
         publicKey: form.getFieldValue("address"),
-        customer_id: kycData?.id,
+        customer_id: kycData?.id || "",
         investor_asset: INVESTOR_ASSET,
       }).then(() => {
         if (current !== 3) updateCurrent(current + 1);

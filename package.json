@@ -15,7 +15,7 @@
     "@clickpesa/components-library.alert": "^0.0.6",
     "@clickpesa/components-library.currency-logos": "^0.0.3",
     "@clickpesa/components-library.data-display.detail-content-item": "^0.0.2",
-    "@clickpesa/components-library.details-row": "^0.0.16",
+    "@clickpesa/components-library.details-row": "^0.0.17",
     "@clickpesa/components-library.forms.exchange-form-item": "^0.0.15",
     "@clickpesa/components-library.inputs.phone-input": "^0.0.5",
     "@clickpesa/components-library.inputs.select-input": "^0.0.14",

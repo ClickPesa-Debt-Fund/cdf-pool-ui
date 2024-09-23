@@ -74,7 +74,7 @@ const WithdrawForm = ({
         JWTToken: generateTokenData?.JWTToken,
         issuer: issuer_address || "",
         publicKey: form.getFieldValue("address"),
-        customer_id: kycData?.id,
+        customer_id: kycData?.id || "",
       }).then(() => {
         if (current !== 3) updateCurrent(current + 1);
       });

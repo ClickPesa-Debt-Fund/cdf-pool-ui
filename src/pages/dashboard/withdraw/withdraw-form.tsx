@@ -1,21 +1,17 @@
 import Form from "antd/lib/form";
 import Steps from "antd/lib/steps";
-import { SupplyFormProps } from ".";
+import { WithdrawFormProps } from ".";
 import AmountInput from "./amount-input";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import {
   useGetAccountBalance,
   useGetKYC,
-  useHorizonAccount,
   useSubmitKYC,
-  useTokenBalance,
 } from "@/components/other/pool/services";
-import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
 import KycForm from "../kyc-form";
 import Summary from "./summary";
 import { compareObjects, formatErrorMessage } from "@/utils";
 import {
-  FixedMath,
   PoolContract,
   Positions,
   PositionsEstimate,
@@ -26,13 +22,12 @@ import {
 import { scaleInputToBigInt } from "@/utils/scval";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 import FullPageSpinner from "@/components/other/full-page-loader";
-import { getAssetReserve } from "@/utils/horizon";
 import { useState } from "react";
 import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 
-const SupplyForm = ({
+const WithdrawForm = ({
   form,
   current,
   amount,
@@ -41,48 +36,29 @@ const SupplyForm = ({
   updateAmount,
   updateAmountError,
   close,
-}: SupplyFormProps) => {
+}: WithdrawFormProps) => {
   const poolId = import.meta.env.VITE_POOL_ID || "";
   const assetId = import.meta.env.VITE_ASSET_ID || "";
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
     useWallet();
-  const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
+  const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
-  const supportedBalances = balance?.balances?.find((balance) => {
-    return (
-      (balance?.asset_issuer === BLND_ISSURER ||
-        balance?.asset_issuer === USDC_ISSURER) &&
-      balance?.asset_code === "USDC"
-    );
-  });
+
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
   const { data: pool } = usePool(poolId);
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   const reserve = pool?.reserves.get(assetId);
-  const decimals = reserve?.config.decimals ?? 7;
+  const currentDeposit =
+    reserve && poolUser ? poolUser.getCollateralFloat(reserve) : undefined;
 
-  const { data: horizonAccount } = useHorizonAccount();
-  const { data: tokenBalance } = useTokenBalance(
-    assetId,
-    reserve?.tokenMetadata?.asset,
-    horizonAccount
-  );
+  const decimals = reserve?.config.decimals ?? 7;
 
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<Positions>();
   const [isLoading, setloading] = useState(false);
-
-  // calculate current wallet state
-  const stellar_reserve_amount = getAssetReserve(
-    horizonAccount,
-    reserve?.tokenMetadata?.asset
-  );
-  const freeUserBalanceScaled =
-    FixedMath.toFloat(tokenBalance ?? BigInt(0), reserve?.config?.decimals) -
-    stellar_reserve_amount;
 
   const curPositionsEstimate =
     pool && poolOracle && poolUser
@@ -109,12 +85,12 @@ const SupplyForm = ({
     if (amount && connected && reserve) {
       let submitArgs: SubmitArgs = {
         from: walletAddress,
-        spender: walletAddress,
         to: walletAddress,
+        spender: walletAddress,
         requests: [
           {
-            amount: scaleInputToBigInt(amount, reserve.config.decimals),
-            request_type: RequestType.SupplyCollateral,
+            amount: scaleInputToBigInt(amount, decimals),
+            request_type: RequestType.WithdrawCollateral,
             address: reserve.assetId,
           },
         ],
@@ -152,7 +128,7 @@ const SupplyForm = ({
         if (current === 1) {
           if (!amount) {
             updateAmountError("Invalid Amount");
-          } else if (+(supportedBalances?.balance || 0) < +(amount || 0)) {
+          } else if (+(currentDeposit || 0) < +(amount || 0)) {
             updateAmountError("Insufficient Balance");
           } else {
             updateAmountError("");
@@ -252,7 +228,7 @@ const SupplyForm = ({
           amount={amount}
           amountError={amountError}
           updateAmountError={updateAmountError}
-          freeUserBalanceScaled={freeUserBalanceScaled}
+          freeUserBalanceScaled={currentDeposit}
         />
       )}
       {current === 2 && (
@@ -279,4 +255,4 @@ const SupplyForm = ({
   );
 };
 
-export default SupplyForm;
+export default WithdrawForm;

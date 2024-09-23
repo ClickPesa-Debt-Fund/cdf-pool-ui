@@ -7,6 +7,7 @@ import {
   PoolBackstopActionArgs,
   PoolClaimArgs,
   PoolContract,
+  RequestType,
   SubmitArgs,
 } from "@blend-capital/blend-sdk";
 import {
@@ -60,7 +61,11 @@ export interface IWalletContext {
     poolId: string,
     submitArgs: SubmitArgs,
     sim: boolean
-  ) => Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ) => Promise<
+    | SorobanRpc.Api.SimulateTransactionResponse
+    | undefined
+    | { message?: string; error?: string }
+  >;
   poolClaim: (
     poolId: string,
     claimArgs: PoolClaimArgs,
@@ -404,19 +409,34 @@ export const WalletProvider = ({ children = null as any }) => {
     poolId: string,
     submitArgs: SubmitArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
-    if (connected) {
-      const pool = new PoolContract(poolId);
-      const operation = xdr.Operation.fromXDR(
-        pool.submit(submitArgs),
-        "base64"
-      );
-      if (sim) {
-        return await simulateOperation(operation);
+  ): Promise<
+    | SorobanRpc.Api.SimulateTransactionResponse
+    | undefined
+    | { message?: string; error?: string }
+  > {
+    try {
+      if (connected) {
+        const pool = new PoolContract(poolId);
+        const operation = xdr.Operation.fromXDR(
+          pool.submit(submitArgs),
+          "base64"
+        );
+        if (sim) {
+          return await simulateOperation(operation);
+        }
+        await invokeSorobanOperation(operation);
+        cleanPoolCache(poolId);
+        cleanWalletCache();
+        return {
+          message:
+            submitArgs?.requests?.[0]?.request_type ===
+            RequestType.WithdrawCollateral
+              ? "Successful withdrawn Funds"
+              : "Successfully Supplied funds",
+        };
       }
-      await invokeSorobanOperation(operation);
-      cleanPoolCache(poolId);
-      cleanWalletCache();
+    } catch (error) {
+      throw new Error("Something Went wrong");
     }
   }
 
@@ -653,7 +673,7 @@ export const WalletProvider = ({ children = null as any }) => {
     }
   }
 
-  async function faucet(): Promise<undefined> {
+  async function faucet(): Promise<any> {
     if (
       connected &&
       import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
@@ -681,7 +701,7 @@ export const WalletProvider = ({ children = null as any }) => {
         console.error("Failed submitting transaction: ", e);
         setFailureMessage(e?.message);
         setTxStatus(TxStatus.FAIL);
-        return undefined;
+        throw new Error("Something went wrong");
       }
     }
   }

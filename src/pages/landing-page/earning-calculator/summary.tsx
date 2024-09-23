@@ -27,7 +27,7 @@ const Summary = ({ amount }: { amount: string }) => {
       />
       <DetailsRow
         text={{
-          label: "Annual Percentage Yield (APY)",
+          label: "Annual Percentage Yield (APR)",
           value: "12%",
         }}
         isMobile={isMobile}
@@ -66,14 +66,18 @@ const Summary = ({ amount }: { amount: string }) => {
       <DetailsRow
         text={{
           label: "First Repayment Date",
-          value: formatDate(new Date("03-31-2025".replace(/-/g, '/')).toISOString()),
+          value: formatDate(
+            new Date("03-31-2025".replace(/-/g, "/")).toISOString()
+          ),
         }}
         isMobile={isMobile}
       />
       <DetailsRow
         text={{
           label: "Last Repayment Date",
-          value: formatDate(new Date("09-30-2025".replace(/-/g, '/')).toISOString()),
+          value: formatDate(
+            new Date("09-30-2025".replace(/-/g, "/")).toISOString()
+          ),
         }}
         isMobile={isMobile}
       />

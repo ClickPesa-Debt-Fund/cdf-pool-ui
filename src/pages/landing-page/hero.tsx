@@ -19,7 +19,7 @@ const Hero = () => {
       <div className="order-1 md:order-2 flex-[1.6] self-stretch flex flex-col justify-between gap-10">
         <div className="space-y-4">
           <h1 className="font-bold text-font-bold [font-size:_clamp(24px,5vw,32px)] !text-white">
-            Support SMEs in Africa and Earn a 12% APY Return on Investment
+            Support SMEs in Africa and Earn a 12% APR Return on Investment
           </h1>
           <p className="[font-size:_clamp(16px,5vw,18px)]">
             Invest in the Clickpesa Debt Fund, a fund dedicated to providing

@@ -37,7 +37,7 @@ const Form = ({
         </div>
         <div>
           <label htmlFor="apy" className="text-text-300 flex">
-            Annual Percentage Yield (APY)
+            Annual Percentage Yield (APR)
           </label>
           <ExchangeFormItem
             currencies={[

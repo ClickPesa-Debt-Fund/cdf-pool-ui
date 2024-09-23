@@ -14,9 +14,7 @@ import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
 import { useGetAccountBalance } from "@/components/other/pool/services";
 import { formatAmount } from "@/utils";
-
-const BLND_ISSURER = import.meta.env.VITE_BLND_ISSUER;
-const USDC_ISSURER = import.meta.env.VITE_USDC_ISSUER;
+import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
 
 const Header = () => {
   const pathname = useLocation().pathname;

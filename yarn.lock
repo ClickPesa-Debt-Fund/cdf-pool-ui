@@ -1065,14 +1065,14 @@
     antd "5.3.2"
     core-js "^3.0.0"
 
-"@clickpesa/components-library.details-row@^0.0.16":
-  version "0.0.16"
-  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.details-row/-/components-library.details-row-0.0.16.tgz#174bdf3f15e0b4d0d00f737d7aa22e8158d78730"
-  integrity sha512-QO4FHlhFwevelhGpXCNbVe2ugUE2kGKvscPFATmv6F1claj64YXTsCiFQRXtm3PWLF7ZT0Jmuj407lSHqckuLw==
+"@clickpesa/components-library.details-row@^0.0.17":
+  version "0.0.17"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.details-row/-/components-library.details-row-0.0.17.tgz#9cc4a2e20f85a1f855d12300fce07ebd6acdae62"
+  integrity sha512-XQ0dwshobzsr0LFcMEVeB8c1q/zRGK8Y4QYhc4BOoDgfuyd5hW0Pcx4D6zfbA0Z8pQMtcTeXiYhl38s1bb8lug==
   dependencies:
     "@clickpesa/components-library.currency-logos" "0.0.3"
     "@clickpesa/components-library.exchange-rate-arrow" "0.0.1"
-    "@clickpesa/components-library.shared.shared-functions" "0.0.4"
+    "@clickpesa/components-library.shared.shared-functions" "0.0.5"
     "@clickpesa/components-library.status-tag" "0.0.7"
     core-js "^3.0.0"
 
@@ -1160,6 +1160,15 @@
   version "0.0.4"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.shared.shared-functions/-/components-library.shared.shared-functions-0.0.4.tgz#ebc7ecd63b54b22021ef6460b7f6b2f79b48392d"
   integrity sha512-OMTuzLKBWaicXAj61VLJlSE5A0sc4BtnIgGvLQbFxinwIX3hywjI8pkOH6FUlXhCHy4PjTp5YmhF3aSdxySoVg==
+  dependencies:
+    core-js "^3.0.0"
+    moment "2.29.4"
+    react-currency-input-field "3.6.10"
+
+"@clickpesa/components-library.shared.shared-functions@0.0.5":
+  version "0.0.5"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.shared.shared-functions/-/components-library.shared.shared-functions-0.0.5.tgz#ae69189ddb1f0978164ed497f0d414c2196e54f9"
+  integrity sha512-Eide72rbRwQOsbiK5fMJmwSPafvOo+nL9rnB1/BjZdygP+t8A6vsP0mETBcW1Zlsu72lkUjmy1RW9N+Q/fNfcQ==
   dependencies:
     core-js "^3.0.0"
     moment "2.29.4"

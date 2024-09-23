@@ -1,7 +1,7 @@
 import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
-import PoolActivities from "./pool-activities";
-import PoolDetails from "./pool-details";
-import UserPositionDetails from "./user-position-details";
+import PoolActivities from "./components/pool-activities";
+import PoolDetails from "./components/pool-details";
+import UserPositionDetails from "./components/user-position-details";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import notification from "antd/lib/notification";
 import { useGetAccountBalance } from "@/components/other/pool/services";
@@ -11,11 +11,15 @@ import { Alert } from "@clickpesa/components-library.alert";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
-
-const BLND_ISSURER = import.meta.env.VITE_BLND_ISSUER;
-const USDC_ISSURER = import.meta.env.VITE_USDC_ISSUER;
+import { BLND_ISSURER, POOL_ID, USDC_ISSURER } from "@/constants";
+import { usePool } from "@/services";
+import Spinner from "@/components/other/spinner";
 
 const Dashboard = () => {
+  const safePoolId =
+    typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
+  const { isLoading } = usePool(safePoolId, true);
+
   const { connected, walletAddress, faucet, txStatus } = useWallet();
   const [loading, setLoading] = useState(false);
   const { balance, balanceError, balanceRefetch } = useGetAccountBalance(
@@ -59,8 +63,12 @@ const Dashboard = () => {
 
   const notFound = balanceError?.response?.status === 404;
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="md:space-y-[30px] space-y-[24px] md:py-[100px] py-[50px] container max-w-[1270px] min-h-full">
+    <div className="md:space-y-[30px] space-y-[24px] md:py-[100px] py-[90px] container max-w-[1270px] min-h-full">
       {loading && (
         <FullPageSpinner
           message={
@@ -82,7 +90,7 @@ const Dashboard = () => {
               className="md:h-[34px] h-[34px]"
             />
           </span>
-          {"USDC"}/{"CPYT"}
+          SMEs
         </div>
         {connected ? (
           <div>
