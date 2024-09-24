@@ -8,31 +8,28 @@ import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";
-import SupplyForm from "./supply-form";
+import RepayForm from "./repay-form";
 
 const BLND_ISSURER = import.meta.env.VITE_BLND_ISSUER;
 const USDC_ISSURER = import.meta.env.VITE_USDC_ISSUER;
 
-export type SupplyFormProps = {
+export type RepayFormProps = {
   close: () => void;
   form: FormInstance<any>;
   amount: string;
   amountError: string;
   current: number;
-  asset: "USDC" | "CPYT";
   updateCurrent: (current: number) => void;
   updateAmount: (amount: string) => void;
   updateAmountError: (error: string) => void;
 };
 
-const SupplyModal = ({
+const RepayModal = ({
   open,
   close,
-  asset,
 }: {
   open: boolean;
   close: () => void;
-  asset: "USDC" | "CPYT";
 }) => {
   const [current, setCurrent] = useState(1);
   const [amount, setAmount] = useState("");
@@ -64,14 +61,14 @@ const SupplyModal = ({
               <ArrowLeft />
             </Button>
           )}
-          Supply {asset}
+          Repay USDC
         </span>
       }
       footer={false}
       destroyOnClose
       maskClosable={false}
     >
-      <Supply
+      <Repay
         form={form}
         amount={amount}
         amountError={amountError}
@@ -80,13 +77,12 @@ const SupplyModal = ({
         updateAmount={(amount) => setAmount(amount)}
         updateAmountError={(error) => setAmountError(error)}
         close={onClose}
-        asset={asset}
       />
     </Modal>
   );
 };
 
-const Supply = ({
+const Repay = ({
   close,
   amount,
   amountError,
@@ -95,8 +91,7 @@ const Supply = ({
   updateAmountError,
   updateCurrent,
   current,
-  asset,
-}: SupplyFormProps) => {
+}: RepayFormProps) => {
   const [isLoading, setLoading] = useState(false);
   const { walletAddress } = useWallet();
   const { balance, balanceError, balanceLoading, balanceRefetch } =
@@ -137,7 +132,7 @@ const Supply = ({
   }
   //   if yes form
   return (
-    <SupplyForm
+    <RepayForm
       close={close}
       form={form}
       amount={amount}
@@ -146,9 +141,8 @@ const Supply = ({
       updateCurrent={updateCurrent}
       updateAmount={updateAmount}
       updateAmountError={updateAmountError}
-      asset={asset}
     />
   );
 };
 
-export default SupplyModal;
+export default RepayModal;

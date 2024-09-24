@@ -41,7 +41,7 @@ const Summary = ({
         <div>
           <DetailsRow
             amount={{
-              label: "Amount to supply",
+              label: "Amount to Repay",
               value: amount,
               currency: "USDC",
             }}
@@ -64,23 +64,18 @@ const Summary = ({
               digits: 2,
             }}
           />
+
           {reserve && (
             <DetailsRow
               exchangeRate={{
-                label: "Withdraw Amount",
+                label: "Your total borrowed",
                 start: {
+                  value: `${poolUser?.getLiabilitiesFloat(reserve) || 0}`,
                   currency: symbol,
-                  value: `${toBalance(
-                    poolUser?.getCollateralFloat(reserve),
-                    decimals
-                  )}`,
                 },
                 end: {
+                  value: `${newPoolUser?.getLiabilitiesFloat(reserve) ?? 0}`,
                   currency: symbol,
-                  value: `${toBalance(
-                    newPoolUser?.getCollateralFloat(reserve),
-                    decimals
-                  )}`,
                 },
               }}
             />

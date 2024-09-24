@@ -1,6 +1,6 @@
 import Form from "antd/lib/form";
 import Steps from "antd/lib/steps";
-import { WithdrawFormProps } from ".";
+import { RepayFormProps } from ".";
 import AmountInput from "./amount-input";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import {
@@ -27,7 +27,7 @@ import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 
-const WithdrawForm = ({
+const RepayForm = ({
   form,
   current,
   amount,
@@ -36,7 +36,7 @@ const WithdrawForm = ({
   updateAmount,
   updateAmountError,
   close,
-}: WithdrawFormProps) => {
+}: RepayFormProps) => {
   const poolId = import.meta.env.VITE_POOL_ID || "";
   const assetId = import.meta.env.VITE_ASSET_ID || "";
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
@@ -50,8 +50,6 @@ const WithdrawForm = ({
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   const reserve = pool?.reserves.get(assetId);
-  const currentDeposit =
-    reserve && poolUser ? poolUser.getCollateralFloat(reserve) : undefined;
 
   const decimals = reserve?.config.decimals ?? 7;
 
@@ -70,13 +68,13 @@ const WithdrawForm = ({
       ? PositionsEstimate.build(pool, poolOracle, parsedSimResult)
       : undefined;
 
-  const curBorrowCap = curPositionsEstimate?.borrowCap;
-  const nextBorrowCap = newPositionsEstimate?.borrowCap;
-  const curBorrowLimit =
+  const curRepayCap = curPositionsEstimate?.borrowCap;
+  const nextRepayCap = newPositionsEstimate?.borrowCap;
+  const curRepayLimit =
     curPositionsEstimate && Number.isFinite(curPositionsEstimate?.borrowLimit)
       ? curPositionsEstimate.borrowLimit
       : 0;
-  const nextBorrowLimit =
+  const nextRepayLimit =
     newPositionsEstimate && Number.isFinite(newPositionsEstimate?.borrowLimit)
       ? newPositionsEstimate?.borrowLimit
       : 0;
@@ -90,7 +88,7 @@ const WithdrawForm = ({
         requests: [
           {
             amount: scaleInputToBigInt(amount, decimals),
-            request_type: RequestType.WithdrawCollateral,
+            request_type: RequestType.Repay,
             address: reserve.assetId,
           },
         ],
@@ -120,6 +118,9 @@ const WithdrawForm = ({
     750
   );
 
+  const currentDebt =
+    reserve && poolUser ? poolUser.getLiabilitiesFloat(reserve) : undefined;
+
   return (
     <Form
       form={form}
@@ -128,7 +129,7 @@ const WithdrawForm = ({
         if (current === 1) {
           if (!amount) {
             updateAmountError("Invalid Amount");
-          } else if (+(currentDeposit || 0) < +(amount || 0)) {
+          } else if (+(currentDebt || 0) < +(amount || 0)) {
             updateAmountError("Insufficient Balance");
           } else {
             updateAmountError("");
@@ -228,7 +229,7 @@ const WithdrawForm = ({
           amount={amount}
           amountError={amountError}
           updateAmountError={updateAmountError}
-          maxAmount={currentDeposit}
+          maxAmount={currentDebt}
         />
       )}
       {current === 2 && (
@@ -245,14 +246,14 @@ const WithdrawForm = ({
           decimals={decimals}
           poolUser={poolUser}
           reserve={reserve}
-          curBorrowCap={curBorrowCap}
-          nextBorrowCap={nextBorrowCap}
-          curBorrowLimit={curBorrowLimit}
-          nextBorrowLimit={nextBorrowLimit}
+          curBorrowCap={curRepayCap}
+          nextBorrowCap={nextRepayCap}
+          curBorrowLimit={curRepayLimit}
+          nextBorrowLimit={nextRepayLimit}
         />
       )}
     </Form>
   );
 };
 
-export default WithdrawForm;
+export default RepayForm;

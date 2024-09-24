@@ -39,7 +39,7 @@ const AmountInput = ({
         amountError={amountError}
         label=""
         isMobile={false}
-        message={`Available Balance: ${maxAmount} USDC`}
+        message={`Maximum Amount: ${maxAmount} USDC`}
       />
       <Button className="w-full">Continue</Button>
     </div>

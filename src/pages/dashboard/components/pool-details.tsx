@@ -9,11 +9,24 @@ import { useState } from "react";
 import Supply from "../supply";
 import { ArrowUpCircle } from "lucide-react";
 import { usePool, usePoolOracle } from "@/services";
-import { POOL_ID, STELLER_EXPERT_URL } from "@/constants";
-import { PoolEstimate } from "@blend-capital/blend-sdk";
+import { ASSET_ID, POOL_ID, STELLER_EXPERT_URL } from "@/constants";
+import {
+  // BackstopPoolEst,
+  // BackstopPoolUserEst,
+  PoolEstimate,
+} from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import Spinner from "@/components/other/spinner";
-import { toCompactAddress } from "@/utils/formatter";
+import {
+  toBalance,
+  // toBalance,
+  toCompactAddress,
+} from "@/utils/formatter";
+import {
+  useBackstop,
+  useBackstopPool,
+  // useBackstopPoolUser
+} from "../services";
 
 const PoolDetails = () => {
   const { connected, connect } = useWallet();
@@ -21,17 +34,35 @@ const PoolDetails = () => {
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool, isLoading } = usePool(safePoolId, true);
-
+  const { data: backstop, isLoading: backstopLoading } = useBackstop();
+  const { data: backstopPoolData } = useBackstopPool(pool?.id || "");
+  // const { data: backstopUserData } = useBackstopPoolUser(pool?.id || "");
   const { data: poolOracle } = usePoolOracle(pool);
+
+  const reserve = pool?.reserves.get(ASSET_ID);
+
+  if (isLoading || backstopLoading) {
+    return <Spinner />;
+  }
+
+  if (!backstop || !backstopPoolData) {
+    return <></>;
+  }
+
+  // const backstopPoolEst = BackstopPoolEst.build(
+  //   backstop?.backstopToken,
+  //   backstopPoolData?.poolBalance
+  // );
+
+  // const backstopUserPoolEst =
+  //   backstopUserData !== undefined
+  //     ? BackstopPoolUserEst.build(backstop, backstopPoolData, backstopUserData)
+  //     : undefined;
 
   const marketSize =
     poolOracle !== undefined && pool !== undefined
       ? PoolEstimate.build(pool.reserves, poolOracle).totalSupply
       : 0;
-
-  if (isLoading) {
-    return <Spinner />;
-  }
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
@@ -61,7 +92,7 @@ const PoolDetails = () => {
               title="Total Supplied Funds"
               content={
                 <span className="text-font-semi-bold">
-                  {nFormatter(marketSize || 0, 3)} USDC
+                  ${nFormatter(marketSize || 0, 3)}
                 </span>
               }
               style={{
@@ -77,14 +108,18 @@ const PoolDetails = () => {
             />
             <DetailContentItem
               title="Total Borrowed Funds"
-              content={<span className="text-font-semi-bold">30.6k USDC</span>}
+              content={
+                <span className="text-font-semi-bold">
+                  ${toBalance(reserve?.totalLiabilitiesFloat())}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
             />
             <DetailContentItem
               title="Total Repaid Funds"
-              content={<span className="text-font-semi-bold">12k USDC</span>}
+              content={<span className="text-font-semi-bold">$12k</span>}
               style={{
                 marginTop: 0,
               }}
@@ -201,7 +236,11 @@ const PoolDetails = () => {
           </Button>
         </Col>
       </Row>
-      <Supply open={openSupplyModal} close={() => setOpenSupplyModal(false)} />
+      <Supply
+        asset="USDC"
+        open={openSupplyModal}
+        close={() => setOpenSupplyModal(false)}
+      />
     </div>
   );
 };

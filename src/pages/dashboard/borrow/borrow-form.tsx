@@ -1,6 +1,6 @@
 import Form from "antd/lib/form";
 import Steps from "antd/lib/steps";
-import { WithdrawFormProps } from ".";
+import { BorrowFormProps } from ".";
 import AmountInput from "./amount-input";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import {
@@ -12,6 +12,7 @@ import KycForm from "../kyc-form";
 import Summary from "./summary";
 import { compareObjects, formatErrorMessage } from "@/utils";
 import {
+  FixedMath,
   PoolContract,
   Positions,
   PositionsEstimate,
@@ -27,7 +28,7 @@ import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 
-const WithdrawForm = ({
+const BorrowForm = ({
   form,
   current,
   amount,
@@ -36,7 +37,7 @@ const WithdrawForm = ({
   updateAmount,
   updateAmountError,
   close,
-}: WithdrawFormProps) => {
+}: BorrowFormProps) => {
   const poolId = import.meta.env.VITE_POOL_ID || "";
   const assetId = import.meta.env.VITE_ASSET_ID || "";
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
@@ -50,8 +51,6 @@ const WithdrawForm = ({
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   const reserve = pool?.reserves.get(assetId);
-  const currentDeposit =
-    reserve && poolUser ? poolUser.getCollateralFloat(reserve) : undefined;
 
   const decimals = reserve?.config.decimals ?? 7;
 
@@ -90,7 +89,7 @@ const WithdrawForm = ({
         requests: [
           {
             amount: scaleInputToBigInt(amount, decimals),
-            request_type: RequestType.WithdrawCollateral,
+            request_type: RequestType.Borrow,
             address: reserve.assetId,
           },
         ],
@@ -120,6 +119,14 @@ const WithdrawForm = ({
     750
   );
 
+  const maxUtilFloat = reserve
+    ? FixedMath.toFloat(BigInt(reserve.config.max_util), 7)
+    : 1;
+  const totalSupplied = reserve ? reserve.totalSupplyFloat() : 0;
+  const availableToBorrow = reserve
+    ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
+    : 0;
+
   return (
     <Form
       form={form}
@@ -128,7 +135,7 @@ const WithdrawForm = ({
         if (current === 1) {
           if (!amount) {
             updateAmountError("Invalid Amount");
-          } else if (+(currentDeposit || 0) < +(amount || 0)) {
+          } else if (+(availableToBorrow || 0) < +(amount || 0)) {
             updateAmountError("Insufficient Balance");
           } else {
             updateAmountError("");
@@ -228,7 +235,7 @@ const WithdrawForm = ({
           amount={amount}
           amountError={amountError}
           updateAmountError={updateAmountError}
-          maxAmount={currentDeposit}
+          maxAmount={availableToBorrow}
         />
       )}
       {current === 2 && (
@@ -255,4 +262,4 @@ const WithdrawForm = ({
   );
 };
 
-export default WithdrawForm;
+export default BorrowForm;

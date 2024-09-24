@@ -29,7 +29,7 @@ import {
 import { retrieveWithdrawStatus } from "./withdraw/retrieve-info";
 
 import {
-  Backstop,
+  Backstop, BackstopPool, BackstopPoolUser, UserBalance,
   // BackstopPool,
   // BackstopPoolUser,
   // Pool,
@@ -63,6 +63,8 @@ const BACKSTOP_ID = import.meta.env.VITE_BACKSTOP || "";
 const DEFAULT_STALE_TIME = 30 * 1000;
 
 const anchorDomain = import.meta.env.VITE_API_URL as string;
+
+console.log(import.meta.env.VITE_BACKSTOP, BACKSTOP_ID, "backstops");
 
 type DepositInstructionPayload = {
   JWTToken: any;
@@ -166,10 +168,66 @@ export function useBackstop(
   return useQuery({
     staleTime: DEFAULT_STALE_TIME,
     queryKey: ["backstop"],
-    retry: false,
     enabled,
     queryFn: async () => {
+      // console.log(BACKSTOP_ID, network);
       return await Backstop.load(network, BACKSTOP_ID);
+    },
+  });
+}
+
+/**
+ * Fetch the backstop pool data for the given pool ID.
+ * @param poolId - The pool ID
+ * @param enabled - Whether the query is enabled (optional - defaults to true)
+ * @returns Query result with the backstop pool data.
+ */
+export function useBackstopPool(
+  poolId: string,
+  enabled: boolean = true
+): UseQueryResult<BackstopPool, Error> {
+  const { network } = useSettings();
+  return useQuery({
+    staleTime: DEFAULT_STALE_TIME,
+    queryKey: ["backstopPool", poolId],
+    enabled,
+    queryFn: async () => {
+      return await BackstopPool.load(network, BACKSTOP_ID, poolId);
+    },
+  });
+}
+
+/**
+ * Fetch the backstop pool user data for the given pool and connected wallet.
+ * @param poolId - The pool ID
+ * @param enabled - Whether the query is enabled (optional - defaults to true)
+ * @returns Query result with the backstop pool user data.
+ */
+export function useBackstopPoolUser(
+  poolId: string,
+  enabled: boolean = true
+): UseQueryResult<BackstopPoolUser, Error> {
+  const { network } = useSettings();
+  const { walletAddress, connected } = useWallet();
+  return useQuery({
+    // staleTime: USER_STALE_TIME,
+    queryKey: ["backstopPoolUser", poolId, walletAddress],
+    enabled: enabled && connected,
+    placeholderData: new BackstopPoolUser(
+      walletAddress,
+      poolId,
+      new UserBalance(BigInt(0), [], BigInt(0), BigInt(0)),
+      undefined
+    ),
+    queryFn: async () => {
+      if (walletAddress !== "") {
+        return await BackstopPoolUser.load(
+          network,
+          BACKSTOP_ID,
+          poolId,
+          walletAddress
+        );
+      }
     },
   });
 }

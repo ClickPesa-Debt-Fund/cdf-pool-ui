@@ -10,7 +10,7 @@ import {
   useSubmitKYC,
   useTokenBalance,
 } from "@/pages/dashboard/services";
-import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
+import { ASSET_ID, BLND_ISSUER, POOL_ID, USDC_ISSUER } from "@/constants";
 import KycForm from "../kyc-form";
 import Summary from "./summary";
 import { compareObjects, formatErrorMessage } from "@/utils";
@@ -41,17 +41,18 @@ const SupplyForm = ({
   updateAmount,
   updateAmountError,
   close,
+  asset,
 }: SupplyFormProps) => {
-  const poolId = import.meta.env.VITE_POOL_ID || "";
-  const assetId = import.meta.env.VITE_ASSET_ID || "";
+  const poolId = POOL_ID;
+  const assetId = ASSET_ID;
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
     useWallet();
   const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
   const supportedBalances = balance?.balances?.find((balance) => {
     return (
-      (balance?.asset_issuer === BLND_ISSURER ||
-        balance?.asset_issuer === USDC_ISSURER) &&
+      (balance?.asset_issuer === BLND_ISSUER ||
+        balance?.asset_issuer === USDC_ISSUER) &&
       balance?.asset_code === "USDC"
     );
   });
@@ -252,7 +253,8 @@ const SupplyForm = ({
           amount={amount}
           amountError={amountError}
           updateAmountError={updateAmountError}
-          freeUserBalanceScaled={freeUserBalanceScaled}
+          maxAmount={freeUserBalanceScaled}
+          asset={asset}
         />
       )}
       {current === 2 && (
