@@ -11,9 +11,10 @@ import { Alert } from "@clickpesa/components-library.alert";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
-import { BLND_ISSURER, POOL_ID, USDC_ISSURER } from "@/constants";
+import { ADMIN_ID, BLND_ISSUER, POOL_ID, USDC_ISSUER } from "@/constants";
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
+import AdminPosition from "./components/admin-position";
 
 const Dashboard = () => {
   const safePoolId =
@@ -25,10 +26,11 @@ const Dashboard = () => {
   const { balance, balanceError, balanceRefetch } = useGetAccountBalance(
     walletAddress || ""
   );
+
   const supportedBalances = balance?.balances?.filter((balance) => {
     return (
-      (balance?.asset_issuer === BLND_ISSURER ||
-        balance?.asset_issuer === USDC_ISSURER) &&
+      (balance?.asset_issuer === BLND_ISSUER ||
+        balance?.asset_issuer === USDC_ISSUER) &&
       (balance?.asset_code === "USDC" ||
         balance?.asset_code === "CPYT" ||
         balance?.asset_code === "BLND")
@@ -124,6 +126,7 @@ const Dashboard = () => {
         ) : null}
       </div>
       <PoolDetails />
+      {walletAddress === ADMIN_ID && <AdminPosition />}
       <UserPositionDetails />
       <PoolActivities />
     </div>
