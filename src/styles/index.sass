@@ -171,3 +171,29 @@ html, body
 
 .ant-avatar >img
   object-fit: contain
+
+.clickpesa-full-page-loader
+  position: fixed
+  top: 0
+  left: 0
+  height: 100dvh
+  width: 100dvw
+  min-height: 100dvh
+  min-width: 100dvw
+  background: rgba(0, 0, 0, 0.75)
+  display: flex
+  justify-content: center
+  align-items: center
+  z-index: 10000000000
+  .content
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    gap: 16
+    h3
+      color: rgba(255, 255, 255, 0.75)
+
+.alert-container
+  p
+    width: 100%

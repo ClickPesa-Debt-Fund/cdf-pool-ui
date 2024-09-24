@@ -35,8 +35,8 @@ export const faqs = [
       "Debt Fund platform follows all the industry best practices for IT security checks, data protection, access rights, and data encryption. We’re constantly raising the bar for our security standards.",
   },
   {
-    qn: "Are the APY rates guaranteed?",
+    qn: "Are the APR rates guaranteed?",
     answer:
-      "Transparency-enhanced DeFi platform in each step in the lending chain—from disbursement to repayment—fully verifiable and transparent, is almost a guarantee. But No, APY is not guaranteed. We are committed to your stable profits. We will let you know if there are any changes in the expected APY. And we will continue listing more pools with different APY rates and creative terms based on the market.",
+      "Transparency-enhanced DeFi platform in each step in the lending chain—from disbursement to repayment—fully verifiable and transparent, is almost a guarantee. But No, APR is not guaranteed. We are committed to your stable profits. We will let you know if there are any changes in the expected APR. And we will continue listing more pools with different APR rates and creative terms based on the market.",
   },
 ];

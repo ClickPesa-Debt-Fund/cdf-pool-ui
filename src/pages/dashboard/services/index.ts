@@ -14,7 +14,7 @@ import {
   generateDepositInstructions,
   initiateDeposit,
 } from "./deposit/initiate-deposit";
-import { useMutation, useQuery } from "react-query";
+import { UseQueryResult, useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { formatErrorMessage } from "@/utils";
 import {
@@ -28,11 +28,41 @@ import {
 } from "./withdraw/initiate-withdraw";
 import { retrieveWithdrawStatus } from "./withdraw/retrieve-info";
 
-const horizonURL = process.env.VITE_HORIZON_URL as string;
-const coreApiURL = process.env.VITE_CORE_API_URL as string;
-const networkPassphrase = process.env.VITE_STELLAR_NETWORK_PASSPHRASE as string;
+import {
+  Backstop,
+  // BackstopPool,
+  // BackstopPoolUser,
+  // Pool,
+  // PoolOracle,
+  // PoolUser,
+  // Positions,
+  // Reserve,
+  // UserBalance,
+} from "@blend-capital/blend-sdk";
+// import { Address, Asset, Horizon, SorobanRpc } from "@stellar/stellar-sdk";
+import { useSettings } from "@/contexts/settings";
+import {
+  Asset,
+  Horizon,
+  Account,
+  Address,
+  Contract,
+  SorobanRpc,
+  TransactionBuilder,
+  scValToNative,
+} from "@stellar/stellar-sdk";
+import { useWallet } from "@/contexts/wallet";
 
-const anchorDomain = process.env.VITE_API_URL as string;
+const horizonURL =
+  (import.meta.env.VITE_HORIZON_URL as string) ||
+  "https://horizon-testnet.stellar.org";
+const coreApiURL = import.meta.env.VITE_CORE_API_URL as string;
+const networkPassphrase = import.meta.env
+  .VITE_STELLAR_NETWORK_PASSPHRASE as string;
+const BACKSTOP_ID = import.meta.env.VITE_BACKSTOP || "";
+const DEFAULT_STALE_TIME = 30 * 1000;
+
+const anchorDomain = import.meta.env.VITE_API_URL as string;
 
 type DepositInstructionPayload = {
   JWTToken: any;
@@ -62,6 +92,87 @@ type KYCPayload = {
   city?: string;
   country?: string;
 };
+
+/**
+ * Fetch the account from Horizon for the connected wallet.
+ * @param enabled - Whether the query is enabled (optional - defaults to true)
+ * @returns Query result with the account data.
+ */
+export function useHorizonAccount(
+  enabled: boolean = true
+): UseQueryResult<Horizon.AccountResponse> {
+  const { walletAddress, connected } = useWallet();
+  const { network } = useSettings();
+  return useQuery({
+    // staleTime: USER_STALE_TIME,
+    queryKey: ["account", walletAddress],
+    enabled: enabled && connected && walletAddress !== "",
+    queryFn: async () => {
+      if (walletAddress === "") {
+        throw new Error("No wallet address");
+      }
+      let horizon = new Horizon.Server(network.horizonUrl, network.opts);
+      return await horizon.loadAccount(walletAddress);
+    },
+  });
+}
+
+export async function getTokenBalance(
+  stellar_rpc: SorobanRpc.Server,
+  network_passphrase: string,
+  token_id: string,
+  address: Address
+): Promise<bigint> {
+  // account does not get validated during simulateTx
+  const account = new Account(
+    "GANXGJV2RNOFMOSQ2DTI3RKDBAVERXUVFC27KW3RLVQCLB3RYNO3AAI4",
+    "123"
+  );
+  const tx_builder = new TransactionBuilder(account, {
+    fee: "1000",
+    timebounds: { minTime: 0, maxTime: 0 },
+    networkPassphrase: network_passphrase,
+  });
+  tx_builder.addOperation(
+    new Contract(token_id).call("balance", address.toScVal())
+  );
+  const result: SorobanRpc.Api.SimulateTransactionResponse =
+    await stellar_rpc.simulateTransaction(tx_builder.build());
+  if (SorobanRpc.Api.isSimulationSuccess(result)) {
+    let resultScVal = (
+      result as SorobanRpc.Api.SimulateTransactionSuccessResponse
+    ).result?.retval;
+    if (resultScVal == undefined) {
+      console.error(`Error: unable to fetch balance for token: ${token_id}`);
+      return BigInt(0);
+    } else {
+      return scValToNative(resultScVal);
+    }
+  } else {
+    console.error(`Error: unable to fetch balance for token: ${token_id}`);
+    return BigInt(0);
+  }
+}
+
+/**
+ * Fetches the backstop data.
+ * @param enabled - Whether the query is enabled (optional - defaults to true)
+ * @returns Query result with the backstop data.
+ */
+export function useBackstop(
+  enabled: boolean = true
+): UseQueryResult<Backstop, Error> {
+  const { network } = useSettings();
+  return useQuery({
+    staleTime: DEFAULT_STALE_TIME,
+    queryKey: ["backstop"],
+    retry: false,
+    enabled,
+    queryFn: async () => {
+      return await Backstop.load(network, BACKSTOP_ID);
+    },
+  });
+}
 
 export const useGetToml = () => {
   const { data, isLoading, refetch, isRefetching, error } = useQuery(
@@ -267,6 +378,7 @@ export const useGetKYC = (publicKey: string) => {
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
+      retry: false,
     }
   );
   return {
@@ -354,7 +466,7 @@ export const useGetWithdrawStatus = (id: string, interval?: boolean) => {
     withdrawStatusRefetching: isRefetching,
   };
 };
-export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
+export const useGetAccountBalance = (publicKey: string) => {
   const { data, isLoading, error, refetch, isRefetching } = useQuery(
     ["account balance", publicKey],
     async () => {
@@ -364,7 +476,7 @@ export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
     {
       enabled: !!publicKey,
       refetchOnMount: false,
-      ...(interval ? { refetchInterval: 10000 } : {}),
+      // ...(interval ? { refetchInterval: 10000 } : {}),
       refetchOnWindowFocus: false,
     }
   );
@@ -376,6 +488,60 @@ export const useGetAccountBalance = (publicKey: string, interval?: boolean) => {
     balanceRefetching: isRefetching,
   };
 };
+
+export function useTokenBalance(
+  tokenId: string | undefined,
+  asset: Asset | undefined,
+  account: Horizon.AccountResponse | undefined,
+  enabled: boolean = true
+): UseQueryResult<bigint> {
+  const { walletAddress, connected } = useWallet();
+  const { network } = useSettings();
+  return useQuery({
+    // staleTime: USER_STALE_TIME,
+    // ...(interval ? { refetchInterval: 10000 } : {}),
+    queryKey: [
+      "balance",
+      tokenId,
+      walletAddress,
+      account?.last_modified_ledger,
+    ],
+    enabled: enabled && connected && !!account && walletAddress !== "",
+    queryFn: async () => {
+      if (walletAddress === "") {
+        throw new Error("No wallet address");
+      }
+      if (tokenId === undefined || tokenId === "") {
+        return BigInt(0);
+      }
+
+      if (account !== undefined && asset !== undefined) {
+        let balance_line = account.balances.find((balance) => {
+          if (balance.asset_type == "native") {
+            // @ts-ignore
+            return asset.isNative();
+          }
+          return (
+            // @ts-ignore
+            balance.asset_code === asset.getCode() &&
+            // @ts-ignore
+            balance.asset_issuer === asset.getIssuer()
+          );
+        });
+        if (balance_line !== undefined) {
+          return BigInt(balance_line.balance.replace(".", ""));
+        }
+      }
+      let rpc = new SorobanRpc.Server(network.rpc, network.opts);
+      return await getTokenBalance(
+        rpc,
+        network.passphrase,
+        tokenId,
+        new Address(walletAddress)
+      );
+    },
+  });
+}
 
 export const useSubmitAddress = () => {
   const { data, isLoading, error, mutateAsync } = useMutation(

@@ -1,13 +1,17 @@
+import Modal from "antd/lib/modal";
 import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
-import Modal from "antd/lib/modal";
-import { formatErrorMessage } from "@/utils";
-import ErrorComponent from "../../error-component";
-import Spinner from "../../spinner";
-import { useGetWalletInfo, useGetToml } from "../services";
-import WithdrawForm from "./withdraw-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useWallet } from "@/contexts/wallet";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
+import ErrorComponent from "@/components/other/error-component";
+import { formatErrorMessage } from "@/utils";
+import Spinner from "@/components/other/spinner";
+import WithdrawForm from "./withdraw-form";
+
+const BLND_ISSURER = import.meta.env.VITE_BLND_ISSUER;
+const USDC_ISSURER = import.meta.env.VITE_USDC_ISSUER;
 
 export type WithdrawFormProps = {
   close: () => void;
@@ -21,11 +25,11 @@ export type WithdrawFormProps = {
 };
 
 const WithdrawModal = ({
-  close,
   open,
+  close,
 }: {
-  close: () => void;
   open: boolean;
+  close: () => void;
 }) => {
   const [current, setCurrent] = useState(1);
   const [amount, setAmount] = useState("");
@@ -57,25 +61,23 @@ const WithdrawModal = ({
               <ArrowLeft />
             </Button>
           )}
-          Withdraw Token
+          Withdraw USDC
         </span>
       }
       footer={false}
       destroyOnClose
       maskClosable={false}
     >
-      {open && (
-        <Withdraw
-          form={form}
-          amount={amount}
-          amountError={amountError}
-          current={current}
-          updateCurrent={(current) => setCurrent(current)}
-          updateAmount={(amount) => setAmount(amount)}
-          updateAmountError={(error) => setAmountError(error)}
-          close={onClose}
-        />
-      )}
+      <Withdraw
+        form={form}
+        amount={amount}
+        amountError={amountError}
+        current={current}
+        updateCurrent={(current) => setCurrent(current)}
+        updateAmount={(amount) => setAmount(amount)}
+        updateAmountError={(error) => setAmountError(error)}
+        close={onClose}
+      />
     </Modal>
   );
 };
@@ -90,53 +92,45 @@ const Withdraw = ({
   updateCurrent,
   current,
 }: WithdrawFormProps) => {
-  const { toml, tomlError, tomlLoading, tomlRefetch, tomlRefetching } =
-    useGetToml();
+  const [isLoading, setLoading] = useState(false);
+  const { walletAddress } = useWallet();
+  const { balance, balanceError, balanceLoading, balanceRefetch } =
+    useGetAccountBalance(walletAddress || "");
 
-  const {
-    walletInfo,
-    walletInfoError,
-    walletInfoLoading,
-    walletInfoRefetch,
-    walletInfoRefetching,
-  } = useGetWalletInfo();
+  const loading = isLoading || balanceLoading;
 
-  if (tomlLoading || tomlRefetching)
+  if (loading)
     return (
       <div className="flex items-center justify-center h-24">
         <Spinner />
       </div>
     );
 
-  if (tomlError)
+  if (balanceError)
     return (
       <ErrorComponent
-        message={formatErrorMessage(tomlError)}
+        message={formatErrorMessage(balanceError)}
         onClick={() => {
-          tomlRefetch();
+          setLoading(true);
+          balanceRefetch().finally(() => setLoading(false));
         }}
       />
     );
 
-  if (walletInfoLoading || walletInfoRefetching)
+  if (!balance) return null;
+  //   check if balance has USDC issues by us or blend
+  const supportedBalances = balance?.balances?.filter((balance) => {
     return (
-      <div className="flex items-center justify-center h-24">
-        <Spinner />
-      </div>
+      (balance?.asset_issuer === BLND_ISSURER ||
+        balance?.asset_issuer === USDC_ISSURER) &&
+      balance?.asset_code === "USDC"
     );
-
-  if (walletInfoError)
-    return (
-      <ErrorComponent
-        message={formatErrorMessage(walletInfoError)}
-        onClick={() => {
-          walletInfoRefetch();
-        }}
-      />
-    );
-
-  if (!toml && !walletInfo) return null;
-
+  });
+  //   if no error component
+  if (!supportedBalances?.length) {
+    return <ErrorComponent message="You have no supported asset" />;
+  }
+  //   if yes form
   return (
     <WithdrawForm
       close={close}

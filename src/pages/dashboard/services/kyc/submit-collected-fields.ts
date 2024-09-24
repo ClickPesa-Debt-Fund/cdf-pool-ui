@@ -15,7 +15,18 @@ const submitCollectedKYCFields = async ({
     is_sep24_merchant: true,
     ...collectedFields,
   };
-  const { data } = await axios.post(`${kycServer}/merchant/sep24`, body);
+  const { data } = await axios.post<{
+    email: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    country: string;
+    city: string;
+    physical_address: string;
+    is_business: boolean;
+    is_sep24_merchant: boolean;
+    id: string;
+  }>(`${kycServer}/merchant/sep24`, body);
   return data;
 };
 

@@ -6,7 +6,7 @@ export const useConfig = () => {
   }, [window.location.pathname]);
 
   useEffect(() => {
-    if (process.env.VITE_NODE_ENV === "production") {
+    if (import.meta.env.VITE_NODE_ENV === "production") {
       // const script = document.createElement("script");
       // script.innerHTML = `
       //     (function (h, o, t, j, a, r) {
