@@ -7,7 +7,7 @@ import {
   useGetAccountBalance,
   useGetKYC,
   useSubmitKYC,
-} from "@/components/other/pool/services";
+} from "@/pages/dashboard/services";
 import KycForm from "../kyc-form";
 import Summary from "./summary";
 import { compareObjects, formatErrorMessage } from "@/utils";

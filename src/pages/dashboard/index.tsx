@@ -4,7 +4,7 @@ import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import notification from "antd/lib/notification";
-import { useGetAccountBalance } from "@/components/other/pool/services";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { Button } from "@/components/ui/button";
 import { toCompactAddress } from "@/utils/formatter";
 import { Alert } from "@clickpesa/components-library.alert";

@@ -7,7 +7,7 @@ import ErrorComponent from "../../components/other/error-component";
 import { useEffect, useState } from "react";
 import { SelectInput } from "@clickpesa/components-library.inputs.select-input";
 import { countries } from "@/shared/data/countries";
-import { useGetKYC } from "@/components/other/pool/services";
+import { useGetKYC } from "@/pages/dashboard/services";
 import Spinner from "@/components/other/spinner";
 
 const validatePhoneNumber: any = async (phoneNumber: string) => {

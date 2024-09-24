@@ -3,7 +3,7 @@ import { currencies } from "../data";
 import { ExchangeFormItem } from "@clickpesa/components-library.forms.exchange-form-item";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
-import { useGetAccountBalance } from "@/components/other/pool/services";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
 
 const AmountInput = ({

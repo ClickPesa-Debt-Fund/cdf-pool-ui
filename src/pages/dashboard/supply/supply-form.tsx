@@ -9,7 +9,7 @@ import {
   useHorizonAccount,
   useSubmitKYC,
   useTokenBalance,
-} from "@/components/other/pool/services";
+} from "@/pages/dashboard/services";
 import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
 import KycForm from "../kyc-form";
 import Summary from "./summary";

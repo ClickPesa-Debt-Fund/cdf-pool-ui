@@ -40,6 +40,7 @@ import {
 } from "../utils/comet";
 import { useSettings } from "./settings";
 import { useQueryClientCacheCleaner } from "@/services";
+import axios from "axios";
 
 export interface IWalletContext {
   connected: boolean;
@@ -681,10 +682,9 @@ export const WalletProvider = ({ children = null as any }) => {
       const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=${walletAddress}`;
       try {
         setTxStatus(TxStatus.BUILDING);
-        const resp = await fetch(url, { method: "GET" });
-        const txEnvelopeXDR = await resp.text();
+        const { data } = await axios.get(url);
         let transaction = new Transaction(
-          xdr.TransactionEnvelope.fromXDR(txEnvelopeXDR, "base64"),
+          xdr.TransactionEnvelope.fromXDR(data, "base64"),
           network.passphrase
         );
 

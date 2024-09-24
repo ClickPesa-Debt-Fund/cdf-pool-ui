@@ -4,7 +4,7 @@ import Form, { FormInstance } from "antd/lib/form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useWallet } from "@/contexts/wallet";
-import { useGetAccountBalance } from "@/components/other/pool/services";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";

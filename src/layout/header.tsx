@@ -12,7 +12,7 @@ import { Link, useLocation } from "react-router-dom";
 import * as formatter from "@/utils/formatter";
 import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
-import { useGetAccountBalance } from "@/components/other/pool/services";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { formatAmount } from "@/utils";
 import { BLND_ISSURER, USDC_ISSURER } from "@/constants";
 
