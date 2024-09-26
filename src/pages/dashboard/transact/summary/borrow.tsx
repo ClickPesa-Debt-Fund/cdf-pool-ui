@@ -6,7 +6,7 @@ import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 
-const Summary = ({
+const BorrowSummary = ({
   amount,
   simResponse,
   parsedSimResult,
@@ -41,7 +41,7 @@ const Summary = ({
         <div>
           <DetailsRow
             amount={{
-              label: "Amount to Repay",
+              label: "Amount to Borrow",
               value: amount,
               currency: "USDC",
             }}
@@ -113,4 +113,4 @@ const Summary = ({
   );
 };
 
-export default Summary;
+export default BorrowSummary;

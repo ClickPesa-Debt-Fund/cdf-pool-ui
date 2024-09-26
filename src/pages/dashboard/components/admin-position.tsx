@@ -5,6 +5,7 @@ import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
 import {
   ASSET_ID,
+  COLLATERAL_ASSET_CODE,
   //  CPYT_ASSET,
   POOL_ID,
 } from "@/constants";
@@ -17,9 +18,7 @@ import { DetailContentItem } from "@clickpesa/components-library.data-display.de
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { Button } from "@/components/ui/button";
 import { toBalance, toPercentage } from "@/utils/formatter";
-import SupplyModal from "../supply";
-import BorrowModal from "../borrow";
-import RepayModal from "../repay";
+import TransactModal from "../transact";
 
 const AdminPosition = () => {
   const { connected, connect } = useWallet();
@@ -41,6 +40,7 @@ const AdminPosition = () => {
   const availableToBorrow = reserve
     ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
     : 0;
+
   // const emissionsPerAsset =
   //   reserve !== undefined ? reserve.emissionsPerYearPerBorrowedAsset() : 0;
 
@@ -49,6 +49,25 @@ const AdminPosition = () => {
   if (pool === undefined || userPoolData === undefined) {
     return <Spinner />;
   }
+
+  const poolUser = Array.from(pool.reserves.values())
+    .filter((reserve) => {
+      const bTokens =
+        userPoolData.getSupplyBTokens(reserve) +
+        userPoolData.getCollateralBTokens(reserve);
+      return (
+        bTokens > BigInt(0) &&
+        reserve?.tokenMetadata?.asset?.code === COLLATERAL_ASSET_CODE
+      );
+    })
+    ?.map((reserve) => {
+      const bTokens =
+        userPoolData.getSupplyBTokens(reserve) +
+        userPoolData.getCollateralBTokens(reserve);
+      return {
+        assetFloat: reserve.toAssetFromBTokenFloat(bTokens),
+      };
+    });
 
   // const { emissions, claimedTokens } = userPoolData.estimateEmissions(pool);
   // const hasCPYTTrustLine = !requiresTrustline(account, CPYT_ASSET);
@@ -79,6 +98,17 @@ const AdminPosition = () => {
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(reserve?.getLiabilityFactor())}
+                </span>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Total Supplied Collateral"
+              content={
+                <span className="text-font-semi-bold">
+                  {toBalance(poolUser?.[0]?.assetFloat || 0)} CPYT
                 </span>
               }
               style={{
@@ -146,6 +176,7 @@ const AdminPosition = () => {
           </Button>
           <Button
             className="w-full"
+            variant={"destructive"}
             onClick={() => {
               if (connected) {
                 setOpenBorrowModal(true);
@@ -168,7 +199,7 @@ const AdminPosition = () => {
             Borrow USDC
           </Button>
           <Button
-            className="w-full"
+            className="w-full bg-green-600 hover:bg-green-700"
             onClick={() => {
               if (connected) {
                 setOpenRepayModal(true);
@@ -192,17 +223,25 @@ const AdminPosition = () => {
           </Button>
         </Col>
       </Row>
-      <SupplyModal
-        asset="CPYT"
+      <TransactModal
+        asset={COLLATERAL_ASSET_CODE}
+        type={"SupplyCollateral"}
+        title="Supply Collateral"
         open={openSupplyModal}
         close={() => setOpenSupplyModal(false)}
       />
-      <BorrowModal
+      <TransactModal
+        asset="USDC"
+        type={"Borrow"}
+        title="Borrow USDC"
         open={openBorrowModal}
         close={() => setOpenBorrowModal(false)}
       />
-      <RepayModal
+      <TransactModal
+        asset="USDC"
+        type={"Repay"}
         open={openRepayModal}
+        title="Repay USDC"
         close={() => setOpenRepayModal(false)}
       />
     </div>

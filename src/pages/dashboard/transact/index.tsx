@@ -8,37 +8,39 @@ import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";
-import BorrowForm from "./borrow-form";
+import TransactForm from "./transact-form";
+import { COLLATERAL_ASSET_CODE, CPYT_ISSUER } from "@/constants";
 
 const BLND_ISSURER = import.meta.env.VITE_BLND_ISSUER;
 const USDC_ISSURER = import.meta.env.VITE_USDC_ISSUER;
 
-export type BorrowFormProps = {
-  close: () => void;
+export type TransactFormProps = {
   form: FormInstance<any>;
-  amount: string;
-  amountError: string;
   current: number;
+  type: RequestTypeProp;
+  asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
+  close: () => void;
   updateCurrent: (current: number) => void;
-  updateAmount: (amount: string) => void;
-  updateAmountError: (error: string) => void;
 };
 
-const BorrowModal = ({
+const TransactModal = ({
   open,
+  type,
+  asset,
+  title,
   close,
 }: {
   open: boolean;
+  type: RequestTypeProp;
+  asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
+  title?: string;
   close: () => void;
 }) => {
   const [current, setCurrent] = useState(1);
-  const [amount, setAmount] = useState("");
-  const [amountError, setAmountError] = useState("");
+
   const [form] = Form.useForm();
   const onClose = () => {
     form.resetFields();
-    setAmount("");
-    setAmountError("");
     setCurrent(1);
     close();
   };
@@ -61,37 +63,33 @@ const BorrowModal = ({
               <ArrowLeft />
             </Button>
           )}
-          Borrow USDC
+          {title || `Transact ${asset}`}
         </span>
       }
       footer={false}
       destroyOnClose
       maskClosable={false}
     >
-      <Borrow
+      <Transact
         form={form}
-        amount={amount}
-        amountError={amountError}
         current={current}
         updateCurrent={(current) => setCurrent(current)}
-        updateAmount={(amount) => setAmount(amount)}
-        updateAmountError={(error) => setAmountError(error)}
         close={onClose}
+        type={type}
+        asset={asset}
       />
     </Modal>
   );
 };
 
-const Borrow = ({
-  close,
-  amount,
-  amountError,
+const Transact = ({
   form,
-  updateAmount,
-  updateAmountError,
-  updateCurrent,
   current,
-}: BorrowFormProps) => {
+  type,
+  asset,
+  close,
+  updateCurrent,
+}: TransactFormProps) => {
   const [isLoading, setLoading] = useState(false);
   const { walletAddress } = useWallet();
   const { balance, balanceError, balanceLoading, balanceRefetch } =
@@ -122,27 +120,25 @@ const Borrow = ({
   const supportedBalances = balance?.balances?.filter((balance) => {
     return (
       (balance?.asset_issuer === BLND_ISSURER ||
-        balance?.asset_issuer === USDC_ISSURER) &&
-      balance?.asset_code === "USDC"
+        balance?.asset_issuer === USDC_ISSURER ||
+        balance?.asset_issuer === CPYT_ISSUER) &&
+      balance?.asset_code === asset
     );
   });
   //   if no error component
   if (!supportedBalances?.length) {
     return <ErrorComponent message="You have no supported asset" />;
   }
-  //   if yes form
   return (
-    <BorrowForm
+    <TransactForm
       close={close}
       form={form}
-      amount={amount}
-      amountError={amountError}
       current={current}
       updateCurrent={updateCurrent}
-      updateAmount={updateAmount}
-      updateAmountError={updateAmountError}
+      type={type}
+      asset={asset}
     />
   );
 };
 
-export default BorrowModal;
+export default TransactModal;

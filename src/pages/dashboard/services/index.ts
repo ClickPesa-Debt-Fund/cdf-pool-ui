@@ -29,7 +29,10 @@ import {
 import { retrieveWithdrawStatus } from "./withdraw/retrieve-info";
 
 import {
-  Backstop, BackstopPool, BackstopPoolUser, UserBalance,
+  Backstop,
+  BackstopPool,
+  BackstopPoolUser,
+  UserBalance,
   // BackstopPool,
   // BackstopPoolUser,
   // Pool,
@@ -63,8 +66,6 @@ const BACKSTOP_ID = import.meta.env.VITE_BACKSTOP || "";
 const DEFAULT_STALE_TIME = 30 * 1000;
 
 const anchorDomain = import.meta.env.VITE_API_URL as string;
-
-console.log(import.meta.env.VITE_BACKSTOP, BACKSTOP_ID, "backstops");
 
 type DepositInstructionPayload = {
   JWTToken: any;

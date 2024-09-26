@@ -1,3 +1,5 @@
+import { COLLATERAL_ASSET_CODE } from "@/constants";
+
 export const currencies = [
   {
     currency: "TZS",
@@ -88,9 +90,9 @@ export const currencies = [
     currencyType: "CRYPTO",
   },
   {
-    currency: "CPYT",
+    currency: COLLATERAL_ASSET_CODE,
     icon: "https://res.cloudinary.com/dnhpcrm8k/image/upload/v1717765302/assets/debt-fund-icon_izr8j5.svg",
-    symbol: "CPYT",
+    symbol: COLLATERAL_ASSET_CODE,
     minTransfer: 0,
     maxTransfer: 0,
     currencyType: "CRYPTO",

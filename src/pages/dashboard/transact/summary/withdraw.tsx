@@ -6,7 +6,7 @@ import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 
-const Summary = ({
+const WithdrawSummary = ({
   amount,
   simResponse,
   parsedSimResult,
@@ -118,4 +118,4 @@ const Summary = ({
   );
 };
 
-export default Summary;
+export default WithdrawSummary;

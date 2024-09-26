@@ -6,10 +6,15 @@ import Col from "antd/lib/col";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
-import Supply from "../supply";
 import { ArrowUpCircle } from "lucide-react";
 import { usePool, usePoolOracle } from "@/services";
-import { ASSET_ID, POOL_ID, STELLER_EXPERT_URL } from "@/constants";
+import {
+  ASSET_ID,
+  COLLATERAL_ASSET_CODE,
+  PARTICIPATING_MFIs,
+  POOL_ID,
+  STELLER_EXPERT_URL,
+} from "@/constants";
 import {
   // BackstopPoolEst,
   // BackstopPoolUserEst,
@@ -21,12 +26,14 @@ import {
   toBalance,
   // toBalance,
   toCompactAddress,
+  toPercentage,
 } from "@/utils/formatter";
 import {
   useBackstop,
   useBackstopPool,
   // useBackstopPoolUser
 } from "../services";
+import TransactModal from "../transact";
 
 const PoolDetails = () => {
   const { connected, connect } = useWallet();
@@ -45,7 +52,7 @@ const PoolDetails = () => {
     return <Spinner />;
   }
 
-  if (!backstop || !backstopPoolData) {
+  if (!backstop || !backstopPoolData || !pool) {
     return <></>;
   }
 
@@ -66,10 +73,9 @@ const PoolDetails = () => {
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Pool</h3>
-      <Row gutter={[12, 12]}>
-        <Col md={18} span={24}>
-          <Row gutter={[12, 12]}>
+      <Row gutter={[12, 12]} justify={"space-between"}>
+        <Col md={16} span={24}>
+          <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Pool Status"
               content={
@@ -83,7 +89,16 @@ const PoolDetails = () => {
             />
             <DetailContentItem
               title="APR"
-              content={<span className="text-font-semi-bold">12%</span>}
+              content={
+                <span className="text-font-semi-bold">
+                  {toPercentage(
+                    Array.from(pool?.reserves.values())?.find(
+                      (reserve) =>
+                        reserve?.tokenMetadata?.asset?.code === "USDC"
+                    )?.borrowApr
+                  )}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
@@ -101,7 +116,11 @@ const PoolDetails = () => {
             />
             <DetailContentItem
               title="Total Supplied Collateral"
-              content={<span className="text-font-semi-bold">28k CPYT</span>}
+              content={
+                <span className="text-font-semi-bold">
+                  28k {COLLATERAL_ASSET_CODE}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
@@ -125,22 +144,38 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Number of Participation MFIs"
-              content={<span className="text-font-semi-bold">128</span>}
+              title="Number of Participating MFIs"
+              content={
+                <span className="text-font-semi-bold">
+                  {PARTICIPATING_MFIs}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
             />
+
             <DetailContentItem
-              title="Number of Participation Funders"
+              title="Number of Participating Funders"
               content={<span className="text-font-semi-bold">24</span>}
               style={{
                 marginTop: 0,
               }}
             />
-            <DetailContentItem
-              title={`Pool ${toCompactAddress(pool?.id)}`}
-              content={
+            <div
+              style={{
+                width: "30%",
+              }}
+            ></div>
+          </Row>
+        </Col>
+        <Col md={6} span={24} className="space-y-4">
+          <DetailContentItem
+            title={`Pool`}
+            full_width
+            content={
+              <div>
+                <p className="!mb-0">{toCompactAddress(pool?.id)}</p>
                 <Button
                   className="w-full justify-start gap-4 -ml-4"
                   variant={"link"}
@@ -154,14 +189,17 @@ const PoolDetails = () => {
                   View Contract
                   <ArrowUpCircle className="rotate-45" size={14} />
                 </Button>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-            <DetailContentItem
-              title={`Oracle ${toCompactAddress(pool?.config?.oracle)}`}
-              content={
+              </div>
+            }
+          />
+          <DetailContentItem
+            title={`Oracle`}
+            full_width
+            content={
+              <div>
+                <p className="!mb-0">
+                  {toCompactAddress(pool?.config?.oracle)}
+                </p>
                 <Button
                   className="w-full justify-start gap-4 -ml-4"
                   variant={"link"}
@@ -175,14 +213,15 @@ const PoolDetails = () => {
                   View Contract
                   <ArrowUpCircle className="rotate-45" size={14} />
                 </Button>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-            <DetailContentItem
-              title={`Admin ${toCompactAddress(pool?.config.admin)}`}
-              content={
+              </div>
+            }
+          />
+          <DetailContentItem
+            title={`Admin`}
+            full_width
+            content={
+              <div>
+                <p className="!mb-0">{toCompactAddress(pool?.config.admin)}</p>
                 <Button
                   className="w-full justify-start gap-4 -ml-4"
                   variant={"link"}
@@ -203,14 +242,9 @@ const PoolDetails = () => {
                   View Contract
                   <ArrowUpCircle className="rotate-45" size={14} />
                 </Button>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-          </Row>
-        </Col>
-        <Col md={6} span={24} className="space-y-4">
+              </div>
+            }
+          />
           <Button
             className="w-full"
             onClick={() => {
@@ -236,8 +270,10 @@ const PoolDetails = () => {
           </Button>
         </Col>
       </Row>
-      <Supply
+      <TransactModal
         asset="USDC"
+        type={"Supply"}
+        title="Supply USDC"
         open={openSupplyModal}
         close={() => setOpenSupplyModal(false)}
       />

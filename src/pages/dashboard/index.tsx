@@ -1,5 +1,5 @@
 import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
-import PoolActivities from "./components/pool-activities";
+// import PoolActivities from "./components/pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
 import { TxStatus, useWallet } from "@/contexts/wallet";
@@ -11,7 +11,14 @@ import { Alert } from "@clickpesa/components-library.alert";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
-import { ADMIN_ID, BLND_ISSUER, POOL_ID, USDC_ISSUER } from "@/constants";
+import {
+  ADMIN_ID,
+  BLND_ISSUER,
+  COLLATERAL_ASSET_CODE,
+  CPYT_ISSUER,
+  POOL_ID,
+  USDC_ISSUER,
+} from "@/constants";
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import AdminPosition from "./components/admin-position";
@@ -31,21 +38,32 @@ const Dashboard = () => {
     return (
       (balance?.asset_issuer === BLND_ISSUER ||
         balance?.asset_issuer === USDC_ISSUER) &&
-      (balance?.asset_code === "USDC" ||
-        balance?.asset_code === "CPYT" ||
-        balance?.asset_code === "BLND")
+      (balance?.asset_code === "USDC" || balance?.asset_code === "BLND")
     );
   });
 
+  const supportedCollateralBalances = balance?.balances?.filter((balance) => {
+    return (
+      balance?.asset_issuer === CPYT_ISSUER &&
+      balance?.asset_code === COLLATERAL_ASSET_CODE
+    );
+  });
+
+  // @ts-ignore
   let needsFaucet = false;
+  // @ts-ignore
+  let needCollateralFaucet = false;
   if (balance && !supportedBalances?.length) {
     needsFaucet = true;
   }
+  if (balance && !supportedCollateralBalances?.length) {
+    needCollateralFaucet = true;
+  }
 
-  const handleFaucet = async () => {
+  const handleFaucet = async (collateral: boolean) => {
     if (connected) {
       setLoading(true);
-      faucet()
+      faucet(collateral)
         .then(() => {
           balanceRefetch();
           notification.success({
@@ -92,7 +110,7 @@ const Dashboard = () => {
               className="md:h-[34px] h-[34px]"
             />
           </span>
-          SMEs
+          DebtFund SME Pool
         </div>
         {connected ? (
           <div>
@@ -107,28 +125,43 @@ const Dashboard = () => {
                 }
               />
             )}
-            {needsFaucet && (
-              <>
+
+            <div className="space-y-2">
+              {/* {needsFaucet && ( */}
+              <Button
+                variant={"secondary"}
+                onClick={() => {
+                  handleFaucet(false);
+                }}
+                size={"lg"}
+                className="w-full justify-between !bg-white"
+              >
+                Click here to receive assets for the Blend test network.
+                <ArrowRight />
+              </Button>
+              {/* )} */}
+              {walletAddress === ADMIN_ID && (
+                // && needCollateralFaucet
                 <Button
                   variant={"secondary"}
                   onClick={() => {
-                    handleFaucet();
+                    handleFaucet(true);
                   }}
                   size={"lg"}
                   className="w-full justify-between !bg-white"
                 >
-                  Click here to receive assets for the Blend test network.
+                  Click here to receive CPYT assets for the Collateral.
                   <ArrowRight />
                 </Button>
-              </>
-            )}
+              )}
+            </div>
           </div>
         ) : null}
       </div>
       <PoolDetails />
       {walletAddress === ADMIN_ID && <AdminPosition />}
       <UserPositionDetails />
-      <PoolActivities />
+      {/* <PoolActivities /> */}
     </div>
   );
 };

@@ -1,17 +1,19 @@
 import Form from "antd/lib/form";
 import Steps from "antd/lib/steps";
-import { WithdrawFormProps } from ".";
+import { TransactFormProps } from ".";
 import AmountInput from "./amount-input";
 import { TxStatus, useWallet } from "@/contexts/wallet";
 import {
   useGetAccountBalance,
   useGetKYC,
+  useHorizonAccount,
   useSubmitKYC,
+  useTokenBalance,
 } from "@/pages/dashboard/services";
 import KycForm from "../kyc-form";
-import Summary from "./summary";
 import { compareObjects, formatErrorMessage } from "@/utils";
 import {
+  FixedMath,
   PoolContract,
   Positions,
   PositionsEstimate,
@@ -26,22 +28,34 @@ import { useState } from "react";
 import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
+import { getAssetReserve } from "@/utils/horizon";
+import { cn } from "@/lib/utils";
+import {
+  ASSET_ID,
+  COLLATERAL_ASSET_CODE,
+  CPYT_ISSUER,
+  POOL_ID,
+  USDC_ISSUER,
+} from "@/constants";
+import WithdrawSummary from "./summary/withdraw";
+import SupplySummary from "./summary/supply";
+import BorrowSummary from "./summary/borrow";
+import RepaySummary from "./summary/repay";
 
-const WithdrawForm = ({
+const TransactForm = ({
   form,
   current,
-  amount,
-  amountError,
+  type,
+  asset,
   updateCurrent,
-  updateAmount,
-  updateAmountError,
   close,
-}: WithdrawFormProps) => {
-  const poolId = import.meta.env.VITE_POOL_ID || "";
-  const assetId = import.meta.env.VITE_ASSET_ID || "";
+}: TransactFormProps) => {
+  const amount = Form.useWatch("amount", form);
+  const poolId = POOL_ID;
+  const assetId = ASSET_ID;
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
     useWallet();
-  const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
+  const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
 
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
@@ -50,8 +64,69 @@ const WithdrawForm = ({
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   const reserve = pool?.reserves.get(assetId);
-  const currentDeposit =
-    reserve && poolUser ? poolUser.getCollateralFloat(reserve) : undefined;
+
+  const { data: horizonAccount } = useHorizonAccount();
+  const { data: tokenBalance } = useTokenBalance(
+    assetId,
+    reserve?.tokenMetadata?.asset,
+    horizonAccount
+  );
+
+  let maxAmount = 0;
+  if (type === "WithdrawCollateral") {
+    maxAmount =
+      reserve && poolUser && poolUser.getCollateralFloat(reserve)
+        ? poolUser.getCollateralFloat(reserve)
+        : 0;
+  }
+
+  if (type === "Supply") {
+    // calculate current wallet state
+    const stellar_reserve_amount = getAssetReserve(
+      horizonAccount,
+      reserve?.tokenMetadata?.asset
+    );
+    maxAmount =
+      FixedMath.toFloat(tokenBalance ?? BigInt(0), reserve?.config?.decimals) -
+      stellar_reserve_amount;
+  }
+
+  if (type === "SupplyCollateral") {
+    const supportedBalance = balance?.balances?.find(
+      (balance) =>
+        balance?.asset_code === COLLATERAL_ASSET_CODE &&
+        balance?.asset_issuer === CPYT_ISSUER
+    );
+    if (supportedBalance) {
+      maxAmount = +supportedBalance?.balance;
+    }
+  }
+
+  if (type === "Repay") {
+    const supportedBalance =
+      balance?.balances?.find(
+        (balance) =>
+          balance?.asset_code === "USDC" &&
+          balance?.asset_issuer === USDC_ISSUER
+      )?.balance || "0";
+    const debtAmount =
+      reserve && poolUser ? poolUser.getLiabilitiesFloat(reserve) : 0;
+    if (+supportedBalance > debtAmount) {
+      maxAmount = debtAmount;
+    } else {
+      maxAmount = +supportedBalance;
+    }
+  }
+
+  if (type === "Borrow") {
+    const maxUtilFloat = reserve
+      ? FixedMath.toFloat(BigInt(reserve.config.max_util), 7)
+      : 1;
+    const totalSupplied = reserve ? reserve.totalSupplyFloat() : 0;
+    maxAmount = reserve
+      ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
+      : 0;
+  }
 
   const decimals = reserve?.config.decimals ?? 7;
 
@@ -89,8 +164,8 @@ const WithdrawForm = ({
         spender: walletAddress,
         requests: [
           {
-            amount: scaleInputToBigInt(amount, decimals),
-            request_type: RequestType.WithdrawCollateral,
+            amount: scaleInputToBigInt(amount.toString(), decimals),
+            request_type: RequestType?.[type],
             address: reserve.assetId,
           },
         ],
@@ -123,17 +198,14 @@ const WithdrawForm = ({
   return (
     <Form
       form={form}
+      initialValues={{
+        currency: asset,
+      }}
       className="space-y-6 max-w-full w-[700px] my-5 mx-auto"
       onFinish={async (data) => {
         if (current === 1) {
-          if (!amount) {
-            updateAmountError("Invalid Amount");
-          } else if (+(currentDeposit || 0) < +(amount || 0)) {
-            updateAmountError("Insufficient Balance");
-          } else {
-            updateAmountError("");
-            updateCurrent(2);
-          }
+          await form.validateFields(["amount"]);
+          updateCurrent(2);
         }
         if (current === 2) {
           await form.validateFields();
@@ -222,15 +294,10 @@ const WithdrawForm = ({
           },
         ]}
       />
-      {current === 1 && (
-        <AmountInput
-          updateAmount={updateAmount}
-          amount={amount}
-          amountError={amountError}
-          updateAmountError={updateAmountError}
-          maxAmount={currentDeposit}
-        />
-      )}
+      <div className={cn({ block: current === 1, hidden: current !== 1 })}>
+        <AmountInput asset={asset} maxAmount={maxAmount} decimals={decimals} />
+      </div>
+
       {current === 2 && (
         <KycForm
           loading={kycLoading || kycRefetching}
@@ -238,21 +305,67 @@ const WithdrawForm = ({
         />
       )}
       {current === 3 && (
-        <Summary
-          amount={amount}
-          simResponse={simResponse}
-          parsedSimResult={parsedSimResult}
-          decimals={decimals}
-          poolUser={poolUser}
-          reserve={reserve}
-          curBorrowCap={curBorrowCap}
-          nextBorrowCap={nextBorrowCap}
-          curBorrowLimit={curBorrowLimit}
-          nextBorrowLimit={nextBorrowLimit}
-        />
+        <>
+          {type === "WithdrawCollateral" && (
+            <WithdrawSummary
+              amount={amount}
+              simResponse={simResponse}
+              parsedSimResult={parsedSimResult}
+              decimals={decimals}
+              poolUser={poolUser}
+              reserve={reserve}
+              curBorrowCap={curBorrowCap}
+              nextBorrowCap={nextBorrowCap}
+              curBorrowLimit={curBorrowLimit}
+              nextBorrowLimit={nextBorrowLimit}
+            />
+          )}
+          {type === "Supply" && (
+            <SupplySummary
+              amount={amount}
+              simResponse={simResponse}
+              parsedSimResult={parsedSimResult}
+              decimals={decimals}
+              poolUser={poolUser}
+              reserve={reserve}
+              curBorrowCap={curBorrowCap}
+              nextBorrowCap={nextBorrowCap}
+              curBorrowLimit={curBorrowLimit}
+              nextBorrowLimit={nextBorrowLimit}
+            />
+          )}
+          {type === "Borrow" && (
+            <BorrowSummary
+              amount={amount}
+              simResponse={simResponse}
+              parsedSimResult={parsedSimResult}
+              decimals={decimals}
+              poolUser={poolUser}
+              reserve={reserve}
+              curBorrowCap={curBorrowCap}
+              nextBorrowCap={nextBorrowCap}
+              curBorrowLimit={curBorrowLimit}
+              nextBorrowLimit={nextBorrowLimit}
+            />
+          )}
+          {type === "Repay" && (
+            <RepaySummary
+              amount={amount}
+              simResponse={simResponse}
+              parsedSimResult={parsedSimResult}
+              decimals={decimals}
+              poolUser={poolUser}
+              reserve={reserve}
+              curBorrowCap={curBorrowCap}
+              nextBorrowCap={nextBorrowCap}
+              curBorrowLimit={curBorrowLimit}
+              nextBorrowLimit={nextBorrowLimit}
+            />
+          )}
+        </>
       )}
     </Form>
   );
 };
 
-export default WithdrawForm;
+export default TransactForm;

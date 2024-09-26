@@ -41,6 +41,7 @@ import {
 import { useSettings } from "./settings";
 import { useQueryClientCacheCleaner } from "@/services";
 import axios from "axios";
+import { PLAYGROUND_API } from "@/constants";
 
 export interface IWalletContext {
   connected: boolean;
@@ -107,7 +108,7 @@ export interface IWalletContext {
     args: CometLiquidityArgs,
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
-  faucet(): Promise<undefined>;
+  faucet(collateral: boolean): Promise<undefined>;
   createTrustline(asset: Asset): Promise<void>;
   getNetworkDetails(): Promise<Network & { horizonUrl: string }>;
 }
@@ -674,12 +675,15 @@ export const WalletProvider = ({ children = null as any }) => {
     }
   }
 
-  async function faucet(): Promise<any> {
+  async function faucet(collateral?: boolean): Promise<any> {
     if (
       connected &&
       import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
     ) {
-      const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=${walletAddress}`;
+      const url = `${PLAYGROUND_API}/stellar-utils/${
+        collateral ? "get-debt-fund-testing-assets" : "get-blend-testing-assets"
+      }/${walletAddress}`;
+      // const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=/${walletAddress}`;
       try {
         setTxStatus(TxStatus.BUILDING);
         const { data } = await axios.get(url);
@@ -692,6 +696,8 @@ export const WalletProvider = ({ children = null as any }) => {
           await sign(transaction.toXDR()),
           network.passphrase
         );
+        console.log(signedTx);
+
         const result = await sendTransaction(signedTx);
 
         if (result) {
