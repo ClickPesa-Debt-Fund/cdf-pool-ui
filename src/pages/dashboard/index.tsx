@@ -13,7 +13,6 @@ import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
 import {
   BLND_ISSUER,
-  COLLATERAL_ADMIN_ID,
   COLLATERAL_ASSET_CODE,
   CPYT_ISSUER,
   POOL_ID,
@@ -51,9 +50,7 @@ const Dashboard = () => {
     );
   });
 
-  // @ts-ignore
   let needsFaucet = false;
-  // @ts-ignore
   let needCollateralFaucet = false;
   if (balance && !supportedBalances?.length) {
     needsFaucet = true;
@@ -133,21 +130,20 @@ const Dashboard = () => {
             {import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE ===
               Networks.TESTNET && (
               <div className="space-y-2">
-                {/* {needsFaucet && ( */}
-                <Button
-                  variant={"secondary"}
-                  onClick={() => {
-                    handleFaucet(false);
-                  }}
-                  size={"lg"}
-                  className="w-full justify-between !bg-white"
-                >
-                  Click here to receive assets for the Blend test network.
-                  <ArrowRight />
-                </Button>
-                {/* )} */}
-                {walletAddress === COLLATERAL_ADMIN_ID && (
-                  // && needCollateralFaucet
+                {needsFaucet && (
+                  <Button
+                    variant={"secondary"}
+                    onClick={() => {
+                      handleFaucet(false);
+                    }}
+                    size={"lg"}
+                    className="w-full justify-between !bg-white"
+                  >
+                    Click here to receive assets for the Blend test network.
+                    <ArrowRight />
+                  </Button>
+                )}
+                {needCollateralFaucet && (
                   <Button
                     variant={"secondary"}
                     onClick={() => {
@@ -166,7 +162,7 @@ const Dashboard = () => {
         ) : null}
       </div>
       <PoolDetails />
-      {walletAddress === COLLATERAL_ADMIN_ID && <AdminPosition />}
+      {supportedCollateralBalances?.length && <AdminPosition />}
       <UserPositionDetails />
       {/* <PoolActivities /> */}
     </div>
