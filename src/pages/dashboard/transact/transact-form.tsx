@@ -41,6 +41,7 @@ import WithdrawSummary from "./summary/withdraw";
 import SupplySummary from "./summary/supply";
 import BorrowSummary from "./summary/borrow";
 import RepaySummary from "./summary/repay";
+import { CPYT_ASSET_ID } from "@/constants";
 
 const TransactForm = ({
   form,
@@ -63,6 +64,7 @@ const TransactForm = ({
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
+  const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
 
   const { data: horizonAccount } = useHorizonAccount();
   const { data: tokenBalance } = useTokenBalance(
@@ -79,7 +81,7 @@ const TransactForm = ({
         : 0;
   }
 
-  if (type === "Supply") {
+  if (type === "SupplyCollateral" && asset === "USDC") {
     // calculate current wallet state
     const stellar_reserve_amount = getAssetReserve(
       horizonAccount,
@@ -90,7 +92,7 @@ const TransactForm = ({
       stellar_reserve_amount;
   }
 
-  if (type === "SupplyCollateral") {
+  if (type === "SupplyCollateral" && asset === COLLATERAL_ASSET_CODE) {
     const supportedBalance = balance?.balances?.find(
       (balance) =>
         balance?.asset_code === COLLATERAL_ASSET_CODE &&
@@ -319,7 +321,7 @@ const TransactForm = ({
               nextBorrowLimit={nextBorrowLimit}
             />
           )}
-          {type === "Supply" && (
+          {type === "SupplyCollateral" && asset === "USDC" && (
             <SupplySummary
               amount={amount}
               simResponse={simResponse}
@@ -327,6 +329,20 @@ const TransactForm = ({
               decimals={decimals}
               poolUser={poolUser}
               reserve={reserve}
+              curBorrowCap={curBorrowCap}
+              nextBorrowCap={nextBorrowCap}
+              curBorrowLimit={curBorrowLimit}
+              nextBorrowLimit={nextBorrowLimit}
+            />
+          )}
+          {type === "SupplyCollateral" && asset === COLLATERAL_ASSET_CODE && (
+            <SupplySummary
+              amount={amount}
+              simResponse={simResponse}
+              parsedSimResult={parsedSimResult}
+              decimals={decimals}
+              poolUser={poolUser}
+              reserve={collateralReserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
               curBorrowLimit={curBorrowLimit}

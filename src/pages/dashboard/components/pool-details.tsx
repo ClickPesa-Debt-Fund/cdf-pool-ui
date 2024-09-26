@@ -278,7 +278,7 @@ const PoolDetails = () => {
       </Row>
       <TransactModal
         asset="USDC"
-        type={"Supply"}
+        type={"SupplyCollateral"}
         title="Supply USDC"
         open={openSupplyModal}
         close={() => setOpenSupplyModal(false)}
