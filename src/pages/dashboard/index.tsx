@@ -23,6 +23,7 @@ import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import AdminPosition from "./components/admin-position";
 import { Networks } from "@stellar/stellar-sdk";
+import { formatErrorMessage } from "@/utils";
 
 const Dashboard = () => {
   const safePoolId =
@@ -65,15 +66,17 @@ const Dashboard = () => {
     if (connected) {
       setLoading(true);
       faucet(collateral)
-        .then(() => {
+        .then((res) => {
+          console.log(res, "res");
           balanceRefetch();
           notification.success({
             message: "Test network assets added to wallet.",
           });
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error, "error");
           notification.error({
-            message: "Something Went Wrong",
+            message: formatErrorMessage(error) || "Something Went Wrong",
           });
         })
         .finally(() => {

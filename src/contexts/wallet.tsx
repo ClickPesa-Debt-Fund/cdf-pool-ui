@@ -683,7 +683,6 @@ export const WalletProvider = ({ children = null as any }) => {
       const url = `${PLAYGROUND_API}/stellar-utils/${
         collateral ? "get-debt-fund-testing-assets" : "get-blend-testing-assets"
       }/${walletAddress}`;
-      // const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=/${walletAddress}`;
       try {
         setTxStatus(TxStatus.BUILDING);
         const { data } = await axios.get(url);
@@ -692,21 +691,28 @@ export const WalletProvider = ({ children = null as any }) => {
           network.passphrase
         );
 
+        console.log(transaction, "transaction");
+
         let signedTx = new Transaction(
           await sign(transaction.toXDR()),
           network.passphrase
         );
-        console.log(signedTx);
+        console.log(signedTx, "signed transaction");
 
         const result = await sendTransaction(signedTx);
+
+        console.log(result, "transaction result");
 
         if (result) {
           cleanWalletCache();
         }
+        if (!result) {
+          throw new Error("Transaction failed");
+        }
       } catch (e: any) {
         setFailureMessage(e?.message);
         setTxStatus(TxStatus.FAIL);
-        throw new Error("Something went wrong");
+        throw new Error(e);
       }
     } else {
       throw new Error("You are not on testnet environment");
