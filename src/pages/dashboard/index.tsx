@@ -162,7 +162,7 @@ const Dashboard = () => {
         ) : null}
       </div>
       <PoolDetails />
-      {supportedCollateralBalances?.length && <AdminPosition />}
+      {supportedCollateralBalances?.length ? <AdminPosition /> : null}
       <UserPositionDetails />
       {/* <PoolActivities /> */}
     </div>
