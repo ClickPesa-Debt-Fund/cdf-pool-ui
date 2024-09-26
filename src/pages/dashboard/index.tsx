@@ -139,8 +139,19 @@ const Dashboard = () => {
                     size={"lg"}
                     className="w-full justify-between !bg-white"
                   >
-                    Click here to receive assets for the Blend test network.
-                    <ArrowRight />
+                    <Alert
+                      style={{
+                        width: "100%",
+                      }}
+                      color="blue"
+                      subtitle={
+                        <div className="flex justify-between">
+                          Click here to receive assets for the Blend test
+                          network.
+                          <ArrowRight />
+                        </div>
+                      }
+                    />
                   </Button>
                 )}
                 {needCollateralFaucet && (
@@ -150,10 +161,20 @@ const Dashboard = () => {
                       handleFaucet(true);
                     }}
                     size={"lg"}
-                    className="w-full justify-between !bg-white"
+                    className="w-full justify-between p-0"
                   >
-                    Click here to receive CPYT assets for the Collateral.
-                    <ArrowRight />
+                    <Alert
+                      style={{
+                        width: "100%",
+                      }}
+                      color="blue"
+                      subtitle={
+                        <div className="flex justify-between">
+                          Click here to receive CPYT assets for the Collateral.
+                          <ArrowRight />
+                        </div>
+                      }
+                    />
                   </Button>
                 )}
               </div>

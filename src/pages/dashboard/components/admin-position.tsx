@@ -144,7 +144,7 @@ const AdminPosition = () => {
         </Col>
         <Col md={6} span={24} className="space-y-4">
           <Button
-            className="w-full"
+            className="w-full border-primary hover:border-primary text-primary"
             onClick={() => {
               if (connected) {
                 setOpenSupplyModal(true);
@@ -163,12 +163,12 @@ const AdminPosition = () => {
                 });
               }
             }}
+            variant={"outline"}
           >
             Supply Collateral
           </Button>
           <Button
-            className="w-full"
-            variant={"destructive"}
+            className="w-full border-red-500 hover:border-red-600 text-red-500"
             onClick={() => {
               if (connected) {
                 setOpenBorrowModal(true);
@@ -187,11 +187,12 @@ const AdminPosition = () => {
                 });
               }
             }}
+            variant={"outline"}
           >
             Borrow USDC
           </Button>
           <Button
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full border-green-600 text-green-600 hover:border-green-700"
             onClick={() => {
               if (connected) {
                 setOpenRepayModal(true);
@@ -210,6 +211,7 @@ const AdminPosition = () => {
                 });
               }
             }}
+            variant={"outline"}
           >
             Repay
           </Button>
