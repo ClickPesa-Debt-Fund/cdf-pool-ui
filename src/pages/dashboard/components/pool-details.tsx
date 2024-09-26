@@ -9,11 +9,12 @@ import { useState } from "react";
 import { ArrowUpCircle } from "lucide-react";
 import { usePool, usePoolOracle } from "@/services";
 import {
-  ASSET_ID,
+  USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
   PARTICIPATING_MFIs,
   POOL_ID,
   STELLER_EXPERT_URL,
+  CPYT_ASSET_ID,
 } from "@/constants";
 import { BackstopPoolEst, PoolEstimate } from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
@@ -34,7 +35,8 @@ const PoolDetails = () => {
   const { data: backstopPoolData } = useBackstopPool(pool?.id || "");
   const { data: poolOracle } = usePoolOracle(pool);
 
-  const reserve = pool?.reserves.get(ASSET_ID);
+  const reserve = pool?.reserves.get(USDC_ASSET_ID);
+  const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
 
   if (isLoading || backstopLoading) {
     return <Spinner />;
@@ -101,7 +103,8 @@ const PoolDetails = () => {
               title="Total Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
-                  28k {COLLATERAL_ASSET_CODE}
+                  {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 3)}{" "}
+                  {COLLATERAL_ASSET_CODE}
                 </span>
               }
               style={{

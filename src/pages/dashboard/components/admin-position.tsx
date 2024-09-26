@@ -4,7 +4,7 @@ import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
 import {
-  ASSET_ID,
+  USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
   //  CPYT_ASSET,
   POOL_ID,
@@ -31,7 +31,7 @@ const AdminPosition = () => {
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: userPoolData } = usePoolUser(pool);
 
-  const reserve = pool?.reserves.get(ASSET_ID);
+  const reserve = pool?.reserves.get(USDC_ASSET_ID);
 
   const maxUtilFloat = reserve
     ? FixedMath.toFloat(BigInt(reserve.config.max_util), 7)
@@ -40,11 +40,6 @@ const AdminPosition = () => {
   const availableToBorrow = reserve
     ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
     : 0;
-
-  // const emissionsPerAsset =
-  //   reserve !== undefined ? reserve.emissionsPerYearPerBorrowedAsset() : 0;
-
-  // const { data: account } = useHorizonAccount();
 
   if (pool === undefined || userPoolData === undefined) {
     return <Spinner />;
@@ -68,9 +63,6 @@ const AdminPosition = () => {
         assetFloat: reserve.toAssetFromBTokenFloat(bTokens),
       };
     });
-
-  // const { emissions, claimedTokens } = userPoolData.estimateEmissions(pool);
-  // const hasCPYTTrustLine = !requiresTrustline(account, CPYT_ASSET);
 
   const userEst = poolOracle
     ? PositionsEstimate.build(pool, poolOracle, userPoolData.positions)

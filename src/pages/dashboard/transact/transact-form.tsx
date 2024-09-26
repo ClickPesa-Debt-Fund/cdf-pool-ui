@@ -31,7 +31,7 @@ import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { getAssetReserve } from "@/utils/horizon";
 import { cn } from "@/lib/utils";
 import {
-  ASSET_ID,
+  USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
   CPYT_ISSUER,
   POOL_ID,
@@ -52,7 +52,6 @@ const TransactForm = ({
 }: TransactFormProps) => {
   const amount = Form.useWatch("amount", form);
   const poolId = POOL_ID;
-  const assetId = ASSET_ID;
   const { walletAddress, poolSubmit, connected, txStatus, txType } =
     useWallet();
   const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
@@ -63,11 +62,11 @@ const TransactForm = ({
   const { data: pool } = usePool(poolId);
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
-  const reserve = pool?.reserves.get(assetId);
+  const reserve = pool?.reserves.get(USDC_ASSET_ID);
 
   const { data: horizonAccount } = useHorizonAccount();
   const { data: tokenBalance } = useTokenBalance(
-    assetId,
+    USDC_ASSET_ID,
     reserve?.tokenMetadata?.asset,
     horizonAccount
   );
