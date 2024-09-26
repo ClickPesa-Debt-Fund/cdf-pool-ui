@@ -15,27 +15,16 @@ import {
   POOL_ID,
   STELLER_EXPERT_URL,
 } from "@/constants";
-import {
-  // BackstopPoolEst,
-  // BackstopPoolUserEst,
-  PoolEstimate,
-} from "@blend-capital/blend-sdk";
+import { BackstopPoolEst, PoolEstimate } from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import Spinner from "@/components/other/spinner";
-import {
-  toBalance,
-  // toBalance,
-  toCompactAddress,
-  toPercentage,
-} from "@/utils/formatter";
-import {
-  useBackstop,
-  useBackstopPool,
-  // useBackstopPoolUser
-} from "../services";
+import { toBalance, toCompactAddress, toPercentage } from "@/utils/formatter";
+import { useBackstop, useBackstopPool } from "../services";
 import TransactModal from "../transact";
+import { useNavigate } from "react-router-dom";
 
 const PoolDetails = () => {
+  const navigate = useNavigate();
   const { connected, connect } = useWallet();
   const [openSupplyModal, setOpenSupplyModal] = useState(false);
   const safePoolId =
@@ -43,7 +32,6 @@ const PoolDetails = () => {
   const { data: pool, isLoading } = usePool(safePoolId, true);
   const { data: backstop, isLoading: backstopLoading } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(pool?.id || "");
-  // const { data: backstopUserData } = useBackstopPoolUser(pool?.id || "");
   const { data: poolOracle } = usePoolOracle(pool);
 
   const reserve = pool?.reserves.get(ASSET_ID);
@@ -56,15 +44,10 @@ const PoolDetails = () => {
     return <></>;
   }
 
-  // const backstopPoolEst = BackstopPoolEst.build(
-  //   backstop?.backstopToken,
-  //   backstopPoolData?.poolBalance
-  // );
-
-  // const backstopUserPoolEst =
-  //   backstopUserData !== undefined
-  //     ? BackstopPoolUserEst.build(backstop, backstopPoolData, backstopUserData)
-  //     : undefined;
+  const backstopPoolEst = BackstopPoolEst.build(
+    backstop?.backstopToken,
+    backstopPoolData?.poolBalance
+  );
 
   const marketSize =
     poolOracle !== undefined && pool !== undefined
@@ -126,6 +109,26 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
+              title="Total Backstop Size"
+              content={
+                <div className="flex gap-3 items-center">
+                  <span className="text-font-semi-bold">
+                    ${nFormatter(backstopPoolEst.totalSpotValue || 0, 3)}
+                  </span>
+                  <Button
+                    className="justify-start gap-4 "
+                    variant={"link"}
+                    onClick={() => navigate("/dashboard/backstop")}
+                  >
+                    Backstop
+                  </Button>
+                </div>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
               title="Total Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
@@ -162,11 +165,11 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
-            <div
+            {/* <div
               style={{
                 width: "30%",
               }}
-            ></div>
+            ></div> */}
           </Row>
         </Col>
         <Col md={6} span={24} className="space-y-4">
