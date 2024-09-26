@@ -12,8 +12,8 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
 import {
-  ADMIN_ID,
   BLND_ISSUER,
+  COLLATERAL_ADMIN_ID,
   COLLATERAL_ASSET_CODE,
   CPYT_ISSUER,
   POOL_ID,
@@ -22,6 +22,7 @@ import {
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import AdminPosition from "./components/admin-position";
+import { Networks } from "@stellar/stellar-sdk";
 
 const Dashboard = () => {
   const safePoolId =
@@ -126,40 +127,43 @@ const Dashboard = () => {
               />
             )}
 
-            <div className="space-y-2">
-              {/* {needsFaucet && ( */}
-              <Button
-                variant={"secondary"}
-                onClick={() => {
-                  handleFaucet(false);
-                }}
-                size={"lg"}
-                className="w-full justify-between !bg-white"
-              >
-                Click here to receive assets for the Blend test network.
-                <ArrowRight />
-              </Button>
-              {/* )} */}
-              {walletAddress === ADMIN_ID && (
-                // && needCollateralFaucet
+            {import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE ===
+              Networks.TESTNET && (
+              <div className="space-y-2">
+                {/* {needsFaucet && ( */}
                 <Button
                   variant={"secondary"}
                   onClick={() => {
-                    handleFaucet(true);
+                    handleFaucet(false);
                   }}
                   size={"lg"}
                   className="w-full justify-between !bg-white"
                 >
-                  Click here to receive CPYT assets for the Collateral.
+                  Click here to receive assets for the Blend test network.
                   <ArrowRight />
                 </Button>
-              )}
-            </div>
+                {/* )} */}
+                {walletAddress === COLLATERAL_ADMIN_ID && (
+                  // && needCollateralFaucet
+                  <Button
+                    variant={"secondary"}
+                    onClick={() => {
+                      handleFaucet(true);
+                    }}
+                    size={"lg"}
+                    className="w-full justify-between !bg-white"
+                  >
+                    Click here to receive CPYT assets for the Collateral.
+                    <ArrowRight />
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         ) : null}
       </div>
       <PoolDetails />
-      {walletAddress === ADMIN_ID && <AdminPosition />}
+      {walletAddress === COLLATERAL_ADMIN_ID && <AdminPosition />}
       <UserPositionDetails />
       {/* <PoolActivities /> */}
     </div>

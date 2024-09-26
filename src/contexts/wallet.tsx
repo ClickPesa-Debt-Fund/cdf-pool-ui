@@ -704,11 +704,12 @@ export const WalletProvider = ({ children = null as any }) => {
           cleanWalletCache();
         }
       } catch (e: any) {
-        console.error("Failed submitting transaction: ", e);
         setFailureMessage(e?.message);
         setTxStatus(TxStatus.FAIL);
         throw new Error("Something went wrong");
       }
+    } else {
+      throw new Error("You are not on testnet environment");
     }
   }
 
