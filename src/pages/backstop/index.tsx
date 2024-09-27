@@ -2,9 +2,24 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BackstopDetails from "./components/backstop-details";
+import ManageBackstop from "./components/manage-backstop";
+import { POOL_ID } from "@/constants";
+import { useBackstop, useBackstopPool } from "../dashboard/services";
+import { usePool } from "@/services";
+import Spinner from "@/components/other/spinner";
+import { useWallet } from "@/contexts/wallet";
 
 const Backstop = () => {
   const navigate = useNavigate();
+  const { connected } = useWallet();
+  const { data: pool } = usePool(POOL_ID);
+  const { data: backstop } = useBackstop();
+  const { data: backstopPoolData } = useBackstopPool(POOL_ID);
+
+  if (!pool || !backstop || !backstopPoolData) {
+    return <Spinner />;
+  }
+
   return (
     <div className="md:space-y-[30px] space-y-[24px] md:py-[100px] py-[90px] container max-w-[1270px] min-h-full">
       <div>
@@ -17,6 +32,11 @@ const Backstop = () => {
         </Button>
       </div>
       <BackstopDetails />
+      {connected && (
+        <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
+          <ManageBackstop />
+        </div>
+      )}
     </div>
   );
 };

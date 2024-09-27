@@ -26,6 +26,7 @@ type WizardAmountProps = {
      * Initial value
      */
     initialValue?: string;
+    containerClassName?: string;
   };
   amount?: InputNumberProps & {
     /**
@@ -37,7 +38,6 @@ type WizardAmountProps = {
      * Initial value
      */
     initialValue?: string;
-    
   };
   /**
    * Input label
@@ -55,7 +55,7 @@ type WizardAmountProps = {
    * container styles
    */
   containerStyle?: CSSProperties;
-  decimalsLimit?: number
+  decimalsLimit?: number;
 };
 
 const WizardAmountInput = ({
@@ -65,7 +65,7 @@ const WizardAmountInput = ({
   height,
   containerStyle,
   currency: { options, ...currency },
-  decimalsLimit = 7
+  decimalsLimit = 7,
 }: WizardAmountProps) => {
   const form = Form.useFormInstance();
   // @ts-ignore
@@ -83,6 +83,7 @@ const WizardAmountInput = ({
         name={currency?.name || "currency"}
         rules={currency.rules}
         initialValue={currency?.initialValue}
+        className={currency?.containerClassName}
       >
         <Select
           showSearch

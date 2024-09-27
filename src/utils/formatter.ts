@@ -15,8 +15,6 @@ export function toBalance(
   amount: bigint | number | undefined,
   decimals?: number | undefined
 ): string {
-  console.log(amount, "number");
-
   if (
     amount == undefined ||
     (typeof amount === "number" && !isFinite(amount))

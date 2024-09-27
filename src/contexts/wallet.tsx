@@ -110,7 +110,9 @@ export interface IWalletContext {
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   faucet(collateral: boolean): Promise<undefined>;
   createTrustline(asset: Asset): Promise<void>;
   getNetworkDetails(): Promise<Network & { horizonUrl: string }>;
@@ -663,7 +665,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -671,9 +675,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;

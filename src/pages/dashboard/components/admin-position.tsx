@@ -141,7 +141,7 @@ const AdminPosition = () => {
         </Col>
         <Col md={6} span={24} className="space-y-4">
           <Button
-            className="w-full border-primary hover:border-primary text-primary"
+            className="w-full"
             onClick={() => {
               if (connected) {
                 setOpenSupplyModal(true);
@@ -160,7 +160,7 @@ const AdminPosition = () => {
                 });
               }
             }}
-            variant={"outline"}
+            
           >
             Supply Collateral
           </Button>
