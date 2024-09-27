@@ -127,32 +127,35 @@ const Dashboard = () => {
 
             {import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE ===
               Networks.TESTNET && (
-              <div className="space-y-3">
+              <div>
                 {needsFaucet && (
-                  <div>
-                    <Button
-                      variant={"secondary"}
-                      onClick={() => {
-                        handleFaucet(false);
-                      }}
-                      size={"lg"}
-                      className="w-full justify-between !bg-white p-0"
-                    >
-                      <Alert
-                        style={{
-                          width: "100%",
+                  <>
+                    <div>
+                      <Button
+                        variant={"secondary"}
+                        onClick={() => {
+                          handleFaucet(false);
                         }}
-                        color="blue"
-                        subtitle={
-                          <div className="flex justify-between">
-                            Click here to receive assets for the Blend test
-                            network.
-                            <ArrowRight />
-                          </div>
-                        }
-                      />
-                    </Button>
-                  </div>
+                        size={"lg"}
+                        className="w-full justify-between !bg-white p-0"
+                      >
+                        <Alert
+                          style={{
+                            width: "100%",
+                          }}
+                          color="blue"
+                          subtitle={
+                            <div className="flex justify-between">
+                              Click here to receive assets for the Blend test
+                              network.
+                              <ArrowRight />
+                            </div>
+                          }
+                        />
+                      </Button>
+                    </div>
+                    {needCollateralFaucet && <br />}
+                  </>
                 )}
                 {needCollateralFaucet && (
                   <div>
