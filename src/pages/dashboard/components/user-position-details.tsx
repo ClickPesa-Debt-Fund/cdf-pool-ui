@@ -13,9 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import * as formatter from "@/utils/formatter";
 import { useState } from "react";
-import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 import TransactModal from "../transact";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
+import { CurrencyLogos } from "@/components/other/currency-logos";
 
 const UserPositionDetails = () => {
   const poolId = import.meta.env.VITE_POOL_ID || "";
@@ -85,7 +85,7 @@ const PositionCard = ({
         <CurrencyLogos name="USDC" size="sm" /> USDC
       </Col>
       <Col span={6} className="text-font-semi-bold text-green-600">
-        ${nFormatter(assetFloat,3)}
+        ${nFormatter(assetFloat, 3)}
       </Col>
       <Col span={6} className="text-font-semi-bold">
         {formatter.toPercentage(reserve.supplyApr)}

@@ -1,4 +1,3 @@
-import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 // import PoolActivities from "./components/pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
@@ -23,6 +22,7 @@ import Spinner from "@/components/other/spinner";
 import AdminPosition from "./components/admin-position";
 import { Networks } from "@stellar/stellar-sdk";
 import { formatErrorMessage } from "@/utils";
+import { CurrencyLogos } from "@/components/other/currency-logos";
 
 const Dashboard = () => {
   const safePoolId =

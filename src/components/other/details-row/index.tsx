@@ -1,9 +1,9 @@
-import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 import { StatusTag } from "@clickpesa/components-library.status-tag";
 import { ExchangeRateArrow } from "@clickpesa/components-library.exchange-rate-arrow";
 import "./details-row.sass";
 import { ReactNode } from "react";
 import { formatAmount, formatDate } from "@/utils";
+import { CurrencyLogos } from "../currency-logos";
 
 type AmountType = {
   label: string;

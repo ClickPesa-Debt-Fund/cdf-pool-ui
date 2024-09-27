@@ -99,7 +99,7 @@ export const currencies = [
   },
   {
     currency: "BLND",
-    icon: "/icons/blend.svg",
+    icon: "/icons/blnd-token.svg",
     symbol: "BLND",
     minTransfer: 0,
     maxTransfer: 0,
@@ -111,6 +111,6 @@ export const currencies = [
     minTransfer: 0,
     maxTransfer: 0,
     currencyType: "CRYPTO",
-    icon: "",
+    icon: "/icons/lp-token.svg",
   },
 ];
