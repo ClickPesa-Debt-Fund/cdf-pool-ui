@@ -6,18 +6,15 @@ import { useState } from "react";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
-  //  CPYT_ASSET,
   POOL_ID,
 } from "@/constants";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { FixedMath, PositionsEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
-// import { requiresTrustline } from "@/utils/horizon";
-// import { useHorizonAccount } from "../services";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { Button } from "@/components/ui/button";
-import { toBalance, toPercentage } from "@/utils/formatter";
+import { toPercentage } from "@/utils/formatter";
 import TransactModal from "../transact";
 
 const AdminPosition = () => {
@@ -71,9 +68,9 @@ const AdminPosition = () => {
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
       <h3 className="text-font-semi-bold mb-6">Admin Position</h3>
-      <Row gutter={[12, 12]}>
-        <Col md={18} span={24}>
-          <Row gutter={[12, 12]}>
+      <Row gutter={[12, 12]} justify={"space-between"}>
+        <Col md={16} span={24}>
+          <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Borrow APR"
               content={
@@ -100,7 +97,7 @@ const AdminPosition = () => {
               title="Total Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
-                  {toBalance(poolUser?.[0]?.assetFloat || 0)} CPYT
+                  {nFormatter(poolUser?.[0]?.assetFloat || 0, 3)} CPYT
                 </span>
               }
               style={{
@@ -111,7 +108,7 @@ const AdminPosition = () => {
               title="Total Borrowed"
               content={
                 <span className="text-font-semi-bold">
-                  ${toBalance(reserve?.totalLiabilitiesFloat())}
+                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 3)}
                 </span>
               }
               style={{
@@ -133,7 +130,7 @@ const AdminPosition = () => {
               title="Available To Borrow"
               content={
                 <span className="text-font-semi-bold">
-                  ${toBalance(availableToBorrow, reserve?.config.decimals)}
+                  ${nFormatter(availableToBorrow, reserve?.config.decimals)}
                 </span>
               }
               style={{

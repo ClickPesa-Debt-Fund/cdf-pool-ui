@@ -15,11 +15,11 @@ import * as formatter from "@/utils/formatter";
 import { useState } from "react";
 import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 import TransactModal from "../transact";
+import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 
 const UserPositionDetails = () => {
   const poolId = import.meta.env.VITE_POOL_ID || "";
   const { data: pool } = usePool(poolId);
-  // const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser, isLoading } = usePoolUser(pool);
 
   if (isLoading) {
@@ -34,11 +34,6 @@ const UserPositionDetails = () => {
   ) {
     return <></>;
   }
-
-  // const poolUserEst =
-  //   poolOracle !== undefined
-  //     ? PositionsEstimate.build(pool, poolOracle, poolUser?.positions)
-  //     : undefined;
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
@@ -90,7 +85,7 @@ const PositionCard = ({
         <CurrencyLogos name="USDC" size="sm" /> USDC
       </Col>
       <Col span={6} className="text-font-semi-bold text-green-600">
-        ${formatter.toBalance(assetFloat)}
+        ${nFormatter(assetFloat,3)}
       </Col>
       <Col span={6} className="text-font-semi-bold">
         {formatter.toPercentage(reserve.supplyApr)}

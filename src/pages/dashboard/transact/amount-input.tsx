@@ -1,8 +1,8 @@
-import { currencies } from "../data";
 import { Button } from "@/components/ui/button";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { formatAmount } from "@/utils";
 import { COLLATERAL_ASSET_CODE } from "@/constants";
+import { currencies } from "@/shared/data/currencies";
 
 const AmountInput = ({
   maxAmount,

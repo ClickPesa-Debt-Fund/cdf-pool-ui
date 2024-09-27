@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import BackstopDetails from "./components/backstop-details";
 
 const Backstop = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Backstop = () => {
           <ArrowLeft size={20} /> Dashboard
         </Button>
       </div>
-      <div>Backstop Page</div>
+      <BackstopDetails />
     </div>
   );
 };

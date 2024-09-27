@@ -19,7 +19,7 @@ import {
 import { BackstopPoolEst, PoolEstimate } from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import Spinner from "@/components/other/spinner";
-import { toBalance, toCompactAddress, toPercentage } from "@/utils/formatter";
+import { toCompactAddress, toPercentage } from "@/utils/formatter";
 import { useBackstop, useBackstopPool } from "../services";
 import TransactModal from "../transact";
 import { useNavigate } from "react-router-dom";
@@ -135,7 +135,7 @@ const PoolDetails = () => {
               title="Total Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
-                  ${toBalance(reserve?.totalLiabilitiesFloat())}
+                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 3)}
                 </span>
               }
               style={{
@@ -168,11 +168,6 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
-            {/* <div
-              style={{
-                width: "30%",
-              }}
-            ></div> */}
           </Row>
         </Col>
         <Col md={6} span={24} className="space-y-4">

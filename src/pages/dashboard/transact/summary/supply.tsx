@@ -2,6 +2,7 @@ import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
+import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
@@ -70,15 +71,15 @@ const SupplySummary = ({
                 label: "Your total supplied",
                 start: {
                   currency: symbol,
-                  value: `${toBalance(
-                    poolUser?.getCollateralFloat(reserve),
+                  value: `${nFormatter(
+                    poolUser?.getCollateralFloat(reserve) || 0,
                     decimals
                   )}`,
                 },
                 end: {
                   currency: symbol,
-                  value: `${toBalance(
-                    newPoolUser?.getCollateralFloat(reserve),
+                  value: `${nFormatter(
+                    newPoolUser?.getCollateralFloat(reserve) || 0,
                     decimals
                   )}`,
                 },

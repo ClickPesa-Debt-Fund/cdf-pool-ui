@@ -14,3 +14,5 @@ export const STELLER_EXPERT_URL = import.meta.env.VITE_STELLAR_EXPERT_URL;
 export const COLLATERAL_ASSET_CODE = "CPYT";
 export const PARTICIPATING_MFIs = import.meta.env.VITE_PARTICIPATING_MFIS;
 export const CPYT_ASSET = new Asset(COLLATERAL_ASSET_CODE, CPYT_ISSUER || "");
+export const USDC_ASSET = new Asset("USDC", USDC_ISSUER || "");
+export const BLND_ASSET = new Asset("BLND", BLND_ISSUER || "");

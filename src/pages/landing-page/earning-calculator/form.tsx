@@ -1,3 +1,4 @@
+import { currencies } from "@/shared/data/currencies";
 import { ExchangeFormItem } from "@clickpesa/components-library.forms.exchange-form-item";
 import { SelectInput } from "@clickpesa/components-library.inputs.select-input";
 
@@ -17,13 +18,9 @@ const Form = ({
             Amount
           </label>
           <ExchangeFormItem
-            currencies={[
-              {
-                currency: "USDC",
-                icon: "https://res.cloudinary.com/dnhpcrm8k/image/upload/v1675763995/assets/usdc_qx0rfh.svg",
-                symbol: "USDC",
-              },
-            ]}
+            currencies={currencies?.filter(
+              (currency) => currency?.currency === "USDC"
+            )}
             amount={amount}
             handleAmountChange={(amount) => {
               updateAmount(amount || "");

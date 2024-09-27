@@ -1,7 +1,7 @@
 /// Information display formatting utils
-import BigNumber from 'bignumber.js';
+import BigNumber from "bignumber.js";
 
-const POSTFIXES = ['', 'k', 'M', 'B', 'T', 'P', 'E', 'Z', 'Y'];
+const POSTFIXES = ["", "k", "M", "B", "T", "P", "E", "Z", "Y"];
 
 /**
  * Format a number as a balance
@@ -15,17 +15,24 @@ export function toBalance(
   amount: bigint | number | undefined,
   decimals?: number | undefined
 ): string {
-  if (amount == undefined || (typeof amount === 'number' && !isFinite(amount))) {
-    return '--';
+  console.log(amount, "number");
+
+  if (
+    amount == undefined ||
+    (typeof amount === "number" && !isFinite(amount))
+  ) {
+    return "--";
   }
   let numValue: number;
-  if (typeof amount === 'bigint' && decimals !== undefined) {
+  if (typeof amount === "bigint" && decimals !== undefined) {
     numValue = Number(amount) / 10 ** decimals;
-  } else if (typeof amount === 'number') {
+  } else if (typeof amount === "number") {
     numValue = amount;
   } else {
-    console.error('Invalid toBalance input. Must provide decimals if amount is a bigint.');
-    return '--';
+    console.error(
+      "Invalid toBalance input. Must provide decimals if amount is a bigint."
+    );
+    return "--";
   }
 
   let visibleDecimals = 0;
@@ -40,7 +47,8 @@ export function toBalance(
   }
 
   const minValue = 10 ** -(visibleDecimals as number);
-  const isSmallerThanMin = numValue !== 0 && Math.abs(numValue) < Math.abs(minValue);
+  const isSmallerThanMin =
+    numValue !== 0 && Math.abs(numValue) < Math.abs(minValue);
   let adjAmount = isSmallerThanMin ? minValue : numValue;
 
   const bnValue = new BigNumber(numValue);
@@ -52,7 +60,7 @@ export function toBalance(
   );
   adjAmount = bnValue.shiftedBy(-3 * postfixIndex).toNumber();
 
-  const formattedStr = new Intl.NumberFormat('en-US', {
+  const formattedStr = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: visibleDecimals,
     minimumFractionDigits: visibleDecimals,
   }).format(adjAmount);
@@ -66,11 +74,11 @@ export function toBalance(
  */
 export function toPercentage(rate: number | undefined): string {
   if (rate == undefined) {
-    return '--';
+    return "--";
   }
 
   const adjRate = rate * 100;
-  const formattedStr = new Intl.NumberFormat('en-US', {
+  const formattedStr = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   }).format(adjRate);
@@ -83,10 +91,13 @@ export function toPercentage(rate: number | undefined): string {
  */
 export function toCompactAddress(address: string | undefined): string {
   if (!address) {
-    return '';
+    return "";
   }
 
-  return `${address.substring(0, 4)}...${address.substring(address.length - 4, address.length)}`;
+  return `${address.substring(0, 4)}...${address.substring(
+    address.length - 4,
+    address.length
+  )}`;
 }
 
 /**
@@ -101,13 +112,16 @@ export function toTimeSpan(secondsLeft: number): string {
   secondsLeft -= m * 60;
 
   const tmp = [];
-  d && tmp.push(d + 'd');
-  (d || h) && tmp.push(h + 'h');
-  (d || h || m) && tmp.push(m + 'm');
-  !d && tmp.push(secondsLeft + 's');
-  return tmp.join(' ');
+  d && tmp.push(d + "d");
+  (d || h) && tmp.push(h + "h");
+  (d || h || m) && tmp.push(m + "m");
+  !d && tmp.push(secondsLeft + "s");
+  return tmp.join(" ");
 }
 
 export function getEmissionTextFromValue(value: number, symbol: string) {
-  return ` This position earns ${toBalance(value, 7)} BLND a year per ${symbol}`;
+  return ` This position earns ${toBalance(
+    value,
+    7
+  )} BLND a year per ${symbol}`;
 }

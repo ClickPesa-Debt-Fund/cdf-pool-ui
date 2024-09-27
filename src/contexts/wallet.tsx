@@ -7,7 +7,6 @@ import {
   PoolBackstopActionArgs,
   PoolClaimArgs,
   PoolContract,
-  RequestType,
   SubmitArgs,
 } from "@blend-capital/blend-sdk";
 import {
@@ -97,12 +96,16 @@ export interface IWalletContext {
     cometPoolId: string,
     args: CometSingleSidedDepositArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   cometJoin(
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   cometExit(
     cometPoolId: string,
     args: CometLiquidityArgs,
@@ -383,7 +386,11 @@ export const WalletProvider = ({ children = null as any }) => {
       ).build();
       const signedTx = await sign(assembled_tx.toXDR());
       const tx = new Transaction(signedTx, network.passphrase);
-      await sendTransaction(tx);
+      const result = await sendTransaction(tx);
+      if (result)
+        return {
+          message: "Transaction was submitted successfully",
+        };
     } catch (e: any) {
       console.error("Unknown error submitting transaction: ", e);
       setFailureMessage(e?.message);
@@ -412,9 +419,7 @@ export const WalletProvider = ({ children = null as any }) => {
     submitArgs: SubmitArgs,
     sim: boolean
   ): Promise<
-    | SorobanRpc.Api.SimulateTransactionResponse
-    | undefined
-    | { message?: string; error?: string }
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
     try {
       if (connected) {
@@ -426,16 +431,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanPoolCache(poolId);
         cleanWalletCache();
-        return {
-          message:
-            submitArgs?.requests?.[0]?.request_type ===
-            RequestType.WithdrawCollateral
-              ? "Successful withdrawn Funds"
-              : "Successfully Supplied funds",
-        };
+        return result;
       }
     } catch (error) {
       throw new Error("Something Went wrong");
@@ -616,7 +615,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometSingleSidedDepositArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -624,9 +625,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;
@@ -637,7 +639,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -645,9 +649,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;

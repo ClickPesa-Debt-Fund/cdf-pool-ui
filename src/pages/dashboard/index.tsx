@@ -63,15 +63,13 @@ const Dashboard = () => {
     if (connected) {
       setLoading(true);
       faucet(collateral)
-        .then((res) => {
-          console.log(res, "res");
+        .then(() => {
           balanceRefetch();
           notification.success({
             message: "Test network assets added to wallet.",
           });
         })
         .catch((error) => {
-          console.log(error, "error");
           notification.error({
             message: formatErrorMessage(error) || "Something Went Wrong",
           });

@@ -10,7 +10,7 @@ import {
   useSubmitKYC,
   useTokenBalance,
 } from "@/pages/dashboard/services";
-import KycForm from "../kyc-form";
+import KycForm from "./kyc-form";
 import { compareObjects, formatErrorMessage } from "@/utils";
 import {
   FixedMath,

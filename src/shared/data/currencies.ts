@@ -97,4 +97,20 @@ export const currencies = [
     maxTransfer: 0,
     currencyType: "CRYPTO",
   },
+  {
+    currency: "BLND",
+    icon: "/icons/blend.svg",
+    symbol: "BLND",
+    minTransfer: 0,
+    maxTransfer: 0,
+    currencyType: "CRYPTO",
+  },
+  {
+    currency: "BLND-USDC LP",
+    symbol: "BLND-USDC LP",
+    minTransfer: 0,
+    maxTransfer: 0,
+    currencyType: "CRYPTO",
+    icon: "",
+  },
 ];
