@@ -63,8 +63,8 @@ const TransactForm = ({
   const { data: pool } = usePool(poolId);
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
-  const reserve = pool?.reserves.get(USDC_ASSET_ID);
-  const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
+  let assetId = asset === COLLATERAL_ASSET_CODE ? CPYT_ASSET_ID : USDC_ASSET_ID;
+  const reserve = pool?.reserves.get(assetId);
 
   const { data: horizonAccount } = useHorizonAccount();
   const { data: tokenBalance } = useTokenBalance(
@@ -321,7 +321,7 @@ const TransactForm = ({
               nextBorrowLimit={nextBorrowLimit}
             />
           )}
-          {type === "SupplyCollateral" && asset === "USDC" && (
+          {type === "SupplyCollateral" && (
             <SupplySummary
               amount={amount}
               simResponse={simResponse}
@@ -335,20 +335,7 @@ const TransactForm = ({
               nextBorrowLimit={nextBorrowLimit}
             />
           )}
-          {type === "SupplyCollateral" && asset === COLLATERAL_ASSET_CODE && (
-            <SupplySummary
-              amount={amount}
-              simResponse={simResponse}
-              parsedSimResult={parsedSimResult}
-              decimals={decimals}
-              poolUser={poolUser}
-              reserve={collateralReserve}
-              curBorrowCap={curBorrowCap}
-              nextBorrowCap={nextBorrowCap}
-              curBorrowLimit={curBorrowLimit}
-              nextBorrowLimit={nextBorrowLimit}
-            />
-          )}
+
           {type === "Borrow" && (
             <BorrowSummary
               amount={amount}

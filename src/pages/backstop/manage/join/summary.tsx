@@ -49,7 +49,7 @@ const Summary = ({
             BigInt((simResponse as any)?.minResourceFee ?? 0),
             decimals
           )}`,
-          currency: currency as any,
+          currency: "XLM" as any,
         }}
       />
       {isJoin && (

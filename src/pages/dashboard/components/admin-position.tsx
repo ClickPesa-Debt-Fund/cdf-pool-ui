@@ -3,11 +3,7 @@ import Col from "antd/lib/col";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
-import {
-  USDC_ASSET_ID,
-  COLLATERAL_ASSET_CODE,
-  POOL_ID,
-} from "@/constants";
+import { USDC_ASSET_ID, COLLATERAL_ASSET_CODE, POOL_ID } from "@/constants";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { FixedMath, PositionsEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
@@ -67,7 +63,7 @@ const AdminPosition = () => {
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Admin Position</h3>
+      <h3 className="text-font-semi-bold mb-6">Borrowing Position</h3>
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
@@ -160,7 +156,6 @@ const AdminPosition = () => {
                 });
               }
             }}
-            
           >
             Supply Collateral
           </Button>

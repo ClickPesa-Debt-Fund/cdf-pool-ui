@@ -8,6 +8,8 @@ import { useBackstop, useBackstopPool } from "../dashboard/services";
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import { useWallet } from "@/contexts/wallet";
+import YourPosition from "./components/your-position";
+import BackstopActivities from "./components/backstop-activities";
 
 const Backstop = () => {
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ const Backstop = () => {
           <ManageBackstop />
         </div>
       )}
+      {connected && <YourPosition />}
+      <BackstopActivities />
     </div>
   );
 };

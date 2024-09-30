@@ -37,7 +37,7 @@ const UserPositionDetails = () => {
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Your Supplied Position</h3>
+      <h3 className="text-font-semi-bold mb-6">Lending Position</h3>
       <Row gutter={[12, 12]}>
         <Col md={24} span={24}>
           <Row gutter={[12, 12]}>

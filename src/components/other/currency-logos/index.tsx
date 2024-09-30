@@ -19,6 +19,7 @@ import {
   XLM,
   XLMsm,
 } from "./logos";
+import { COLLATERAL_ASSET_CODE } from "@/constants";
 
 export type CurrencyLogosProps = {
   /**
@@ -37,7 +38,8 @@ export type CurrencyLogosProps = {
     | "SEPA"
     | "VISAMASTER"
     | "BLND"
-    | "BLND-USDC LP";
+    | "BLND-USDC LP"
+    | typeof COLLATERAL_ASSET_CODE;
 
   /**
    * size of currency icon
@@ -81,6 +83,16 @@ export function CurrencyLogos({ name, size = "md" }: CurrencyLogosProps) {
         return (
           <img
             src="/icons/blnd-token.svg"
+            className={cn("w-auto", {
+              "h-4": size === "sm",
+              "h-[50px]": size === "md",
+            })}
+          />
+        );
+      case COLLATERAL_ASSET_CODE:
+        return (
+          <img
+            src="/icons/logo.svg"
             className={cn("w-auto", {
               "h-4": size === "sm",
               "h-[50px]": size === "md",

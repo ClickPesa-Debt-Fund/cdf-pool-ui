@@ -1,4 +1,4 @@
-// import PoolActivities from "./components/pool-activities";
+import PoolActivities from "./components/pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
 import { TxStatus, useWallet } from "@/contexts/wallet";
@@ -100,17 +100,6 @@ const Dashboard = () => {
         />
       )}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
-          <CurrencyLogos name={"USDC"} />
-          <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
-            <img
-              src="/icons/logo.svg"
-              alt=""
-              className="md:h-[34px] h-[34px]"
-            />
-          </span>
-          DebtFund SME Pool
-        </div>
         {connected ? (
           <div>
             {notFound && (
@@ -187,11 +176,22 @@ const Dashboard = () => {
             )}
           </div>
         ) : null}
+        <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
+          <CurrencyLogos name={"USDC"} />
+          <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
+            <img
+              src="/icons/logo.svg"
+              alt=""
+              className="md:h-[34px] h-[34px]"
+            />
+          </span>
+          DebtFund SME Pool
+        </div>
       </div>
       <PoolDetails />
       {supportedCollateralBalances?.length ? <AdminPosition /> : null}
       <UserPositionDetails />
-      {/* <PoolActivities /> */}
+      <PoolActivities />
     </div>
   );
 };

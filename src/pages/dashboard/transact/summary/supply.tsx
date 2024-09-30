@@ -2,7 +2,6 @@ import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
@@ -61,7 +60,7 @@ const SupplySummary = ({
                   decimals
                 ) || 0
               }`,
-              currency: symbol,
+              currency: "XLM",
               digits: 2,
             }}
           />
@@ -71,17 +70,13 @@ const SupplySummary = ({
                 label: "Your total supplied",
                 start: {
                   currency: symbol,
-                  value: `${nFormatter(
-                    poolUser?.getCollateralFloat(reserve) || 0,
-                    decimals
-                  )}`,
+                  value: `${poolUser?.getCollateralFloat(reserve) || 0}`,
+                  digits: 7,
                 },
                 end: {
                   currency: symbol,
-                  value: `${nFormatter(
-                    newPoolUser?.getCollateralFloat(reserve) || 0,
-                    decimals
-                  )}`,
+                  value: `${newPoolUser?.getCollateralFloat(reserve) || 0}`,
+                  digits: 7,
                 },
               }}
             />
@@ -91,11 +86,11 @@ const SupplySummary = ({
               label: "Borrow capacity",
               start: {
                 value: `${curBorrowCap}`,
-                currency: symbol,
+                currency: "USDC",
               },
               end: {
                 value: `${nextBorrowCap}`,
-                currency: symbol,
+                currency: "USDC",
               },
             }}
           />

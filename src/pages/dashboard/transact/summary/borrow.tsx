@@ -60,7 +60,7 @@ const BorrowSummary = ({
                   decimals
                 ) || 0
               }`,
-              currency: "USDC",
+              currency: "XLM",
               digits: 2,
             }}
           />
