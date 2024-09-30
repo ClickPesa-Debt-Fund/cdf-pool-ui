@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Form from "antd/lib/form";
 import Input from "antd/lib/input";
-import Spin from "antd/lib/spin";
 import notification from "antd/lib/notification";
 import { ExitFormProps } from ".";
 import { BalancesProps } from "../join";
@@ -39,7 +38,6 @@ const ExitForm = ({
   const slippage = Form.useWatch("slippage", form);
   const [minBLNDOut, setMinBLNDOut] = useState<number>(0);
   const [minUSDCOut, setMinUSDCOut] = useState<number>(0);
-  const [loadingEstimate, setLoadingEstimate] = useState<boolean>(false);
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const decimals = 7;
@@ -55,7 +53,6 @@ const ExitForm = ({
         backstop?.config.backstopTkn &&
         walletAddress
       ) {
-        setLoadingEstimate(true);
         const inputAsBigInt = scaleInputToBigInt(
           (amount || 0)?.toString(),
           decimals
@@ -87,10 +84,7 @@ const ExitForm = ({
           .catch(() => {
             setMinBLNDOut(0);
             setMinUSDCOut(0);
-          })
-          .finally(() => setLoadingEstimate(false));
-      } else {
-        setLoadingEstimate(false);
+          });
       }
     },
     [amount, slippage],
@@ -202,6 +196,11 @@ const ExitForm = ({
             marginBottom: "2rem",
           }}
         />
+        <p className="text-right">{`Maximum Amount: ${formatAmount(
+          Number(lpBalance) / 10 ** 7,
+          decimals
+        )} BLND-USDC LP`}</p>
+
         <Form.Item
           name="slippage"
           label="Maximum Slippage Percentage"
@@ -229,11 +228,6 @@ const ExitForm = ({
         >
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
-        {loadingEstimate && (
-          <div className="flex gap-4 justify-end items-center mb-5">
-            Loading Estimate <Spin size="small" />
-          </div>
-        )}
       </div>
       {current === 2 && (
         <Summary
@@ -248,9 +242,7 @@ const ExitForm = ({
           amount={amount}
         />
       )}
-      <Button className="w-full" disabled={loadingEstimate}>
-        Continue
-      </Button>
+      <Button className="w-full">Continue</Button>
     </Form>
   );
 };

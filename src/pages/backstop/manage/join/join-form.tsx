@@ -1,6 +1,5 @@
 import Form from "antd/lib/form";
 import Input from "antd/lib/input";
-import Spin from "antd/lib/spin";
 import notification from "antd/lib/notification";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { currencies } from "@/shared/data/currencies";
@@ -332,6 +331,18 @@ const JoinForm = ({
             marginBottom: "2rem",
           }}
         />
+        {currency !== "BLND-USDC LP" && (
+          <p className="text-right">{`Maximum Amount: ${formatAmount(
+            curTokenBalance,
+            decimals
+          )} ${currency}`}</p>
+        )}
+        {currency === "BLND-USDC LP" && (
+          <p className="text-right">{`Maximum Amount: ${formatAmount(
+            maxBLNDIn,
+            decimals
+          )} BLND and ${formatAmount(maxUSDCIn, decimals)} USDC`}</p>
+        )}
         <Form.Item
           name="slippage"
           label="Maximum Slippage Percentage"
@@ -359,11 +370,6 @@ const JoinForm = ({
         >
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
-        {loadingEstimate && (
-          <div className="flex gap-4 justify-end items-center mb-5">
-            Loading Estimate <Spin size="small" />
-          </div>
-        )}
       </div>
       {current === 2 && (
         <Summary

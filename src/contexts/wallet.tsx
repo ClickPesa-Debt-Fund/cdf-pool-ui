@@ -85,7 +85,9 @@ export interface IWalletContext {
   backstopQueueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   backstopDequeueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
@@ -532,7 +534,9 @@ export const WalletProvider = ({ children = null as any }) => {
   async function backstopQueueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     if (connected && import.meta.env.VITE_BACKSTOP) {
       let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
       let operation = xdr.Operation.fromXDR(
@@ -542,12 +546,13 @@ export const WalletProvider = ({ children = null as any }) => {
       if (sim) {
         return await simulateOperation(operation);
       }
-      await invokeSorobanOperation(operation);
+      const result = await invokeSorobanOperation(operation);
       if (typeof args.pool_address === "string") {
         cleanBackstopPoolCache(args.pool_address);
       } else {
         cleanBackstopPoolCache(args.pool_address.toString());
       }
+      return result;
     }
   }
 

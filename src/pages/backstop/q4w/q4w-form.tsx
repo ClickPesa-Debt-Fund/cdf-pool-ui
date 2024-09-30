@@ -1,98 +1,120 @@
-import { useState } from "react";
-import Form from "antd/lib/form";
-import notification from "antd/lib/notification";
-import { DepositFormProps } from ".";
-import { SorobanRpc } from "@stellar/stellar-sdk";
 import { TxStatus, useWallet } from "@/contexts/wallet";
-import useDebounce from "@/hooks/use-debounce";
-import { DEBOUNCE_DELAY, POOL_ID } from "@/constants";
+import { Q4WFormProps } from ".";
 import {
-  BackstopContract,
-  PoolBackstopActionArgs,
-  parseResult,
-} from "@blend-capital/blend-sdk";
-import { bigintToInput, scaleInputToBigInt } from "@/utils/scval";
-import WizardAmountInput from "@/components/other/wizard-amount-input";
-import { currencies } from "@/shared/data/currencies";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import KycForm from "@/components/other/kyc-form";
-import {
-  useGetAccountBalance,
+  useBackstop,
+  useBackstopPool,
+  useBackstopPoolUser,
   useGetKYC,
   useSubmitKYC,
 } from "@/pages/dashboard/services";
+import { DEBOUNCE_DELAY, POOL_ID } from "@/constants";
+import { useState } from "react";
+import { SorobanRpc } from "@stellar/stellar-sdk";
+import {
+  BackstopContract,
+  BackstopPoolUserEst,
+  PoolBackstopActionArgs,
+  Q4W,
+  parseResult,
+} from "@blend-capital/blend-sdk";
+import Form from "antd/lib/form";
+import notification from "antd/lib/notification";
+import useDebounce from "@/hooks/use-debounce";
+import FullPageSpinner from "@/components/other/full-page-loader";
+import WizardAmountInput from "@/components/other/wizard-amount-input";
+import { cn } from "@/lib/utils";
+import { currencies } from "@/shared/data/currencies";
+import KycForm from "@/components/other/kyc-form";
+import { Button } from "@/components/ui/button";
 import { compareObjects, formatAmount, formatErrorMessage } from "@/utils";
 import Summary from "./summary";
-import FullPageSpinner from "@/components/other/full-page-loader";
 
-const DepositForm = ({
-  form,
-  lpBalance,
-  close,
-  current,
-  updateCurrent,
-}: DepositFormProps) => {
+const Q4WForm = ({ form, current, close, updateCurrent }: Q4WFormProps) => {
   const amount = Form.useWatch("amount", form);
-  const { connected, walletAddress, backstopDeposit, txStatus } = useWallet();
-  const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
-  const [simResponse, setSimResponse] =
-    useState<SorobanRpc.Api.SimulateTransactionResponse>();
-  const [parsedSimResult, setParsedSimResult] = useState<bigint>();
-  const [isLoading, setloading] = useState(false);
+  const { connected, walletAddress, backstopQueueWithdrawal, txStatus } =
+    useWallet();
+
+  const { data: backstop } = useBackstop();
+  const { data: backstopPoolData } = useBackstopPool(POOL_ID);
+  const { data: backstopUserData } = useBackstopPoolUser(POOL_ID);
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
+
+  const [simResponse, setSimResponse] =
+    useState<SorobanRpc.Api.SimulateTransactionResponse>();
+  const [parsedSimResult, setParsedSimResult] = useState<Q4W>();
+  const [loadingEstimate, setLoadingEstimate] = useState<boolean>(false);
+  const [isLoading, setloading] = useState(false);
+  const decimals = 7;
 
   useDebounce(
     async () => {
       setSimResponse(undefined);
+      setLoadingEstimate(true);
+      setParsedSimResult(undefined);
       await handleSubmitTransaction(true);
+      setLoadingEstimate(false);
     },
     [amount],
     DEBOUNCE_DELAY
   );
 
+  if (!backstop || !backstopPoolData) {
+    return null;
+  }
+
+  const backstopUserEst =
+    backstopUserData !== undefined
+      ? BackstopPoolUserEst.build(backstop, backstopPoolData, backstopUserData)
+      : undefined;
+
+  const tokensToShares =
+    Number(backstopPoolData?.poolBalance.shares) /
+    Number(backstopPoolData?.poolBalance.tokens);
+
+  const maxAmount = backstopUserEst?.tokens.toFixed(7) || 0;
+
   const handleSubmitTransaction = async (sim: boolean) => {
-    if (amount && connected) {
-      const depositArgs: PoolBackstopActionArgs = {
+    let toQueueShares = BigInt(0);
+    const as_number = Number(amount);
+    if (!Number.isNaN(as_number)) {
+      const as_shares = as_number * tokensToShares;
+      const as_bigint = BigInt(Math.floor(as_shares * 1e7));
+      toQueueShares = as_bigint;
+    }
+    if (connected && toQueueShares !== BigInt(0)) {
+      let depositArgs: PoolBackstopActionArgs = {
         from: walletAddress,
         pool_address: POOL_ID,
-        amount: scaleInputToBigInt(amount?.toString(), 7),
+        amount: toQueueShares,
       };
-      const response = await backstopDeposit(depositArgs, sim);
-      if (response && sim) {
+      let response = await backstopQueueWithdrawal(depositArgs, sim);
+      if (response) {
         // @ts-ignore
         setSimResponse(response);
-        // @ts-ignores
+        // @ts-ignore
         if (SorobanRpc.Api.isSimulationSuccess(response)) {
-          const result = parseResult(
-            response,
-            BackstopContract.parsers.deposit
+          setParsedSimResult(
+            parseResult(response, BackstopContract.parsers.queueWithdrawal)
           );
-          setParsedSimResult(result);
         }
       }
-      if (!sim) {
-        return response;
-      }
+      return response;
     }
   };
-
-  const maxAmount = bigintToInput(lpBalance, 7);
 
   return (
     <Form
       form={form}
-      initialValues={{
-        currency: "BLND-USDC LP",
-      }}
       onFinish={async (data) => {
+        if (loadingEstimate) {
+          return;
+        }
+        await form.validateFields();
         if (current === 1) {
-          await form.validateFields(["amount"]);
           updateCurrent(2);
         }
         if (current === 2) {
-          await form.validateFields();
           if (
             !kycData ||
             (kyc &&
@@ -130,8 +152,6 @@ const DepositForm = ({
                   // @ts-ignore
                   message: res?.message,
                 });
-                // refetch balance
-                balanceRefetch();
                 close();
               }
             })
@@ -142,6 +162,9 @@ const DepositForm = ({
             })
             .finally(() => setloading(false));
         }
+      }}
+      initialValues={{
+        currency: "BLND-USDC LP",
       }}
     >
       {([
@@ -198,26 +221,22 @@ const DepositForm = ({
         />
         <p className="text-right">{`Maximum Amount: ${formatAmount(
           maxAmount,
-          7
+          decimals
         )} BLND-USDC LP`}</p>
         <br />
       </div>
-      <div
-        className={cn({
-          hidden: current !== 2,
-        })}
-      >
+      {current === 2 && (
         <KycForm
           loading={kycLoading || kycRefetching}
           publicKey={walletAddress}
         />
-      </div>
+      )}
       {current === 3 && (
         <Summary
           amount={amount}
           simResponse={simResponse}
-          lpBalance={maxAmount}
           parsedSimResult={parsedSimResult}
+          decimals={decimals}
         />
       )}
       {current !== 2 && <Button className="w-full">Continue</Button>}
@@ -225,4 +244,4 @@ const DepositForm = ({
   );
 };
 
-export default DepositForm;
+export default Q4WForm;

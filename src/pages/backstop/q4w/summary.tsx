@@ -7,47 +7,41 @@ import {
   useBackstopPoolUser,
 } from "@/pages/dashboard/services";
 import { toBalance } from "@/utils/formatter";
-import { BackstopPoolUserEst } from "@blend-capital/blend-sdk";
+import { BackstopPoolUserEst, FixedMath, Q4W } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 
 const Summary = ({
   amount,
   simResponse,
   decimals = 7,
-  lpBalance,
   parsedSimResult,
 }: {
   simResponse: SorobanRpc.Api.SimulateTransactionResponse | undefined;
-  parsedSimResult?: bigint;
   amount: string | number;
-  lpBalance: string;
   decimals?: number;
+  parsedSimResult: Q4W | undefined;
 }) => {
   const { data: backstop } = useBackstop();
+  const { data: backstopUserData } = useBackstopPoolUser(POOL_ID);
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
-  const { data: userBackstopPoolData } = useBackstopPoolUser(POOL_ID);
-
+  const sharesToTokens =
+    Number(backstopPoolData?.poolBalance.tokens) /
+    Number(backstopPoolData?.poolBalance.shares);
+  const currentTokensQ4WFloat = backstopUserData
+    ? FixedMath.toFloat(backstopUserData.balance.totalQ4W, 7) * sharesToTokens
+    : 0;
   const backstopUserEst =
-    userBackstopPoolData !== undefined &&
+    backstopUserData !== undefined &&
     backstop !== undefined &&
     backstopPoolData !== undefined
-      ? BackstopPoolUserEst.build(
-          backstop,
-          backstopPoolData,
-          userBackstopPoolData
-        )
+      ? BackstopPoolUserEst.build(backstop, backstopPoolData, backstopUserData)
       : undefined;
 
-  let sharesToTokens = backstopPoolData
-    ? Number(backstopPoolData.poolBalance.tokens) /
-      Number(backstopPoolData.poolBalance.shares) /
-      1e7
-    : 0;
   return (
     <div className="mb-6">
       <DetailsRow
         amount={{
-          label: "Amount to Deposit",
+          label: "Amount to Queue",
           value: amount?.toString(),
           currency: "BLND-USDC LP",
           digits: decimals,
@@ -69,37 +63,29 @@ const Summary = ({
         }}
       />
       <DetailsRow
-        exchangeRate={{
-          label: "Your LP tokens",
-          start: {
-            value: Number(lpBalance)?.toString() || "",
-            currency: "BLND-USDC LP",
-            digits: 7,
-          },
-          end: {
-            value: lpBalance
-              ? // @ts-ignore
-                (Number(lpBalance) - amount).toString()
-              : "",
-            currency: "BLND-USDC LP",
-            digits: 7,
-          },
+        text={{
+          type: "date",
+          label: "New queue expiration",
+          value: (parsedSimResult
+            ? new Date(Number(parsedSimResult.exp) * 1000)
+            : new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
+          )?.toISOString(),
         }}
       />
       <DetailsRow
         exchangeRate={{
-          label: "Your total deposit",
+          label: "Your total amount queued",
           start: {
-            value: Number(backstopUserEst?.tokens || "0")?.toString() || "",
+            value: currentTokensQ4WFloat?.toString(),
             currency: "BLND-USDC LP",
             digits: 7,
           },
           end: {
-            value: (parsedSimResult && backstopUserEst
-              ? backstopUserEst.tokens +
-                Number(parsedSimResult) * sharesToTokens
+            value: (backstopUserEst && parsedSimResult
+              ? currentTokensQ4WFloat +
+                FixedMath.toFloat(parsedSimResult.amount, 7) * sharesToTokens
               : 0
-            ).toString(),
+            )?.toString(),
             currency: "BLND-USDC LP",
             digits: 7,
           },
