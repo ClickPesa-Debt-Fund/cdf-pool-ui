@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "start": "vite --port 3000 --host",
+    "doppler": "doppler run npm start",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "doppler-install": "(curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sh -s -- --no-install --no-package-manager",
+    "prettier": "npx prettier --write '**/*.{ts,tsx,js,scss,css,html,json}'"
   },
   "dependencies": {
     "@blend-capital/blend-sdk": "^2.0.3",
@@ -39,6 +42,7 @@
     "phone": "^3.1.44",
     "process": "^0.11.10",
     "react": "^18.2.0",
+    "react-currency-input-field": "^3.8.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.22.3",

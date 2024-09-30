@@ -1,4 +1,3 @@
-import { CurrencyLogos } from "@clickpesa/components-library.currency-logos";
 import PoolActivities from "./components/pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
@@ -11,10 +10,19 @@ import { Alert } from "@clickpesa/components-library.alert";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import FullPageSpinner from "@/components/other/full-page-loader";
-import { ADMIN_ID, BLND_ISSUER, POOL_ID, USDC_ISSUER } from "@/constants";
+import {
+  BLND_ISSUER,
+  COLLATERAL_ASSET_CODE,
+  CPYT_ISSUER,
+  POOL_ID,
+  USDC_ISSUER,
+} from "@/constants";
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import AdminPosition from "./components/admin-position";
+import { Networks } from "@stellar/stellar-sdk";
+import { formatErrorMessage } from "@/utils";
+import { CurrencyLogos } from "@/components/other/currency-logos";
 
 const Dashboard = () => {
   const safePoolId =
@@ -31,30 +39,39 @@ const Dashboard = () => {
     return (
       (balance?.asset_issuer === BLND_ISSUER ||
         balance?.asset_issuer === USDC_ISSUER) &&
-      (balance?.asset_code === "USDC" ||
-        balance?.asset_code === "CPYT" ||
-        balance?.asset_code === "BLND")
+      (balance?.asset_code === "USDC" || balance?.asset_code === "BLND")
+    );
+  });
+
+  const supportedCollateralBalances = balance?.balances?.filter((balance) => {
+    return (
+      balance?.asset_issuer === CPYT_ISSUER &&
+      balance?.asset_code === COLLATERAL_ASSET_CODE
     );
   });
 
   let needsFaucet = false;
+  let needCollateralFaucet = false;
   if (balance && !supportedBalances?.length) {
     needsFaucet = true;
   }
+  if (balance && !supportedCollateralBalances?.length) {
+    needCollateralFaucet = true;
+  }
 
-  const handleFaucet = async () => {
+  const handleFaucet = async (collateral: boolean) => {
     if (connected) {
       setLoading(true);
-      faucet()
+      faucet(collateral)
         .then(() => {
           balanceRefetch();
           notification.success({
             message: "Test network assets added to wallet.",
           });
         })
-        .catch(() => {
+        .catch((error) => {
           notification.error({
-            message: "Something Went Wrong",
+            message: formatErrorMessage(error) || "Something Went Wrong",
           });
         })
         .finally(() => {
@@ -83,17 +100,6 @@ const Dashboard = () => {
         />
       )}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
-          <CurrencyLogos name={"USDC"} />
-          <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
-            <img
-              src="/icons/logo.svg"
-              alt=""
-              className="md:h-[34px] h-[34px]"
-            />
-          </span>
-          SMEs
-        </div>
         {connected ? (
           <div>
             {notFound && (
@@ -107,26 +113,83 @@ const Dashboard = () => {
                 }
               />
             )}
-            {needsFaucet && (
-              <>
-                <Button
-                  variant={"secondary"}
-                  onClick={() => {
-                    handleFaucet();
-                  }}
-                  size={"lg"}
-                  className="w-full justify-between !bg-white"
-                >
-                  Click here to receive assets for the Blend test network.
-                  <ArrowRight />
-                </Button>
-              </>
+
+            {import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE ===
+              Networks.TESTNET && (
+              <div>
+                {needsFaucet && (
+                  <>
+                    <div>
+                      <Button
+                        variant={"secondary"}
+                        onClick={() => {
+                          handleFaucet(false);
+                        }}
+                        size={"lg"}
+                        className="w-full justify-between !bg-white p-0"
+                      >
+                        <Alert
+                          style={{
+                            width: "100%",
+                          }}
+                          color="blue"
+                          subtitle={
+                            <div className="flex justify-between">
+                              Click here to receive assets for the Blend test
+                              network.
+                              <ArrowRight />
+                            </div>
+                          }
+                        />
+                      </Button>
+                    </div>
+                    {needCollateralFaucet && <br />}
+                  </>
+                )}
+                {needCollateralFaucet && (
+                  <div>
+                    <Button
+                      variant={"secondary"}
+                      onClick={() => {
+                        handleFaucet(true);
+                      }}
+                      size={"lg"}
+                      className="w-full justify-between p-0"
+                    >
+                      <Alert
+                        style={{
+                          width: "100%",
+                        }}
+                        color="blue"
+                        subtitle={
+                          <div className="flex justify-between">
+                            Click here to receive CPYT assets for the
+                            Collateral.
+                            <ArrowRight />
+                          </div>
+                        }
+                      />
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ) : null}
+        <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
+          <CurrencyLogos name={"USDC"} />
+          <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
+            <img
+              src="/icons/logo.svg"
+              alt=""
+              className="md:h-[34px] h-[34px]"
+            />
+          </span>
+          DebtFund SME Pool
+        </div>
       </div>
       <PoolDetails />
-      {walletAddress === ADMIN_ID && <AdminPosition />}
+      {supportedCollateralBalances?.length ? <AdminPosition /> : null}
       <UserPositionDetails />
       <PoolActivities />
     </div>

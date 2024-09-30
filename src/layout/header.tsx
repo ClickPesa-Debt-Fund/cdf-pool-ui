@@ -14,7 +14,12 @@ import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
 import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { formatAmount } from "@/utils";
-import { BLND_ISSUER, USDC_ISSUER, CPYT_ISSUER } from "@/constants";
+import {
+  BLND_ISSUER,
+  USDC_ISSUER,
+  CPYT_ISSUER,
+  COLLATERAL_ASSET_CODE,
+} from "@/constants";
 
 const Header = () => {
   const pathname = useLocation().pathname;
@@ -55,7 +60,7 @@ const Header = () => {
         balance?.asset_issuer === USDC_ISSUER ||
         balance?.asset_issuer === CPYT_ISSUER) &&
       (balance?.asset_code === "USDC" ||
-        balance?.asset_code === "CPYT" ||
+        balance?.asset_code === COLLATERAL_ASSET_CODE ||
         balance?.asset_code === "BLND")
     );
   });
@@ -81,7 +86,7 @@ const Header = () => {
                               balance?.asset_issuer === USDC_ISSUER ||
                               balance?.asset_issuer === CPYT_ISSUER) &&
                             (balance?.asset_code === "USDC" ||
-                              balance?.asset_code === "CPYT" ||
+                              balance?.asset_code === COLLATERAL_ASSET_CODE ||
                               balance?.asset_code === "BLND")
                           );
                         })

@@ -5,3 +5,15 @@ type ApiError = AxiosError<{
     reason: string;
   };
 }>;
+
+type RequestTypeProp =
+  | "Supply"
+  | "Withdraw"
+  | "SupplyCollateral"
+  | "WithdrawCollateral"
+  | "Borrow"
+  | "Repay"
+  | "FillUserLiquidationAuction"
+  | "FillBadDebtAuction"
+  | "FillInterestAuction"
+  | "DeleteLiquidationAuction";

@@ -7,7 +7,6 @@ import {
   PoolBackstopActionArgs,
   PoolClaimArgs,
   PoolContract,
-  RequestType,
   SubmitArgs,
 } from "@blend-capital/blend-sdk";
 import {
@@ -41,6 +40,7 @@ import {
 import { useSettings } from "./settings";
 import { useQueryClientCacheCleaner } from "@/services";
 import axios from "axios";
+import { DEBOUNCE_DELAY, PLAYGROUND_API } from "@/constants";
 
 export interface IWalletContext {
   connected: boolean;
@@ -75,7 +75,9 @@ export interface IWalletContext {
   backstopDeposit(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   backstopWithdraw(
     args: PoolBackstopActionArgs,
     sim: boolean
@@ -83,7 +85,9 @@ export interface IWalletContext {
   backstopQueueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   backstopDequeueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
@@ -96,18 +100,24 @@ export interface IWalletContext {
     cometPoolId: string,
     args: CometSingleSidedDepositArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   cometJoin(
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   cometExit(
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
-  faucet(): Promise<undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
+  faucet(collateral: boolean): Promise<undefined>;
   createTrustline(asset: Asset): Promise<void>;
   getNetworkDetails(): Promise<Network & { horizonUrl: string }>;
 }
@@ -173,17 +183,14 @@ export const WalletProvider = ({ children = null as any }) => {
 
   useEffect(() => {
     if (!connected && autoConnect !== "false") {
-      // @dev: timeout ensures chrome has the ability to load extensions
       setTimeout(() => {
         handleSetWalletAddress();
-      }, 750);
+      }, DEBOUNCE_DELAY);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect]);
 
   function setFailureMessage(message: string | undefined) {
     if (message) {
-      // some contract failures include diagnostic information. If so, try and remove it.
       let substrings = message.split("Event log (newest first):");
       if (substrings.length > 1) {
         setTxFailure(`Contract Error: ${substrings[0].trimEnd()}`);
@@ -382,7 +389,11 @@ export const WalletProvider = ({ children = null as any }) => {
       ).build();
       const signedTx = await sign(assembled_tx.toXDR());
       const tx = new Transaction(signedTx, network.passphrase);
-      await sendTransaction(tx);
+      const result = await sendTransaction(tx);
+      if (result)
+        return {
+          message: "Transaction was submitted successfully",
+        };
     } catch (e: any) {
       console.error("Unknown error submitting transaction: ", e);
       setFailureMessage(e?.message);
@@ -411,9 +422,7 @@ export const WalletProvider = ({ children = null as any }) => {
     submitArgs: SubmitArgs,
     sim: boolean
   ): Promise<
-    | SorobanRpc.Api.SimulateTransactionResponse
-    | undefined
-    | { message?: string; error?: string }
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
     try {
       if (connected) {
@@ -425,16 +434,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanPoolCache(poolId);
         cleanWalletCache();
-        return {
-          message:
-            submitArgs?.requests?.[0]?.request_type ===
-            RequestType.WithdrawCollateral
-              ? "Successful withdrawn Funds"
-              : "Successfully Supplied funds",
-        };
+        return result;
       }
     } catch (error) {
       throw new Error("Something Went wrong");
@@ -476,20 +479,23 @@ export const WalletProvider = ({ children = null as any }) => {
   async function backstopDeposit(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     if (connected && import.meta.env.VITE_BACKSTOP) {
       let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
       let operation = xdr.Operation.fromXDR(backstop.deposit(args), "base64");
       if (sim) {
         return await simulateOperation(operation);
       }
-      await invokeSorobanOperation(operation);
+      const result = await invokeSorobanOperation(operation);
       if (typeof args.pool_address === "string") {
         cleanBackstopPoolCache(args.pool_address);
       } else {
         cleanBackstopPoolCache(args.pool_address.toString());
       }
       cleanWalletCache();
+      return result;
     }
   }
 
@@ -528,7 +534,9 @@ export const WalletProvider = ({ children = null as any }) => {
   async function backstopQueueWithdrawal(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     if (connected && import.meta.env.VITE_BACKSTOP) {
       let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
       let operation = xdr.Operation.fromXDR(
@@ -538,12 +546,13 @@ export const WalletProvider = ({ children = null as any }) => {
       if (sim) {
         return await simulateOperation(operation);
       }
-      await invokeSorobanOperation(operation);
+      const result = await invokeSorobanOperation(operation);
       if (typeof args.pool_address === "string") {
         cleanBackstopPoolCache(args.pool_address);
       } else {
         cleanBackstopPoolCache(args.pool_address.toString());
       }
+      return result;
     }
   }
 
@@ -615,7 +624,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometSingleSidedDepositArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -623,9 +634,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;
@@ -636,7 +648,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -644,9 +658,10 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;
@@ -657,7 +672,9 @@ export const WalletProvider = ({ children = null as any }) => {
     cometPoolId: string,
     args: CometLiquidityArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     try {
       if (connected) {
         let cometClient = new CometClient(cometPoolId);
@@ -665,21 +682,24 @@ export const WalletProvider = ({ children = null as any }) => {
         if (sim) {
           return await simulateOperation(operation);
         }
-        await invokeSorobanOperation(operation);
+        const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        return result;
       }
     } catch (e) {
       throw e;
     }
   }
 
-  async function faucet(): Promise<any> {
+  async function faucet(collateral?: boolean): Promise<any> {
     if (
       connected &&
       import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
     ) {
-      const url = `https://ewqw4hx7oa.execute-api.us-east-1.amazonaws.com/getAssets?userId=${walletAddress}`;
+      const url = `${PLAYGROUND_API}/stellar-utils/${
+        collateral ? "get-debt-fund-testing-assets" : "get-blend-testing-assets"
+      }/${walletAddress}`;
       try {
         setTxStatus(TxStatus.BUILDING);
         const { data } = await axios.get(url);
@@ -688,21 +708,31 @@ export const WalletProvider = ({ children = null as any }) => {
           network.passphrase
         );
 
+        console.log(transaction, "transaction");
+
         let signedTx = new Transaction(
           await sign(transaction.toXDR()),
           network.passphrase
         );
+        console.log(signedTx, "signed transaction");
+
         const result = await sendTransaction(signedTx);
+
+        console.log(result, "transaction result");
 
         if (result) {
           cleanWalletCache();
         }
+        if (!result) {
+          throw new Error("Transaction failed");
+        }
       } catch (e: any) {
-        console.error("Failed submitting transaction: ", e);
         setFailureMessage(e?.message);
         setTxStatus(TxStatus.FAIL);
-        throw new Error("Something went wrong");
+        throw new Error(e);
       }
+    } else {
+      throw new Error("You are not on testnet environment");
     }
   }
 

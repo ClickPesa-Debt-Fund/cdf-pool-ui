@@ -1,0 +1,134 @@
+.clickpesa-wizard-amount-input
+    background-color: white
+    border: 1px solid #d9d9d9
+    padding: 7px
+    border-radius: 8px
+    display: flex
+    margin-bottom: 2.5rem
+    position: relative
+    &:focus-within
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2)
+        outline: none !important
+    &:hover
+        border-color: #40a9ff
+    .label-container
+        padding: 0px 10px
+        text-align: start
+        background: #F3F4F6
+        border-radius: 6px
+        vertical-align: middle
+        label
+            height: 100%
+            display: flex
+            align-items: center
+            vertical-align: middle
+            font-size: 16px
+    .ant-form-item
+        margin: 0 !important
+    .ant-form-item-control
+        position: static !important
+    .inputs
+        input, .ant-select-selector
+            border: none !important
+            background: none !important
+            box-shadow: none !important
+
+        .ant-input-number-group-wrapper
+            width: 100%
+            border: none
+            background: none
+            .ant-input-number, .ant-input-number:focus, .ant-input-number:focus-within, .ant-input-number:hover
+                border: none
+                background: none
+                box-shadow: none
+            input
+                text-align: right
+                height: 39px
+                &::-webkit-input-placeholder
+                    color: #bfbfbf !important
+                    opacity: 1
+                &:-moz-placeholder
+                    color: #bfbfbf !important
+                    opacity: 1
+                &::-moz-placeholder
+                    color: #bfbfbf !important
+                    opacity: 1
+                &:-ms-input-placeholder
+                    color: #bfbfbf !important
+                    opacity: 1
+                #placeholder
+                    color: #bfbfbf !important
+                    opacity: 1
+            .ant-input-number-group-addon
+                min-width: 180px
+                width: 180px
+                border: none
+                background: none
+                padding: 0
+        .ant-form-item-explain
+            bottom: -24px
+            left: 0
+            width: 100% !important
+            position: absolute
+            color: #ff4d4f !important
+
+    &.mobile
+        flex-direction: column
+        .label-container
+            min-height: auto
+            height: 39px !important
+
+    &.dark
+        background: #2b343b !important
+        border-color: #6f6f70 !important
+        &:hover
+            border-color: #40a9ff !important
+        .label-container
+            background-color: #363E44
+            label
+                color: white
+        .inputs
+            .ant-input-number-group-wrapper
+                input
+                    color: white
+                    &:-webkit-autofill,
+                    &:-webkit-autofill:hover,
+                    &:-webkit-autofill:focus
+                        caret-color: rgba(255, 255, 255, .85)
+                        -webkit-background-clip: text
+                        border: 1px solid blue
+                        box-shadow: 0 0 0px 1000px #2B343A inset !important
+                        -webkit-box-shadow: 0 0 0px 1000px #2B343A inset !important
+                        -webkit-text-fill-color: rgba(255, 255, 255, .85) !important
+                        transition: background-color 5000s ease-in-out 0s !important
+                    &::-ms-input-placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    &::placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    &::-webkit-input-placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    &:-moz-placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    &::-moz-placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    &:-ms-input-placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                    #placeholder
+                        color: #bfbfbf !important
+                        opacity: .65
+                .ant-input-number-group-addon
+                    .currency-selector-input
+                        .ant-select-selector
+                            background: none !important
+                        .ant-select-selection-placeholder
+                            color: #bfbfbf !important
+                        .ant-select-selection-item
+                            color: white !important
+                        .anticon
+                            color: white !important

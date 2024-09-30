@@ -1,10 +1,8 @@
 import LandingPage from "@/pages/landing-page";
 import { Route, Routes } from "react-router-dom";
-// import Pools from "./pages/pools";
-// import Pool from "./pages/pool";
 import Header from "./layout/header";
-import Trustline from "./pages/trustline";
 import Dashboard from "./pages/dashboard";
+import Backstop from "./pages/backstop";
 
 const App = () => {
   return (
@@ -13,9 +11,7 @@ const App = () => {
       <Routes>
         <Route element={<LandingPage />} path="*" />
         <Route element={<Dashboard />} path="/dashboard" />
-        {/* <Route element={<Pools />} path="/pools" />
-        <Route element={<Pool />} path="/pools/:id" /> */}
-        <Route element={<Trustline />} path="/trustline" />
+        <Route element={<Backstop />} path="/dashboard/backstop" />
       </Routes>
     </div>
   );
