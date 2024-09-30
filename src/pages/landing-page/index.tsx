@@ -9,7 +9,7 @@ import Steps from "./steps";
 
 const LandingPage = () => {
   return (
-    <div className="md:space-y-[100px] space-y-[50px] md:py-[100px] py-[50px] container max-w-[1270px] min-h-full">
+    <div className="md:space-y-[100px] space-y-[50px] md:py-[100px] py-[90px] container max-w-[1270px] min-h-full">
       <Hero />
       <Partners />
       <EarningCalculator />

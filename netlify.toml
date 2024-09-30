@@ -1,0 +1,14 @@
+# Branch deploy context:
+# All deploys that are not from a pull/merge request
+# or from the production branch will inherit these settings.
+[context.production]
+  command = "yarn run doppler-install && CI=false ./doppler run --token $DOPPLER_TOKEN_PRD -- yarn run build"
+
+[context.staging]
+  command = "yarn run doppler-install && CI=false ./doppler run --token $DOPPLER_TOKEN_STG -- yarn run build"
+
+[context.develop]
+  command = "yarn run doppler-install && yarn config set legacy-peer-deps=true && node --max-old-space-size=8192 && CI=false ./doppler run --token $DOPPLER_TOKEN_DVP -- yarn run build"
+
+[context.testnet]
+  command = "yarn run doppler-install && yarn config set legacy-peer-deps=true && node --max-old-space-size=8192 && CI=false ./doppler run --token $DOPPLER_TOKEN_DVP -- yarn run build"

@@ -20,6 +20,7 @@
 
 *
   font-family: DMSansRegular !important
+  // outline: 1px solid red
 
 :target
   scroll-margin-top: 78px
@@ -197,3 +198,36 @@ html, body
 .alert-container
   p
     width: 100%
+
+.ant-tabs-nav
+  width: 100% !important
+
+.ant-tabs-tab
+  display: block
+  flex: 1
+  text-align: center
+  justify-content: center
+
+.ant-tabs-nav > div:nth-of-type(1)
+  display: unset !important
+  width: 100% !important
+
+.details-row-container
+  .label
+    width: 30% !important
+
+  .value
+    width: 70% !important
+
+@media screen and ( max-width: 767px )
+  .details-row-container
+    flex-wrap: wrap
+    .label
+      width: 100% !important
+
+    .value
+      width: 100% !important
+
+.ant-input-affix-wrapper
+  .ant-input:hover
+    border: none !important
