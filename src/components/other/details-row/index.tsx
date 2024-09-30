@@ -4,16 +4,45 @@ import "./details-row.sass";
 import { ReactNode } from "react";
 import { formatAmount, formatDate } from "@/utils";
 import { CurrencyLogos } from "../currency-logos";
+import { COLLATERAL_ASSET_CODE } from "@/constants";
 
 type AmountType = {
   label: string;
   value: string;
-  currency: "XLM" | "USDC" | "TZS" | "KES" | "USD" | "EUR" | "RWF";
+  currency:
+    | "XLM"
+    | "USDC"
+    | "USD"
+    | "EUR"
+    | "TZS"
+    | "RWF"
+    | "KES"
+    | "VISA"
+    | "MASTER"
+    | "SEPA"
+    | "VISAMASTER"
+    | "BLND"
+    | "BLND-USDC LP"
+    | typeof COLLATERAL_ASSET_CODE;
   digits?: number;
 };
 type ExchangeRateAmountType = {
   value: string;
-  currency?: "XLM" | "USDC" | "TZS" | "KES" | "USD" | "EUR" | "RWF";
+  currency?:
+    | "XLM"
+    | "USDC"
+    | "USD"
+    | "EUR"
+    | "TZS"
+    | "RWF"
+    | "KES"
+    | "VISA"
+    | "MASTER"
+    | "SEPA"
+    | "VISAMASTER"
+    | "BLND"
+    | "BLND-USDC LP"
+    | typeof COLLATERAL_ASSET_CODE;
   digits?: number;
 };
 

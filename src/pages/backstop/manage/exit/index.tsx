@@ -1,5 +1,6 @@
 import Form, { FormInstance } from "antd/lib/form";
 import Modal from "antd/lib/modal";
+import Steps from "antd/lib/steps";
 import { BalancesProps } from "../join";
 import { requiresTrustline } from "@/utils/horizon";
 import { BLND_ASSET, USDC_ASSET } from "@/constants";
@@ -52,7 +53,7 @@ const ExitModal = ({
         2,
         TxStatus.SUBMITTING,
       ].includes(txStatus) ||
-        isLoading) && (
+        isLoading) && open && (
         <FullPageSpinner
           message={
             txStatus === TxStatus.BUILDING
@@ -92,7 +93,7 @@ const ExitModal = ({
       >
         {(!hasBLNDTrustline || !hasUSDCTrustline) && (
           <div className="space-y-3">
-            <p>You dont have trustline for either USDC or BLND. Create.</p>
+            <p>You don't have trustline for either USDC or BLND. Create.</p>
             <div className="flex gap-2">
               {hasUSDCTrustline && (
                 <Button
@@ -120,18 +121,32 @@ const ExitModal = ({
           </div>
         )}
         {hasBLNDTrustline && hasUSDCTrustline && (
-          <ExitForm
-            current={current}
-            form={form}
-            lpBalance={lpBalance}
-            usdcBalance={usdcBalance}
-            blndBalance={blndBalance}
-            backstop={backstop}
-            close={onClose}
-            refetch={refetch}
-            updateCurrent={(current) => setCurrent(current)}
-            updateLoading={(loading) => setLoading(loading)}
-          />
+          <>
+            <Steps
+              current={current - 1}
+              className="mb-4 mt-3"
+              items={[
+                {
+                  title: "Enter Details",
+                },
+                {
+                  title: "Summary",
+                },
+              ]}
+            />
+            <ExitForm
+              current={current}
+              form={form}
+              lpBalance={lpBalance}
+              usdcBalance={usdcBalance}
+              blndBalance={blndBalance}
+              backstop={backstop}
+              close={onClose}
+              refetch={refetch}
+              updateCurrent={(current) => setCurrent(current)}
+              updateLoading={(loading) => setLoading(loading)}
+            />
+          </>
         )}
       </Modal>
     </>

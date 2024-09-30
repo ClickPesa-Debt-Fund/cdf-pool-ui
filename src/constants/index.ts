@@ -16,3 +16,4 @@ export const PARTICIPATING_MFIs = import.meta.env.VITE_PARTICIPATING_MFIS;
 export const CPYT_ASSET = new Asset(COLLATERAL_ASSET_CODE, CPYT_ISSUER || "");
 export const USDC_ASSET = new Asset("USDC", USDC_ISSUER || "");
 export const BLND_ASSET = new Asset("BLND", BLND_ISSUER || "");
+export const DEBOUNCE_DELAY = 750;

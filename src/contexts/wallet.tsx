@@ -40,7 +40,7 @@ import {
 import { useSettings } from "./settings";
 import { useQueryClientCacheCleaner } from "@/services";
 import axios from "axios";
-import { PLAYGROUND_API } from "@/constants";
+import { DEBOUNCE_DELAY, PLAYGROUND_API } from "@/constants";
 
 export interface IWalletContext {
   connected: boolean;
@@ -75,7 +75,9 @@ export interface IWalletContext {
   backstopDeposit(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined>;
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  >;
   backstopWithdraw(
     args: PoolBackstopActionArgs,
     sim: boolean
@@ -179,17 +181,14 @@ export const WalletProvider = ({ children = null as any }) => {
 
   useEffect(() => {
     if (!connected && autoConnect !== "false") {
-      // @dev: timeout ensures chrome has the ability to load extensions
       setTimeout(() => {
         handleSetWalletAddress();
-      }, 750);
+      }, DEBOUNCE_DELAY);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect]);
 
   function setFailureMessage(message: string | undefined) {
     if (message) {
-      // some contract failures include diagnostic information. If so, try and remove it.
       let substrings = message.split("Event log (newest first):");
       if (substrings.length > 1) {
         setTxFailure(`Contract Error: ${substrings[0].trimEnd()}`);
@@ -478,20 +477,23 @@ export const WalletProvider = ({ children = null as any }) => {
   async function backstopDeposit(
     args: PoolBackstopActionArgs,
     sim: boolean
-  ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
+  ): Promise<
+    SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
+  > {
     if (connected && import.meta.env.VITE_BACKSTOP) {
       let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
       let operation = xdr.Operation.fromXDR(backstop.deposit(args), "base64");
       if (sim) {
         return await simulateOperation(operation);
       }
-      await invokeSorobanOperation(operation);
+      const result = await invokeSorobanOperation(operation);
       if (typeof args.pool_address === "string") {
         cleanBackstopPoolCache(args.pool_address);
       } else {
         cleanBackstopPoolCache(args.pool_address.toString());
       }
       cleanWalletCache();
+      return result;
     }
   }
 

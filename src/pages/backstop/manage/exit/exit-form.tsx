@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { formatAmount, formatErrorMessage } from "@/utils";
 import { estExitPool } from "@/utils/comet";
 import Summary from "./summary";
+import { DEBOUNCE_DELAY } from "@/constants";
 
 const ExitForm = ({
   form,
@@ -93,7 +94,7 @@ const ExitForm = ({
       }
     },
     [amount, slippage],
-    750
+    DEBOUNCE_DELAY
   );
 
   async function handleSubmitExit() {

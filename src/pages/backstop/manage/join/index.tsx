@@ -54,19 +54,20 @@ const JoinModal = ({
         2,
         TxStatus.SUBMITTING,
       ].includes(txStatus) ||
-        isLoading) && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
+        isLoading) &&
+        open && (
+          <FullPageSpinner
+            message={
+              txStatus === TxStatus.BUILDING
+                ? "Preparing your transaction..."
+                : txStatus === TxStatus.SIGNING
+                ? "Please confirm the transaction in your wallet."
+                : txStatus === TxStatus.SUBMITTING
+                ? "Submitting your transaction..."
+                : ""
+            }
+          />
+        )}
       <Modal
         open={open}
         onCancel={onClose}

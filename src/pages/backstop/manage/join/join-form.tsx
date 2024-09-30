@@ -16,6 +16,7 @@ import { delay, formatAmount, formatErrorMessage } from "@/utils";
 import { cn } from "@/lib/utils";
 import Summary from "./summary";
 import { BalancesProps, JoinFormProps } from ".";
+import { DEBOUNCE_DELAY } from "@/constants";
 
 const JoinForm = ({
   form,
@@ -170,7 +171,7 @@ const JoinForm = ({
       }
     },
     [amount, slippage, currency],
-    750
+    DEBOUNCE_DELAY
   );
 
   async function handleSubmitJoin() {

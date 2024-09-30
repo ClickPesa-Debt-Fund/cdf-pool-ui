@@ -1,6 +1,7 @@
 import Modal from "antd/lib/modal";
 import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
+import Steps from "antd/lib/steps";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useWallet } from "@/contexts/wallet";
@@ -8,36 +9,16 @@ import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";
-import TransactForm from "./transact-form";
-import {
-  BLND_ISSUER,
-  COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
-  USDC_ISSUER,
-} from "@/constants";
+import { BLND_ISSUER, CPYT_ISSUER, USDC_ISSUER } from "@/constants";
 
-export type TransactFormProps = {
+export type Q4WFormProps = {
   form: FormInstance<any>;
   current: number;
-  type: RequestTypeProp;
-  asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
   close: () => void;
   updateCurrent: (current: number) => void;
 };
 
-const TransactModal = ({
-  open,
-  type,
-  asset,
-  title,
-  close,
-}: {
-  open: boolean;
-  type: RequestTypeProp;
-  asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
-  title?: string;
-  close: () => void;
-}) => {
+const Q4WModal = ({ open, close }: { open: boolean; close: () => void }) => {
   const [current, setCurrent] = useState(1);
 
   const [form] = Form.useForm();
@@ -65,33 +46,24 @@ const TransactModal = ({
               <ArrowLeft />
             </Button>
           )}
-          {title || `Transact ${asset}`}
+          {"Queue BLND-USDC LP for Withdrawal"}
         </span>
       }
       footer={false}
       destroyOnClose
       maskClosable={false}
     >
-      <Transact
+      <Q4W
         form={form}
         current={current}
         updateCurrent={(current) => setCurrent(current)}
         close={onClose}
-        type={type}
-        asset={asset}
       />
     </Modal>
   );
 };
 
-const Transact = ({
-  form,
-  current,
-  type,
-  asset,
-  close,
-  updateCurrent,
-}: TransactFormProps) => {
+const Q4W = ({ current }: Q4WFormProps) => {
   const [isLoading, setLoading] = useState(false);
   const { walletAddress } = useWallet();
   const { balance, balanceError, balanceLoading, balanceRefetch } =
@@ -121,10 +93,9 @@ const Transact = ({
   //   check if balance has USDC issues by us or blend
   const supportedBalances = balance?.balances?.filter((balance) => {
     return (
-      (balance?.asset_issuer === BLND_ISSUER ||
-        balance?.asset_issuer === USDC_ISSUER ||
-        balance?.asset_issuer === CPYT_ISSUER) &&
-      balance?.asset_code === asset
+      balance?.asset_issuer === BLND_ISSUER ||
+      balance?.asset_issuer === USDC_ISSUER ||
+      balance?.asset_issuer === CPYT_ISSUER
     );
   });
   //   if no error component
@@ -132,15 +103,24 @@ const Transact = ({
     return <ErrorComponent message="You have no supported asset" />;
   }
   return (
-    <TransactForm
-      close={close}
-      form={form}
-      current={current}
-      updateCurrent={updateCurrent}
-      type={type}
-      asset={asset}
-    />
+    <>
+      <Steps
+        current={current - 1}
+        className="mb-4 mt-3"
+        items={[
+          {
+            title: "Amount",
+          },
+          {
+            title: "KYC",
+          },
+          {
+            title: "Summary",
+          },
+        ]}
+      />
+    </>
   );
 };
 
-export default TransactModal;
+export default Q4WModal;

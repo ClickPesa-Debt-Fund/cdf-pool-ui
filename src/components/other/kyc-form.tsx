@@ -3,7 +3,7 @@ import Form from "antd/lib/form";
 import Input from "antd/lib/input";
 import { PhoneInput } from "@clickpesa/components-library.inputs.phone-input";
 import { Button } from "@/components/ui/button";
-import ErrorComponent from "../../../components/other/error-component";
+import ErrorComponent from "./error-component";
 import { useEffect, useState } from "react";
 import { SelectInput } from "@clickpesa/components-library.inputs.select-input";
 import { countries } from "@/shared/data/countries";

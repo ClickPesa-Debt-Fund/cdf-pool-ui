@@ -10,7 +10,7 @@ import {
   useSubmitKYC,
   useTokenBalance,
 } from "@/pages/dashboard/services";
-import KycForm from "./kyc-form";
+import KycForm from "../../../components/other/kyc-form";
 import { compareObjects, formatErrorMessage } from "@/utils";
 import {
   FixedMath,
@@ -36,6 +36,7 @@ import {
   CPYT_ISSUER,
   POOL_ID,
   USDC_ISSUER,
+  DEBOUNCE_DELAY,
 } from "@/constants";
 import WithdrawSummary from "./summary/withdraw";
 import SupplySummary from "./summary/supply";
@@ -57,7 +58,6 @@ const TransactForm = ({
     useWallet();
   const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
-
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
   const { data: pool } = usePool(poolId);
@@ -193,7 +193,7 @@ const TransactForm = ({
       }
     },
     [amount, txType],
-    750
+    DEBOUNCE_DELAY
   );
 
   return (
