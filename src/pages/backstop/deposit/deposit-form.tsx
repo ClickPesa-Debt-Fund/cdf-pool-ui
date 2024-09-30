@@ -146,7 +146,7 @@ const DepositForm = ({
     >
       {([
         TxStatus.BUILDING,
-        txStatus === TxStatus.SIGNING,
+        TxStatus.SIGNING,
         TxStatus.SUBMITTING,
       ].includes(txStatus) ||
         isLoading) && (

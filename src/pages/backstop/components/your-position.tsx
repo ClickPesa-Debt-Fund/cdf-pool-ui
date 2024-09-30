@@ -42,6 +42,11 @@ const YourPosition = () => {
         )
       : undefined;
 
+  const backstopDepositUSD =
+    backstopUserEst?.tokens && backstop?.backstopToken.lpTokenPrice
+      ? backstopUserEst?.tokens * backstop.backstopToken.lpTokenPrice
+      : undefined;
+
   async function getLPEstimate(
     amount: bigint,
     depositTokenAddress: string,
@@ -103,6 +108,13 @@ const YourPosition = () => {
             <DetailContentItem
               title="Your backstop deposit"
               content={`${toBalance(backstopUserEst?.tokens)} BLND-USDC LP`}
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Your backstop deposit (USD)"
+              content={`$${toBalance(backstopDepositUSD)}`}
               style={{
                 marginTop: 0,
               }}

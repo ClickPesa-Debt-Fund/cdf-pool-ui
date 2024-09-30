@@ -261,11 +261,9 @@ const TransactForm = ({
         }
       }}
     >
-      {([
-        TxStatus.BUILDING,
-        txStatus === TxStatus.SIGNING,
-        TxStatus.SUBMITTING,
-      ].includes(txStatus) ||
+      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
+        txStatus
+      ) ||
         isLoading) && (
         <FullPageSpinner
           message={

@@ -47,25 +47,23 @@ const ExitModal = ({
 
   return (
     <>
-      {([
-        TxStatus.BUILDING,
-        txStatus === TxStatus.SIGNING,
-        2,
-        TxStatus.SUBMITTING,
-      ].includes(txStatus) ||
-        isLoading) && open && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
+      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
+        txStatus
+      ) ||
+        isLoading) &&
+        open && (
+          <FullPageSpinner
+            message={
+              txStatus === TxStatus.BUILDING
+                ? "Preparing your transaction..."
+                : txStatus === TxStatus.SIGNING
+                ? "Please confirm the transaction in your wallet."
+                : txStatus === TxStatus.SUBMITTING
+                ? "Submitting your transaction..."
+                : ""
+            }
+          />
+        )}
       <Modal
         open={open}
         onCancel={onClose}

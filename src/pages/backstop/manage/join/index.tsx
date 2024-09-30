@@ -48,12 +48,9 @@ const JoinModal = ({
   };
   return (
     <>
-      {([
-        TxStatus.BUILDING,
-        txStatus === TxStatus.SIGNING,
-        2,
-        TxStatus.SUBMITTING,
-      ].includes(txStatus) ||
+      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
+        txStatus
+      ) ||
         isLoading) &&
         open && (
           <FullPageSpinner
