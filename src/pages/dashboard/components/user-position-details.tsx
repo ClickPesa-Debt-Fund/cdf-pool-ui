@@ -16,10 +16,14 @@ import { useState } from "react";
 import TransactModal from "../transact";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { CurrencyLogos } from "@/components/other/currency-logos";
+import { POOL_ID } from "@/constants";
+import notification from "antd/lib/notification";
+import { useWallet } from "@/contexts/wallet";
 
 const UserPositionDetails = () => {
-  const poolId = import.meta.env.VITE_POOL_ID || "";
-  const { data: pool } = usePool(poolId);
+  const { connected, connect } = useWallet();
+  const [openSupplyModal, setOpenSupplyModal] = useState(false);
+  const { data: pool } = usePool(POOL_ID);
   const { data: poolUser, isLoading } = usePoolUser(pool);
 
   if (isLoading) {
@@ -37,7 +41,42 @@ const UserPositionDetails = () => {
 
   return (
     <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Lending Position</h3>
+      <Row
+        gutter={[12, 12]}
+        align={"middle"}
+        justify={"space-between"}
+        className="mb-6"
+      >
+        <Col span={18} className="">
+          <h3 className="text-font-semi-bold">Lending Position</h3>
+        </Col>
+        <Col span={6}>
+          <Button
+            className="w-full"
+            onClick={() => {
+              if (connected) {
+                setOpenSupplyModal(true);
+              } else {
+                connect((successful: boolean) => {
+                  if (successful) {
+                    notification.success({
+                      message: "Wallet connected.",
+                    });
+                    setOpenSupplyModal(true);
+                  } else {
+                    notification.error({
+                      message: "Unable to connect wallet.",
+                    });
+                  }
+                });
+              }
+            }}
+          >
+            Supply
+          </Button>
+        </Col>
+      </Row>
+
       <Row gutter={[12, 12]}>
         <Col md={24} span={24}>
           <Row gutter={[12, 12]}>
@@ -65,6 +104,13 @@ const UserPositionDetails = () => {
             })}
         </Col>
       </Row>
+      <TransactModal
+        asset="USDC"
+        type={"SupplyCollateral"}
+        title="Supply USDC"
+        open={openSupplyModal}
+        close={() => setOpenSupplyModal(false)}
+      />
     </div>
   );
 };
@@ -91,7 +137,11 @@ const PositionCard = ({
         {formatter.toPercentage(reserve.supplyApr)}
       </Col>
       <Col md={6} span={24}>
-        <Button className="w-full" onClick={() => setWithdraw(true)}>
+        <Button
+          className="w-full"
+          variant={"outline"}
+          onClick={() => setWithdraw(true)}
+        >
           Withdraw
         </Button>
       </Col>

@@ -48,9 +48,9 @@ const JoinForm = ({
   const validDecimals =
     (amount?.toString()?.split(".")[1]?.length ?? 0) <= decimals;
 
-  const blndBalanceRes = +(blndBalance || 0) ?? BigInt(0);
-  const usdcBalanceRes = +(usdcBalance || 0) ?? BigInt(0);
-  const lpBalanceRes = lpBalance ?? BigInt(0);
+  const blndBalanceRes = +(blndBalance || 0) || BigInt(0);
+  const usdcBalanceRes = +(usdcBalance || 0) || BigInt(0);
+  const lpBalanceRes = lpBalance || BigInt(0);
 
   const curTokenBalance =
     currency === "USDC"

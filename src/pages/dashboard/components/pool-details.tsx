@@ -3,9 +3,6 @@ import { DetailContentItem } from "@clickpesa/components-library.data-display.de
 import { StatusTag } from "@clickpesa/components-library.status-tag";
 import Row from "antd/lib/row";
 import Col from "antd/lib/col";
-import notification from "antd/lib/notification";
-import { useWallet } from "@/contexts/wallet";
-import { useState } from "react";
 import { ArrowUpCircle } from "lucide-react";
 import { usePool, usePoolOracle } from "@/services";
 import {
@@ -21,13 +18,11 @@ import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-grap
 import Spinner from "@/components/other/spinner";
 import { toCompactAddress, toPercentage } from "@/utils/formatter";
 import { useBackstop, useBackstopPool } from "../services";
-import TransactModal from "../transact";
 import { useNavigate } from "react-router-dom";
 
 const PoolDetails = () => {
   const navigate = useNavigate();
-  const { connected, connect } = useWallet();
-  const [openSupplyModal, setOpenSupplyModal] = useState(false);
+
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool, isLoading } = usePool(safePoolId, true);
@@ -89,7 +84,7 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Supplied Funds"
+              title="Supplied Funds"
               content={
                 <span className="text-font-semi-bold">
                   ${nFormatter(marketSize || 0, 7)}
@@ -100,7 +95,7 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Supplied Collateral"
+              title="Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
                   {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
@@ -112,11 +107,11 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Backstop Size"
+              title="Backstop Size"
               content={
                 <div className="flex gap-3 items-center">
                   <span className="text-font-semi-bold">
-                    ${nFormatter(backstopPoolEst.totalSpotValue || 0, 3)}
+                    ${nFormatter(backstopPoolEst.totalSpotValue || 0, 7)}
                   </span>
                   <Button
                     className="justify-start gap-4 "
@@ -132,7 +127,7 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Borrowed Funds"
+              title="Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
                   ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 7)}
@@ -143,7 +138,7 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Repaid Funds"
+              title="Repaid Funds"
               content={<span className="text-font-semi-bold">$12k</span>}
               style={{
                 marginTop: 0,
@@ -246,38 +241,8 @@ const PoolDetails = () => {
               </div>
             }
           />
-          <Button
-            className="w-full"
-            onClick={() => {
-              if (connected) {
-                setOpenSupplyModal(true);
-              } else {
-                connect((successful: boolean) => {
-                  if (successful) {
-                    notification.success({
-                      message: "Wallet connected.",
-                    });
-                    setOpenSupplyModal(true);
-                  } else {
-                    notification.error({
-                      message: "Unable to connect wallet.",
-                    });
-                  }
-                });
-              }
-            }}
-          >
-            Supply
-          </Button>
         </Col>
       </Row>
-      <TransactModal
-        asset="USDC"
-        type={"SupplyCollateral"}
-        title="Supply USDC"
-        open={openSupplyModal}
-        close={() => setOpenSupplyModal(false)}
-      />
     </div>
   );
 };

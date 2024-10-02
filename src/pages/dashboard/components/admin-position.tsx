@@ -18,6 +18,7 @@ const AdminPosition = () => {
   const [openSupplyModal, setOpenSupplyModal] = useState(false);
   const [openBorrowModal, setOpenBorrowModal] = useState(false);
   const [openRepayModal, setOpenRepayModal] = useState(false);
+  const [openWithdrawModal, setOpenWithdrawModal] = useState(false);
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool } = usePool(safePoolId, true);
@@ -90,7 +91,7 @@ const AdminPosition = () => {
               }}
             />
             <DetailContentItem
-              title="Total Supplied Collateral"
+              title="Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
                   {nFormatter(
@@ -217,6 +218,30 @@ const AdminPosition = () => {
           >
             Repay
           </Button>
+          <Button
+            className="w-full"
+            onClick={() => {
+              if (connected) {
+                setOpenWithdrawModal(true);
+              } else {
+                connect((successful: boolean) => {
+                  if (successful) {
+                    notification.success({
+                      message: "Wallet connected.",
+                    });
+                    setOpenWithdrawModal(true);
+                  } else {
+                    notification.error({
+                      message: "Unable to connect wallet.",
+                    });
+                  }
+                });
+              }
+            }}
+            variant={"outline"}
+          >
+            Withdraw
+          </Button>
         </Col>
       </Row>
       <TransactModal
@@ -239,6 +264,13 @@ const AdminPosition = () => {
         open={openRepayModal}
         title="Repay USDC"
         close={() => setOpenRepayModal(false)}
+      />
+      <TransactModal
+        asset={COLLATERAL_ASSET_CODE}
+        type={"WithdrawCollateral"}
+        title={`Withdraw ${COLLATERAL_ASSET_CODE}`}
+        open={openWithdrawModal}
+        close={() => setOpenWithdrawModal(false)}
       />
     </div>
   );
