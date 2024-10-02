@@ -85,14 +85,7 @@ const Q4wItem = ({
         />
       )}
       <div className="flex items-center gap-4">
-        <div className="w-[50px]">
-          <RoundedProgressBar
-            percent={timeWaitedPercentage * 100}
-            strokeWidth={1}
-            diameter={10}
-          />
-        </div>
-        <CurrencyLogos name="BLND-USDC LP" size="md" />
+        <CurrencyLogos name="BLND-USDC LP" size="sm" />
         <div>
           <div className=" flex items-center gap-1">
             <strong className="text-font-semi-bold text-lg">
@@ -100,7 +93,19 @@ const Q4wItem = ({
             </strong>{" "}
             <span>BLND-USDC LP</span>
           </div>
-          <div>{timeLeft > 0 ? toTimeSpan(timeLeft) : "Unlocked"}</div>
+          <div className="flex items-center gap-2">
+            {timeLeft > 0 ? (
+              <div className="w-[15px]">
+                <RoundedProgressBar
+                  percent={timeWaitedPercentage * 100}
+                  strokeWidth={1.5}
+                  diameter={10}
+                  ringClassName="text-neutral-200"
+                />
+              </div>
+            ) : null}
+            {timeLeft > 0 ? toTimeSpan(timeLeft) : "Unlocked"}
+          </div>
         </div>
       </div>
       <Popover

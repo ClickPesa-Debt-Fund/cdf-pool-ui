@@ -30,7 +30,7 @@ const Backstop = () => {
           className="gap-2 -ml-4"
           onClick={() => navigate("/dashboard")}
         >
-          <ArrowLeft size={20} /> Dashboard
+          <ArrowLeft size={20} /> Pool
         </Button>
       </div>
       <BackstopDetails />

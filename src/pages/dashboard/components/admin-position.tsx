@@ -93,29 +93,39 @@ const AdminPosition = () => {
               title="Total Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
-                  {nFormatter(poolUser?.[0]?.assetFloat || 0, 3)} CPYT
+                  {nFormatter(
+                    poolUser?.[0]?.assetFloat || 0,
+                    reserve?.config.decimals
+                  )}{" "}
+                  CPYT
                 </span>
               }
               style={{
                 marginTop: 0,
               }}
             />
-            <DetailContentItem
-              title="Total Borrowed"
-              content={
-                <span className="text-font-semi-bold">
-                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 3)}
-                </span>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
+            {poolUser && reserve && (
+              <DetailContentItem
+                title="Total Owed"
+                content={
+                  <span className="text-font-semi-bold">
+                    $
+                    {nFormatter(
+                      userPoolData?.getLiabilitiesFloat(reserve) || 0,
+                      reserve?.config.decimals
+                    )}
+                  </span>
+                }
+                style={{
+                  marginTop: 0,
+                }}
+              />
+            )}
             <DetailContentItem
               title="Maximum Borrow Cap"
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(userEst?.borrowCap || 0, 3)}
+                  ${nFormatter(userEst?.borrowCap || 0, 7)}
                 </span>
               }
               style={{

@@ -85,7 +85,7 @@ const PositionCard = ({
         <CurrencyLogos name="USDC" size="sm" /> USDC
       </Col>
       <Col span={6} className="text-font-semi-bold text-green-600">
-        ${nFormatter(assetFloat, 3)}
+        ${nFormatter(assetFloat, 7)}
       </Col>
       <Col span={6} className="text-font-semi-bold">
         {formatter.toPercentage(reserve.supplyApr)}

@@ -139,7 +139,7 @@ const BackstopDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Q4W"
+              title="Queue For Withdraw"
               content={toPercentage(backstopPoolEst?.q4wPercentage)}
               style={{
                 marginTop: 0,

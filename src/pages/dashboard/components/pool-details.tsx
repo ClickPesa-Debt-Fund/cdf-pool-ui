@@ -92,7 +92,7 @@ const PoolDetails = () => {
               title="Total Supplied Funds"
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(marketSize || 0, 3)}
+                  ${nFormatter(marketSize || 0, 7)}
                 </span>
               }
               style={{
@@ -103,7 +103,7 @@ const PoolDetails = () => {
               title="Total Supplied Collateral"
               content={
                 <span className="text-font-semi-bold">
-                  {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 3)}{" "}
+                  {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
                   {COLLATERAL_ASSET_CODE}
                 </span>
               }
@@ -135,7 +135,7 @@ const PoolDetails = () => {
               title="Total Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 3)}
+                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 7)}
                 </span>
               }
               style={{

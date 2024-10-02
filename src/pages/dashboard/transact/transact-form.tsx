@@ -112,6 +112,7 @@ const TransactForm = ({
       )?.balance || "0";
     const debtAmount =
       reserve && poolUser ? poolUser.getLiabilitiesFloat(reserve) : 0;
+
     if (+supportedBalance > debtAmount) {
       maxAmount = debtAmount;
     } else {
