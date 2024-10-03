@@ -85,7 +85,7 @@ const Q4wItem = ({
         />
       )}
       <div className="flex items-center gap-4">
-        <CurrencyLogos name="BLND-USDC LP" size="sm" />
+        <CurrencyLogos name="BLND-USDC LP" size="md" />
         <div>
           <div className=" flex items-center gap-1">
             <strong className="text-font-semi-bold text-lg">

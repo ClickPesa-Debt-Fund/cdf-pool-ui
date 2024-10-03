@@ -128,7 +128,7 @@ const PositionCard = ({
   return (
     <Row gutter={[12, 12]} align={"middle"} className="py-3">
       <Col span={6} className="text-font-semi-bold flex gap-2 items-center">
-        <CurrencyLogos name="USDC" size="sm" /> USDC
+        <CurrencyLogos name="USDC" size="md" /> USDC
       </Col>
       <Col span={6} className="text-font-semi-bold text-green-600">
         ${nFormatter(assetFloat, 7)}
