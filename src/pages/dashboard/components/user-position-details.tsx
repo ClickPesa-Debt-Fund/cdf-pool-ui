@@ -30,12 +30,7 @@ const UserPositionDetails = () => {
     return <Spinner />;
   }
 
-  if (
-    !pool ||
-    !poolUser?.userId ||
-    (poolUser.positions.collateral.size === 0 &&
-      poolUser.positions.supply.size === 0)
-  ) {
+  if (!pool) {
     return <></>;
   }
 
@@ -76,34 +71,43 @@ const UserPositionDetails = () => {
           </Button>
         </Col>
       </Row>
+      {!poolUser && (
+        <div>You have not yet supplied any funds. Supply to start earning</div>
+      )}
 
-      <Row gutter={[12, 12]}>
-        <Col md={24} span={24}>
-          <Row gutter={[12, 12]}>
-            <Col span={6}>Asset</Col>
-            <Col span={6}>Amount Supplied</Col>
-            <Col span={6}>APR</Col>
-          </Row>
-          {Array.from(pool.reserves.values())
-            .filter((reserve) => {
-              const bTokens =
-                poolUser.getSupplyBTokens(reserve) +
-                poolUser.getCollateralBTokens(reserve);
-              return (
-                bTokens > BigInt(0) &&
-                reserve?.tokenMetadata?.asset?.code === "USDC"
-              );
-            })
-            ?.map((reserve, index) => {
-              const bTokens =
-                poolUser.getSupplyBTokens(reserve) +
-                poolUser.getCollateralBTokens(reserve);
-              return (
-                <PositionCard key={index} reserve={reserve} bTokens={bTokens} />
-              );
-            })}
-        </Col>
-      </Row>
+      {poolUser && (
+        <Row gutter={[12, 12]}>
+          <Col md={24} span={24}>
+            <Row gutter={[12, 12]}>
+              <Col span={6}>Asset</Col>
+              <Col span={6}>Amount Supplied</Col>
+              <Col span={6}>APR</Col>
+            </Row>
+            {Array.from(pool.reserves.values())
+              .filter((reserve) => {
+                const bTokens =
+                  poolUser.getSupplyBTokens(reserve) +
+                  poolUser.getCollateralBTokens(reserve);
+                return (
+                  bTokens > BigInt(0) &&
+                  reserve?.tokenMetadata?.asset?.code === "USDC"
+                );
+              })
+              ?.map((reserve, index) => {
+                const bTokens =
+                  poolUser.getSupplyBTokens(reserve) +
+                  poolUser.getCollateralBTokens(reserve);
+                return (
+                  <PositionCard
+                    key={index}
+                    reserve={reserve}
+                    bTokens={bTokens}
+                  />
+                );
+              })}
+          </Col>
+        </Row>
+      )}
       <TransactModal
         asset="USDC"
         type={"SupplyCollateral"}
