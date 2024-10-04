@@ -13,11 +13,10 @@ import {
   STELLER_EXPERT_URL,
   CPYT_ASSET_ID,
 } from "@/constants";
-import { BackstopPoolEst, PoolEstimate } from "@blend-capital/blend-sdk";
+import { PoolEstimate } from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import Spinner from "@/components/other/spinner";
 import { toCompactAddress, toPercentage } from "@/utils/formatter";
-import { useBackstop, useBackstopPool } from "../services";
 import { useNavigate } from "react-router-dom";
 
 const PoolDetails = () => {
@@ -26,25 +25,18 @@ const PoolDetails = () => {
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool, isLoading } = usePool(safePoolId, true);
-  const { data: backstop, isLoading: backstopLoading } = useBackstop();
-  const { data: backstopPoolData } = useBackstopPool(pool?.id || "");
   const { data: poolOracle } = usePoolOracle(pool);
 
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
   const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
 
-  if (isLoading || backstopLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
-  if (!backstop || !backstopPoolData || !pool) {
+  if (!pool) {
     return <></>;
   }
-
-  const backstopPoolEst = BackstopPoolEst.build(
-    backstop?.backstopToken,
-    backstopPoolData?.poolBalance
-  );
 
   const marketSize =
     poolOracle !== undefined && pool !== undefined
@@ -107,26 +99,6 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Backstop Size"
-              content={
-                <div className="flex gap-3 items-center">
-                  <span className="text-font-semi-bold">
-                    ${nFormatter(backstopPoolEst.totalSpotValue || 0, 7)}
-                  </span>
-                  <Button
-                    className="justify-start gap-4 "
-                    variant={"link"}
-                    onClick={() => navigate("/dashboard/backstop")}
-                  >
-                    Backstop
-                  </Button>
-                </div>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-            <DetailContentItem
               title="Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
@@ -159,6 +131,13 @@ const PoolDetails = () => {
             <DetailContentItem
               title="Number of Participating Funders"
               content={<span className="text-font-semi-bold">24</span>}
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Number of Participating Collateral Suppliers"
+              content={<span className="text-font-semi-bold">1</span>}
               style={{
                 marginTop: 0,
               }}
@@ -240,6 +219,24 @@ const PoolDetails = () => {
                 </Button>
               </div>
             }
+          />
+          <DetailContentItem
+            title="Backstop"
+            full_width
+            content={
+              <div className="flex gap-3 items-center">
+                <Button
+                  className="justify-start gap-4 -ml-4"
+                  variant={"link"}
+                  onClick={() => navigate("/dashboard/backstop")}
+                >
+                  View Backstop
+                </Button>
+              </div>
+            }
+            style={{
+              marginTop: 0,
+            }}
           />
         </Col>
       </Row>

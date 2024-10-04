@@ -6,14 +6,7 @@ export type CurrencyLogosProps = {
   /**
    * Name of currency icon
    */
-  name:
-    | "XLM"
-    | "USDC"
-    | "USD"
-    | "TZS"
-    | "BLND"
-    | "BLND-USDC LP"
-    | typeof COLLATERAL_ASSET_CODE;
+  name: CurrencyNames;
 
   /**
    * size of currency icon

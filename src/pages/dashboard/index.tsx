@@ -1,4 +1,4 @@
-import PoolActivities from "./components/pool-activities";
+import PoolActivities from "./pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
 import { TxStatus, useWallet } from "@/contexts/wallet";
@@ -191,7 +191,7 @@ const Dashboard = () => {
       <PoolDetails />
       {supportedCollateralBalances?.length ? <AdminPosition /> : null}
       <UserPositionDetails />
-      <PoolActivities />
+      <PoolActivities walletAddress={walletAddress} />
     </div>
   );
 };

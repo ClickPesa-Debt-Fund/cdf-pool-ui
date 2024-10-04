@@ -93,7 +93,7 @@ const Summary = ({
               },
               end: {
                 value: (+(usdcBalance || "0") - maxUSDCIn).toString(),
-                currency: "USC" as any,
+                currency: "USDC",
                 digits: 7,
               },
             }}

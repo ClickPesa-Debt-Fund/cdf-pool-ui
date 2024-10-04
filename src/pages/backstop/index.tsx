@@ -9,11 +9,11 @@ import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import { useWallet } from "@/contexts/wallet";
 import YourPosition from "./components/your-position";
-import BackstopActivities from "./components/backstop-activities";
+import BackstopActivities from "./backstop-activities";
 
 const Backstop = () => {
   const navigate = useNavigate();
-  const { connected } = useWallet();
+  const { connected, walletAddress } = useWallet();
   const { data: pool } = usePool(POOL_ID);
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
@@ -40,7 +40,7 @@ const Backstop = () => {
         </div>
       )}
       {connected && <YourPosition />}
-      <BackstopActivities />
+      <BackstopActivities walletAddress={walletAddress} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Asset } from "@stellar/stellar-sdk";
+import { Asset, Networks } from "@stellar/stellar-sdk";
 
 export const API_URL = import.meta.env.API_URL;
 export const STELLAR_API_URL = import.meta.env.VITE_HORIZON_URL;
@@ -17,3 +17,8 @@ export const CPYT_ASSET = new Asset(COLLATERAL_ASSET_CODE, CPYT_ISSUER || "");
 export const USDC_ASSET = new Asset("USDC", USDC_ISSUER || "");
 export const BLND_ASSET = new Asset("BLND", BLND_ISSUER || "");
 export const DEBOUNCE_DELAY = 750;
+export const stellarExpertHashUrl = `https://stellar.expert/explorer/${
+  import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
+    ? "testnet"
+    : "public"
+}/tx/`;

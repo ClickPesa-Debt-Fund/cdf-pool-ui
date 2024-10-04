@@ -160,6 +160,13 @@ const BackstopDetails = () => {
                 marginTop: 0,
               }}
             />
+            <DetailContentItem
+              title="Number of Backstop Suppliers"
+              content={`12`}
+              style={{
+                marginTop: 0,
+              }}
+            />
           </Row>
         </Col>
       </Row>
