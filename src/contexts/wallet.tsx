@@ -50,7 +50,7 @@ export interface IWalletContext {
   lastTxFailure: string | undefined;
   txType: TxType;
   walletId: string | undefined;
-
+  isSimulating: boolean;
   isLoading: boolean;
   connect: (handleSuccess: (success: boolean) => void) => Promise<void>;
   disconnect: () => void;
@@ -160,6 +160,7 @@ export const WalletProvider = ({ children = null as any }) => {
     "false"
   );
   const [loading, setLoading] = useState<boolean>(false);
+  const [isSimulating, setSimulating] = useState(false);
   const [txStatus, setTxStatus] = useState<TxStatus>(TxStatus.NONE);
   const [txHash, setTxHash] = useState<string | undefined>(undefined);
   const [txFailure, setTxFailure] = useState<string | undefined>(undefined);
@@ -350,7 +351,7 @@ export const WalletProvider = ({ children = null as any }) => {
     operation: xdr.Operation
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse> {
     try {
-      setLoading(true);
+      setSimulating(true);
       const account = await rpc.getAccount(walletAddress);
       const tx_builder = new TransactionBuilder(account, {
         networkPassphrase: network.passphrase,
@@ -362,10 +363,10 @@ export const WalletProvider = ({ children = null as any }) => {
       }).addOperation(operation);
       const transaction = tx_builder.build();
       const simulation = await rpc.simulateTransaction(transaction);
-      setLoading(false);
+      setSimulating(false);
       return simulation;
     } catch (e) {
-      setLoading(false);
+      setSimulating(false);
       throw e;
     }
   }
@@ -426,6 +427,7 @@ export const WalletProvider = ({ children = null as any }) => {
   > {
     try {
       if (connected) {
+        if (!sim) setLoading(true);
         const pool = new PoolContract(poolId);
         const operation = xdr.Operation.fromXDR(
           pool.submit(submitArgs),
@@ -437,9 +439,11 @@ export const WalletProvider = ({ children = null as any }) => {
         const result = await invokeSorobanOperation(operation);
         cleanPoolCache(poolId);
         cleanWalletCache();
+        setLoading(false);
         return result;
       }
     } catch (error) {
+      setLoading(false);
       throw new Error("Something Went wrong");
     }
   }
@@ -482,20 +486,27 @@ export const WalletProvider = ({ children = null as any }) => {
   ): Promise<
     SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
-    if (connected && import.meta.env.VITE_BACKSTOP) {
-      let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
-      let operation = xdr.Operation.fromXDR(backstop.deposit(args), "base64");
-      if (sim) {
-        return await simulateOperation(operation);
+    try {
+      if (connected && import.meta.env.VITE_BACKSTOP) {
+        if (!sim) setLoading(true);
+        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let operation = xdr.Operation.fromXDR(backstop.deposit(args), "base64");
+        if (sim) {
+          return await simulateOperation(operation);
+        }
+        const result = await invokeSorobanOperation(operation);
+        if (typeof args.pool_address === "string") {
+          cleanBackstopPoolCache(args.pool_address);
+        } else {
+          cleanBackstopPoolCache(args.pool_address.toString());
+        }
+        cleanWalletCache();
+        setLoading(false);
+        return result;
       }
-      const result = await invokeSorobanOperation(operation);
-      if (typeof args.pool_address === "string") {
-        cleanBackstopPoolCache(args.pool_address);
-      } else {
-        cleanBackstopPoolCache(args.pool_address.toString());
-      }
-      cleanWalletCache();
-      return result;
+    } catch (error) {
+      setLoading(false);
+      throw error;
     }
   }
 
@@ -509,19 +520,29 @@ export const WalletProvider = ({ children = null as any }) => {
     args: PoolBackstopActionArgs,
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
-    if (connected && import.meta.env.VITE_BACKSTOP) {
-      let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
-      let operation = xdr.Operation.fromXDR(backstop.withdraw(args), "base64");
-      if (sim) {
-        return await simulateOperation(operation);
+    try {
+      if (connected && import.meta.env.VITE_BACKSTOP) {
+        if (!sim) setLoading(true);
+        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let operation = xdr.Operation.fromXDR(
+          backstop.withdraw(args),
+          "base64"
+        );
+        if (sim) {
+          return await simulateOperation(operation);
+        }
+        await invokeSorobanOperation(operation);
+        if (typeof args.pool_address === "string") {
+          cleanBackstopPoolCache(args.pool_address);
+        } else {
+          cleanBackstopPoolCache(args.pool_address.toString());
+        }
+        cleanWalletCache();
+        setLoading(false);
       }
-      await invokeSorobanOperation(operation);
-      if (typeof args.pool_address === "string") {
-        cleanBackstopPoolCache(args.pool_address);
-      } else {
-        cleanBackstopPoolCache(args.pool_address.toString());
-      }
-      cleanWalletCache();
+    } catch (error) {
+      setLoading(false);
+      throw error;
     }
   }
 
@@ -537,22 +558,29 @@ export const WalletProvider = ({ children = null as any }) => {
   ): Promise<
     SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
-    if (connected && import.meta.env.VITE_BACKSTOP) {
-      let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
-      let operation = xdr.Operation.fromXDR(
-        backstop.queueWithdrawal(args),
-        "base64"
-      );
-      if (sim) {
-        return await simulateOperation(operation);
+    try {
+      if (connected && import.meta.env.VITE_BACKSTOP) {
+        if (!sim) setLoading(true);
+        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let operation = xdr.Operation.fromXDR(
+          backstop.queueWithdrawal(args),
+          "base64"
+        );
+        if (sim) {
+          return await simulateOperation(operation);
+        }
+        const result = await invokeSorobanOperation(operation);
+        if (typeof args.pool_address === "string") {
+          cleanBackstopPoolCache(args.pool_address);
+        } else {
+          cleanBackstopPoolCache(args.pool_address.toString());
+        }
+        setLoading(false);
+        return result;
       }
-      const result = await invokeSorobanOperation(operation);
-      if (typeof args.pool_address === "string") {
-        cleanBackstopPoolCache(args.pool_address);
-      } else {
-        cleanBackstopPoolCache(args.pool_address.toString());
-      }
-      return result;
+    } catch (error) {
+      setLoading(false);
+      throw error;
     }
   }
 
@@ -566,21 +594,28 @@ export const WalletProvider = ({ children = null as any }) => {
     args: PoolBackstopActionArgs,
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
-    if (connected && import.meta.env.VITE_BACKSTOP) {
-      let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
-      let operation = xdr.Operation.fromXDR(
-        backstop.dequeueWithdrawal(args),
-        "base64"
-      );
-      if (sim) {
-        return await simulateOperation(operation);
+    try {
+      if (connected && import.meta.env.VITE_BACKSTOP) {
+        if (!sim) setLoading(true);
+        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let operation = xdr.Operation.fromXDR(
+          backstop.dequeueWithdrawal(args),
+          "base64"
+        );
+        if (sim) {
+          return await simulateOperation(operation);
+        }
+        await invokeSorobanOperation(operation);
+        if (typeof args.pool_address === "string") {
+          cleanBackstopPoolCache(args.pool_address);
+        } else {
+          cleanBackstopPoolCache(args.pool_address.toString());
+        }
+        setLoading(false);
       }
-      await invokeSorobanOperation(operation);
-      if (typeof args.pool_address === "string") {
-        cleanBackstopPoolCache(args.pool_address);
-      } else {
-        cleanBackstopPoolCache(args.pool_address.toString());
-      }
+    } catch (error) {
+      setLoading(false);
+      throw error;
     }
   }
 
@@ -629,6 +664,7 @@ export const WalletProvider = ({ children = null as any }) => {
   > {
     try {
       if (connected) {
+        if (!sim) setLoading(true);
         let cometClient = new CometClient(cometPoolId);
         let operation = cometClient.depositTokenInGetLPOut(args);
         if (sim) {
@@ -637,9 +673,11 @@ export const WalletProvider = ({ children = null as any }) => {
         const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        setLoading(false);
         return result;
       }
     } catch (e) {
+      setLoading(false);
       throw e;
     }
   }
@@ -653,6 +691,7 @@ export const WalletProvider = ({ children = null as any }) => {
   > {
     try {
       if (connected) {
+        if (!sim) setLoading(true);
         let cometClient = new CometClient(cometPoolId);
         let operation = cometClient.join(args);
         if (sim) {
@@ -661,9 +700,11 @@ export const WalletProvider = ({ children = null as any }) => {
         const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        setLoading(false);
         return result;
       }
     } catch (e) {
+      setLoading(false);
       throw e;
     }
   }
@@ -677,6 +718,7 @@ export const WalletProvider = ({ children = null as any }) => {
   > {
     try {
       if (connected) {
+        if (!sim) setLoading(true);
         let cometClient = new CometClient(cometPoolId);
         let operation = cometClient.exit(args);
         if (sim) {
@@ -685,9 +727,11 @@ export const WalletProvider = ({ children = null as any }) => {
         const result = await invokeSorobanOperation(operation);
         cleanBackstopCache();
         cleanWalletCache();
+        setLoading(false);
         return result;
       }
     } catch (e) {
+      setLoading(false);
       throw e;
     }
   }
@@ -791,6 +835,7 @@ export const WalletProvider = ({ children = null as any }) => {
         txType,
         walletId: autoConnect,
         isLoading: loading,
+        isSimulating,
         connect,
         disconnect,
         clearLastTx,

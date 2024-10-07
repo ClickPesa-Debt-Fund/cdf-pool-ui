@@ -2,7 +2,7 @@ import Form from "antd/lib/form";
 import Steps from "antd/lib/steps";
 import { TransactFormProps } from ".";
 import AmountInput from "./amount-input";
-import { TxStatus, useWallet } from "@/contexts/wallet";
+import { useWallet } from "@/contexts/wallet";
 import {
   useGetAccountBalance,
   useGetKYC,
@@ -23,7 +23,6 @@ import {
 } from "@blend-capital/blend-sdk";
 import { scaleInputToBigInt } from "@/utils/scval";
 import { SorobanRpc } from "@stellar/stellar-sdk";
-import FullPageSpinner from "@/components/other/full-page-loader";
 import { useState } from "react";
 import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
@@ -53,14 +52,12 @@ const TransactForm = ({
   close,
 }: TransactFormProps) => {
   const amount = Form.useWatch("amount", form);
-  const poolId = POOL_ID;
-  const { walletAddress, poolSubmit, connected, txStatus, txType } =
-    useWallet();
+  const { walletAddress, poolSubmit, connected, txType } = useWallet();
   const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
-  const { data: pool } = usePool(poolId);
+  const { data: pool } = usePool(POOL_ID);
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: poolUser } = usePoolUser(pool);
   let assetId = asset === COLLATERAL_ASSET_CODE ? CPYT_ASSET_ID : USDC_ASSET_ID;
@@ -135,8 +132,7 @@ const TransactForm = ({
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<Positions>();
-  const [isLoading, setloading] = useState(false);
-
+  const [loadingSimulation, setLoadingSimulation] = useState(false);
   const curPositionsEstimate =
     pool && poolOracle && poolUser
       ? PositionsEstimate.build(pool, poolOracle, poolUser.positions)
@@ -172,7 +168,7 @@ const TransactForm = ({
           },
         ],
       };
-      return await poolSubmit(poolId, submitArgs, sim);
+      return await poolSubmit(POOL_ID, submitArgs, sim);
     }
   };
 
@@ -180,6 +176,7 @@ const TransactForm = ({
     async () => {
       setSimResponse(undefined);
       setParsedSimResult(undefined);
+      setLoadingSimulation(true);
       let response = await handleSubmitTransaction(true);
 
       if (response) {
@@ -192,6 +189,7 @@ const TransactForm = ({
           );
         }
       }
+      setLoadingSimulation(false);
     },
     [amount, txType],
     DEBOUNCE_DELAY
@@ -207,7 +205,7 @@ const TransactForm = ({
       onFinish={async (data) => {
         if (current === 1) {
           await form.validateFields(["amount"]);
-          updateCurrent(2);
+          if (parsedSimResult) updateCurrent(2);
         }
         if (current === 2) {
           await form.validateFields();
@@ -239,7 +237,6 @@ const TransactForm = ({
           }
         }
         if (current === 3) {
-          setloading(true);
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -257,28 +254,10 @@ const TransactForm = ({
               notification.error({
                 message: formatErrorMessage(error),
               });
-            })
-            .finally(() => setloading(false));
+            });
         }
       }}
     >
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
-
       <Steps
         current={current - 1}
         className="mb-6"
@@ -295,7 +274,12 @@ const TransactForm = ({
         ]}
       />
       <div className={cn({ block: current === 1, hidden: current !== 1 })}>
-        <AmountInput asset={asset} maxAmount={maxAmount} decimals={decimals} />
+        <AmountInput
+          asset={asset}
+          maxAmount={maxAmount}
+          decimals={decimals}
+          loadingSimulation={loadingSimulation}
+        />
       </div>
 
       {current === 2 && (

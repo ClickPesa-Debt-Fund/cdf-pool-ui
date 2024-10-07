@@ -6,8 +6,6 @@ import JoinForm from "./join-form";
 import Modal from "antd/lib/modal";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { TxStatus, useWallet } from "@/contexts/wallet";
-import FullPageSpinner from "@/components/other/full-page-loader";
 
 export type JoinFormProps = {
   form: FormInstance<any>;
@@ -37,9 +35,7 @@ const JoinModal = ({
   title?: string;
   close: () => void;
 } & BalancesProps) => {
-  const { txStatus } = useWallet();
   const [current, setCurrent] = useState(1);
-  const [isLoading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const onClose = () => {
     form.resetFields();
@@ -48,23 +44,6 @@ const JoinModal = ({
   };
   return (
     <>
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) &&
-        open && (
-          <FullPageSpinner
-            message={
-              txStatus === TxStatus.BUILDING
-                ? "Preparing your transaction..."
-                : txStatus === TxStatus.SIGNING
-                ? "Please confirm the transaction in your wallet."
-                : txStatus === TxStatus.SUBMITTING
-                ? "Submitting your transaction..."
-                : ""
-            }
-          />
-        )}
       <Modal
         open={open}
         onCancel={onClose}
@@ -113,7 +92,6 @@ const JoinModal = ({
             close={onClose}
             refetch={refetch}
             updateCurrent={(current) => setCurrent(current)}
-            updateLoading={(loading) => setLoading(loading)}
           />
         )}
       </Modal>

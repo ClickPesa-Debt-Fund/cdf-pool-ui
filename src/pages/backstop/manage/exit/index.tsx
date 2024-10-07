@@ -7,9 +7,8 @@ import { BLND_ASSET, USDC_ASSET } from "@/constants";
 import { AccountResponse } from "node_modules/@stellar/stellar-sdk/lib/horizon";
 import ExitForm from "./exit-form";
 import { Button } from "@/components/ui/button";
-import { TxStatus, useWallet } from "@/contexts/wallet";
+import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
-import FullPageSpinner from "@/components/other/full-page-loader";
 import { ArrowLeft } from "lucide-react";
 
 export type ExitFormProps = {
@@ -33,10 +32,9 @@ const ExitModal = ({
   close: () => void;
   horizonAccount: AccountResponse;
 } & BalancesProps) => {
-  const { createTrustline, txStatus } = useWallet();
+  const { createTrustline } = useWallet();
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(1);
-  const [isLoading, setLoading] = useState(false);
   const hasBLNDTrustline = !requiresTrustline(horizonAccount, BLND_ASSET);
   const hasUSDCTrustline = !requiresTrustline(horizonAccount, USDC_ASSET);
 
@@ -47,23 +45,6 @@ const ExitModal = ({
 
   return (
     <>
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) &&
-        open && (
-          <FullPageSpinner
-            message={
-              txStatus === TxStatus.BUILDING
-                ? "Preparing your transaction..."
-                : txStatus === TxStatus.SIGNING
-                ? "Please confirm the transaction in your wallet."
-                : txStatus === TxStatus.SUBMITTING
-                ? "Submitting your transaction..."
-                : ""
-            }
-          />
-        )}
       <Modal
         open={open}
         onCancel={onClose}
@@ -142,7 +123,6 @@ const ExitModal = ({
               close={onClose}
               refetch={refetch}
               updateCurrent={(current) => setCurrent(current)}
-              updateLoading={(loading) => setLoading(loading)}
             />
           </>
         )}

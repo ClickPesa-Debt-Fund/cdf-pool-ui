@@ -1,4 +1,4 @@
-import { TxStatus, useWallet } from "@/contexts/wallet";
+import { useWallet } from "@/contexts/wallet";
 import { Q4WFormProps } from ".";
 import {
   useBackstop,
@@ -20,7 +20,6 @@ import {
 import Form from "antd/lib/form";
 import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
-import FullPageSpinner from "@/components/other/full-page-loader";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { cn } from "@/lib/utils";
 import { currencies } from "@/shared/data/currencies";
@@ -31,8 +30,7 @@ import Summary from "./summary";
 
 const Q4WForm = ({ form, current, close, updateCurrent }: Q4WFormProps) => {
   const amount = Form.useWatch("amount", form);
-  const { connected, walletAddress, backstopQueueWithdrawal, txStatus } =
-    useWallet();
+  const { connected, walletAddress, backstopQueueWithdrawal } = useWallet();
 
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
@@ -44,7 +42,6 @@ const Q4WForm = ({ form, current, close, updateCurrent }: Q4WFormProps) => {
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<Q4W>();
   const [loadingEstimate, setLoadingEstimate] = useState<boolean>(false);
-  const [isLoading, setloading] = useState(false);
   const decimals = 7;
 
   useDebounce(
@@ -143,7 +140,6 @@ const Q4WForm = ({ form, current, close, updateCurrent }: Q4WFormProps) => {
           }
         }
         if (current === 3) {
-          setloading(true);
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -159,30 +155,13 @@ const Q4WForm = ({ form, current, close, updateCurrent }: Q4WFormProps) => {
               notification.error({
                 message: formatErrorMessage(error),
               });
-            })
-            .finally(() => setloading(false));
+            });
         }
       }}
       initialValues={{
         currency: "BLND-USDC LP",
       }}
     >
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
       <div
         className={cn({
           hidden: current !== 1,

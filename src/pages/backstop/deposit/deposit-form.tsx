@@ -3,7 +3,7 @@ import Form from "antd/lib/form";
 import notification from "antd/lib/notification";
 import { DepositFormProps } from ".";
 import { SorobanRpc } from "@stellar/stellar-sdk";
-import { TxStatus, useWallet } from "@/contexts/wallet";
+import { useWallet } from "@/contexts/wallet";
 import useDebounce from "@/hooks/use-debounce";
 import { DEBOUNCE_DELAY, POOL_ID } from "@/constants";
 import {
@@ -24,7 +24,6 @@ import {
 } from "@/pages/dashboard/services";
 import { compareObjects, formatAmount, formatErrorMessage } from "@/utils";
 import Summary from "./summary";
-import FullPageSpinner from "@/components/other/full-page-loader";
 
 const DepositForm = ({
   form,
@@ -34,12 +33,11 @@ const DepositForm = ({
   updateCurrent,
 }: DepositFormProps) => {
   const amount = Form.useWatch("amount", form);
-  const { connected, walletAddress, backstopDeposit, txStatus } = useWallet();
+  const { connected, walletAddress, backstopDeposit } = useWallet();
   const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<bigint>();
-  const [isLoading, setloading] = useState(false);
   const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
   const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
@@ -121,7 +119,6 @@ const DepositForm = ({
           }
         }
         if (current === 3) {
-          setloading(true);
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -139,29 +136,10 @@ const DepositForm = ({
               notification.error({
                 message: formatErrorMessage(error),
               });
-            })
-            .finally(() => setloading(false));
+            });
         }
       }}
     >
-      {([
-        TxStatus.BUILDING,
-        TxStatus.SIGNING,
-        TxStatus.SUBMITTING,
-      ].includes(txStatus) ||
-        isLoading) && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
       <div
         className={cn({
           hidden: current !== 1,

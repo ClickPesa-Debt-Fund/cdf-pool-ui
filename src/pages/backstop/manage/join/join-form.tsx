@@ -27,11 +27,7 @@ const JoinForm = ({
   updateCurrent,
   close,
   refetch,
-  updateLoading,
-}: JoinFormProps &
-  BalancesProps & {
-    updateLoading: (loading: boolean) => void;
-  }) => {
+}: JoinFormProps & BalancesProps) => {
   const amount = Form.useWatch("amount", form);
   const slippage = Form.useWatch("slippage", form);
   const currency = Form.useWatch("currency", form);
@@ -175,7 +171,6 @@ const JoinForm = ({
 
   async function handleSubmitJoin() {
     if (validDecimals && backstop?.config.backstopTkn) {
-      updateLoading(true);
       await cometJoin(
         backstop?.config.backstopTkn,
         {
@@ -202,23 +197,18 @@ const JoinForm = ({
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }
 
   async function handleSubmitDeposit() {
     if (validDecimals && backstop?.config.backstopTkn && address) {
-      updateLoading(true);
       await cometSingleSidedDeposit(
         backstop?.config.backstopTkn,
         {
@@ -245,16 +235,12 @@ const JoinForm = ({
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }

@@ -26,12 +26,8 @@ const ExitForm = ({
   current,
   close,
   updateCurrent,
-  updateLoading,
   refetch,
-}: ExitFormProps &
-  BalancesProps & {
-    updateLoading: (loading: boolean) => void;
-  }) => {
+}: ExitFormProps & BalancesProps) => {
   const { cometExit, walletAddress } = useWallet();
   const amount = Form.useWatch("amount", form);
   const currency = Form.useWatch("currency", form);
@@ -95,7 +91,6 @@ const ExitForm = ({
     const validDecimals =
       (amount?.toString()?.split(".")[1]?.length ?? 0) <= decimals;
     if (validDecimals && backstop?.config.backstopTkn) {
-      updateLoading(true);
       await cometExit(
         backstop?.config.backstopTkn,
         {
@@ -122,16 +117,12 @@ const ExitForm = ({
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }

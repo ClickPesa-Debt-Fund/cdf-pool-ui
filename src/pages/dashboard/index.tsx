@@ -1,15 +1,13 @@
 import PoolActivities from "./pool-activities";
 import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
-import { TxStatus, useWallet } from "@/contexts/wallet";
+import { useWallet } from "@/contexts/wallet";
 import notification from "antd/lib/notification";
 import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { Button } from "@/components/ui/button";
 import { toCompactAddress } from "@/utils/formatter";
 import { Alert } from "@clickpesa/components-library.alert";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
-import FullPageSpinner from "@/components/other/full-page-loader";
 import {
   BLND_ISSUER,
   COLLATERAL_ASSET_CODE,
@@ -29,8 +27,7 @@ const Dashboard = () => {
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { isLoading } = usePool(safePoolId, true);
 
-  const { connected, walletAddress, faucet, txStatus } = useWallet();
-  const [loading, setLoading] = useState(false);
+  const { connected, walletAddress, faucet } = useWallet();
   const { balance, balanceError, balanceRefetch } = useGetAccountBalance(
     walletAddress || ""
   );
@@ -61,7 +58,6 @@ const Dashboard = () => {
 
   const handleFaucet = async (collateral: boolean) => {
     if (connected) {
-      setLoading(true);
       faucet(collateral)
         .then(() => {
           balanceRefetch();
@@ -73,9 +69,6 @@ const Dashboard = () => {
           notification.error({
             message: formatErrorMessage(error) || "Something Went Wrong",
           });
-        })
-        .finally(() => {
-          setLoading(false);
         });
     }
   };
@@ -88,17 +81,6 @@ const Dashboard = () => {
 
   return (
     <div className="md:space-y-[30px] space-y-[24px] md:py-[100px] py-[90px] container max-w-[1270px] min-h-full">
-      {loading && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : ""
-          }
-        />
-      )}
       <div className="space-y-4">
         {connected ? (
           <div>
