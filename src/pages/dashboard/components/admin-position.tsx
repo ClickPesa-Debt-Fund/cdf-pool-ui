@@ -25,6 +25,8 @@ const AdminPosition = () => {
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: userPoolData } = usePoolUser(pool);
 
+  const assetToBase = poolOracle?.getPriceFloat(USDC_ASSET_ID);
+
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
 
   const maxUtilFloat = reserve
@@ -57,6 +59,28 @@ const AdminPosition = () => {
         assetFloat: reserve.toAssetFromBTokenFloat(bTokens),
       };
     });
+
+  const curPositionsEstimate =
+    pool && poolOracle && userPoolData
+      ? PositionsEstimate.build(pool, poolOracle, userPoolData.positions)
+      : undefined;
+
+  let userAvailableAmountToBorrow = 0;
+
+  if (curPositionsEstimate && reserve && assetToBase) {
+    let to_bounded_hf =
+      (curPositionsEstimate?.totalEffectiveCollateral -
+        curPositionsEstimate?.totalEffectiveLiabilities *
+          reserve?.getLiabilityFactor()) /
+      reserve?.getLiabilityFactor();
+
+    userAvailableAmountToBorrow = Math.min(
+      to_bounded_hf / (assetToBase * reserve.getLiabilityFactor()),
+      reserve.totalSupplyFloat() *
+        (FixedMath.toFloat(BigInt(reserve.config.max_util), 7) - 0.01) -
+        reserve.totalLiabilitiesFloat()
+    );
+  }
 
   const userEst = poolOracle
     ? PositionsEstimate.build(pool, poolOracle, userPoolData.positions)
@@ -134,10 +158,25 @@ const AdminPosition = () => {
               }}
             />
             <DetailContentItem
-              title="Available To Borrow"
+              title="Total Available To Borrow"
               content={
                 <span className="text-font-semi-bold">
                   ${nFormatter(availableToBorrow, reserve?.config.decimals)}
+                </span>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Your Available To Borrow"
+              content={
+                <span className="text-font-semi-bold">
+                  $
+                  {nFormatter(
+                    userAvailableAmountToBorrow,
+                    reserve?.config.decimals
+                  )}
                 </span>
               }
               style={{

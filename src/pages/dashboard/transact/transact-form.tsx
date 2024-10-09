@@ -59,9 +59,10 @@ const TransactForm = ({
 
   const { data: pool } = usePool(POOL_ID);
   const { data: poolOracle } = usePoolOracle(pool);
-  const { data: poolUser } = usePoolUser(pool);
+  const { data: userPoolData } = usePoolUser(pool);
   let assetId = asset === COLLATERAL_ASSET_CODE ? CPYT_ASSET_ID : USDC_ASSET_ID;
   const reserve = pool?.reserves.get(assetId);
+  const assetToBase = poolOracle?.getPriceFloat(assetId);
 
   const { data: horizonAccount } = useHorizonAccount();
   const { data: tokenBalance } = useTokenBalance(
@@ -73,8 +74,8 @@ const TransactForm = ({
   let maxAmount = 0;
   if (type === "WithdrawCollateral") {
     maxAmount =
-      reserve && poolUser && poolUser.getCollateralFloat(reserve)
-        ? poolUser.getCollateralFloat(reserve)
+      reserve && userPoolData && userPoolData.getCollateralFloat(reserve)
+        ? userPoolData.getCollateralFloat(reserve)
         : 0;
   }
 
@@ -108,23 +109,13 @@ const TransactForm = ({
           balance?.asset_issuer === USDC_ISSUER
       )?.balance || "0";
     const debtAmount =
-      reserve && poolUser ? poolUser.getLiabilitiesFloat(reserve) : 0;
+      reserve && userPoolData ? userPoolData.getLiabilitiesFloat(reserve) : 0;
 
     if (+supportedBalance > debtAmount) {
       maxAmount = debtAmount;
     } else {
       maxAmount = +supportedBalance;
     }
-  }
-
-  if (type === "Borrow") {
-    const maxUtilFloat = reserve
-      ? FixedMath.toFloat(BigInt(reserve.config.max_util), 7)
-      : 1;
-    const totalSupplied = reserve ? reserve.totalSupplyFloat() : 0;
-    maxAmount = reserve
-      ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
-      : 0;
   }
 
   const decimals = reserve?.config.decimals ?? 7;
@@ -134,8 +125,8 @@ const TransactForm = ({
   const [parsedSimResult, setParsedSimResult] = useState<Positions>();
   const [loadingSimulation, setLoadingSimulation] = useState(false);
   const curPositionsEstimate =
-    pool && poolOracle && poolUser
-      ? PositionsEstimate.build(pool, poolOracle, poolUser.positions)
+    pool && poolOracle && userPoolData
+      ? PositionsEstimate.build(pool, poolOracle, userPoolData.positions)
       : undefined;
 
   const newPositionsEstimate =
@@ -153,6 +144,27 @@ const TransactForm = ({
     newPositionsEstimate && Number.isFinite(newPositionsEstimate?.borrowLimit)
       ? newPositionsEstimate?.borrowLimit
       : 0;
+
+  if (type === "Borrow") {
+    if (reserve && curPositionsEstimate && assetToBase) {
+      let to_bounded_hf =
+        (curPositionsEstimate?.totalEffectiveCollateral -
+          curPositionsEstimate?.totalEffectiveLiabilities *
+            reserve?.getLiabilityFactor()) /
+        reserve?.getLiabilityFactor();
+
+      let userAvailableAmountToBorrow = Math.min(
+        to_bounded_hf / (assetToBase * reserve.getLiabilityFactor()),
+        reserve.totalSupplyFloat() *
+          (FixedMath.toFloat(BigInt(reserve.config.max_util), 7) - 0.01) -
+          reserve.totalLiabilitiesFloat()
+      );
+
+      maxAmount = userAvailableAmountToBorrow;
+    } else {
+      maxAmount = 0;
+    }
+  }
 
   const handleSubmitTransaction = async (sim: boolean) => {
     if (amount && connected && reserve) {
@@ -194,6 +206,8 @@ const TransactForm = ({
     [amount, txType],
     DEBOUNCE_DELAY
   );
+
+  console.log(simResponse, parsedSimResult);
 
   return (
     <Form
@@ -296,7 +310,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -310,7 +324,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -325,7 +339,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -339,7 +353,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
