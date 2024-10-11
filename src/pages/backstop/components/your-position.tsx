@@ -16,10 +16,10 @@ import {
 import { SorobanRpc, scValToBigInt, xdr } from "@stellar/stellar-sdk";
 import { useEffect, useState } from "react";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
-import { toBalance } from "@/utils/formatter";
 import { Button } from "@/components/ui/button";
 import DepositModal from "../deposit";
 import Q4WModal from "../q4w";
+import { formatAmount } from "@/utils";
 
 const YourPosition = () => {
   const { connected, cometSingleSidedDeposit, connect } = useWallet();
@@ -107,14 +107,17 @@ const YourPosition = () => {
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Your backstop deposit"
-              content={`${toBalance(backstopUserEst?.tokens)} BLND-USDC LP`}
+              content={`${formatAmount(
+                backstopUserEst?.tokens,
+                7
+              )} BLND-USDC LP`}
               style={{
                 marginTop: 0,
               }}
             />
             <DetailContentItem
               title="Your backstop deposit (USD)"
-              content={`$${toBalance(backstopDepositUSD)}`}
+              content={`$${formatAmount(backstopDepositUSD || 0, 7)}`}
               style={{
                 marginTop: 0,
               }}

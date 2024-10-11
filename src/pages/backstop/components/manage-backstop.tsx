@@ -7,14 +7,13 @@ import {
   useHorizonAccount,
   useTokenBalance,
 } from "@/pages/dashboard/services";
-import { formatErrorMessage } from "@/utils";
+import { formatAmount, formatErrorMessage } from "@/utils";
 import { useState } from "react";
 import Row from "antd/lib/row";
 import Col from "antd/lib/col";
 import notification from "antd/lib/notification";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
 import { Button } from "@/components/ui/button";
-import { toBalance } from "@/utils/formatter";
 import JoinModal from "../manage/join";
 import ExitModal from "../manage/exit";
 
@@ -113,21 +112,21 @@ const ManageBackstop = () => {
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Your LP Token Balance"
-              content={toBalance(lpBalance, 7)}
+              content={formatAmount(Number(lpBalance) / 10 ** 7, 7)}
               style={{
                 marginTop: 0,
               }}
             />
             <DetailContentItem
               title="Your BLND Balance"
-              content={toBalance(+(blndBalance || "0"), 7)}
+              content={formatAmount(+(blndBalance || "0"), 7)}
               style={{
                 marginTop: 0,
               }}
             />
             <DetailContentItem
               title="Your USDC Balance"
-              content={toBalance(+(usdcBalance || "0"), 7)}
+              content={formatAmount(+(usdcBalance || "0"), 7)}
               style={{
                 marginTop: 0,
               }}
