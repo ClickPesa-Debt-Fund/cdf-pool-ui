@@ -1,13 +1,16 @@
 //********** Query Client Data **********//
 
+import { MERCURY_ACCESS_TOKEN, MERCURY_API } from "@/constants";
 import { useSettings } from "@/contexts/settings";
 import { useWallet } from "@/contexts/wallet";
+import { RETROSHADES_COMMANDS, retrosharedCommands } from "@/utils/retroshades";
 import {
   Pool,
   PoolOracle,
   PoolUser,
   Positions,
 } from "@blend-capital/blend-sdk";
+import axios from "axios";
 import { UseQueryResult, useQuery, useQueryClient } from "react-query";
 
 export function useQueryClientCacheCleaner(): {
@@ -108,3 +111,37 @@ export function usePoolUser(
     },
   });
 }
+
+// get historical data
+export const useRetroshades = ({
+  command,
+  walletAddress,
+}: {
+  command: RETROSHADES_COMMANDS;
+  walletAddress?: string;
+}) => {
+  const { data, isLoading, error, refetch, isRefetching } = useQuery(
+    [command, walletAddress, "retroshades"],
+    async () => {
+      const { data } = await axios.post(
+        MERCURY_API,
+        {
+          query: retrosharedCommands?.(walletAddress)?.[command],
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + MERCURY_ACCESS_TOKEN,
+          },
+        }
+      );
+      return data;
+    },
+    {
+      enabled: !!command,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchInterval: 10000,
+    }
+  );
+  return { data, error, isLoading, refetch, isRefetching };
+};

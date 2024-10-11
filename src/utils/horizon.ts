@@ -1,4 +1,4 @@
-import { Asset, Horizon } from "@stellar/stellar-sdk";
+import { Asset } from "@stellar/stellar-sdk";
 
 /**
  * Fetch the Stellar Assets reserve requirement for an account
@@ -7,7 +7,7 @@ import { Asset, Horizon } from "@stellar/stellar-sdk";
  * @returns The reserves required, or 0
  */
 export function getAssetReserve(
-  account: Horizon.AccountResponse | undefined,
+  account: HorizonAccountType | undefined,
   asset: Asset | undefined
 ): number {
   let stellar_reserve_amount = 0;
@@ -36,17 +36,20 @@ export function getAssetReserve(
 }
 
 export function requiresTrustline(
-  account: Horizon.AccountResponse | undefined,
+  account: HorizonAccountType | undefined,
   asset: Asset | undefined
 ): boolean {
   // no trustline required for unloaded account or asset
   if (!account || !asset) return false;
   /** @TODO this condition can prolly be improved */
   return !account?.balances.some((balance) => {
-    if (balance?.asset_type == 'native') {
+    if (balance?.asset_type == "native") {
       return asset.isNative();
     }
     // @ts-ignore
-    return balance?.asset_code === asset?.getCode() && balance?.asset_issuer === asset?.getIssuer();
+    return (
+      balance?.asset_code === asset?.getCode() &&
+      balance?.asset_issuer === asset?.getIssuer()
+    );
   });
 }

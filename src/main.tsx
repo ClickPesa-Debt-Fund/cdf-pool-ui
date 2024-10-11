@@ -10,6 +10,7 @@ import App from "@/app.tsx";
 import "@/styles/index.sass";
 import { SettingsProvider } from "./contexts/settings";
 import { WalletProvider } from "./contexts/wallet";
+import { FLAGSMITH_ENVIRONMENT_KEY } from "./constants";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FlagsmithProvider
       options={{
-        environmentID: import.meta.env.VITE_FLAGSMITH_ENVIRONMENT_KEY ?? "",
+        environmentID: FLAGSMITH_ENVIRONMENT_KEY,
       }}
       flagsmith={flagsmith}
     >

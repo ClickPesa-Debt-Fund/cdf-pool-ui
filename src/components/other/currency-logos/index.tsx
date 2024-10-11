@@ -1,117 +1,62 @@
 import { cn } from "@/lib/utils";
-import {
-  EUR,
-  EURsm,
-  KES,
-  KESsm,
-  MasterCardLogo,
-  RWF,
-  RWFsm,
-  SepaLogo,
-  TZS,
-  TZSsm,
-  USD,
-  USDC,
-  USDCsm,
-  USDsm,
-  VisaCardlogo,
-  VisaMasterLogo,
-  XLM,
-  XLMsm,
-} from "./logos";
+import { TZS, USD, USDC, XLM } from "./logos";
 import { COLLATERAL_ASSET_CODE } from "@/constants";
 
 export type CurrencyLogosProps = {
   /**
    * Name of currency icon
    */
-  name:
-    | "XLM"
-    | "USDC"
-    | "USD"
-    | "EUR"
-    | "TZS"
-    | "RWF"
-    | "KES"
-    | "VISA"
-    | "MASTER"
-    | "SEPA"
-    | "VISAMASTER"
-    | "BLND"
-    | "BLND-USDC LP"
-    | typeof COLLATERAL_ASSET_CODE;
+  name: CurrencyNames;
 
   /**
    * size of currency icon
    */
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | number;
 };
 
 export function CurrencyLogos({ name, size = "md" }: CurrencyLogosProps) {
+  const logoSize =
+    size === "lg" ? 50 : size === "md" ? 30 : size === "sm" ? 16 : size;
   const returnIcon = () => {
     switch (name) {
-      case "XLM":
-        if (size === "md") return <XLM />;
-        return <XLMsm />;
       case "USDC":
-        if (size === "md") return <USDC />;
-        return <USDCsm />;
+        return <USDC size={logoSize} />;
       case "USD":
-        if (size === "md") return <USD />;
-        return <USDsm />;
-      case "EUR":
-        if (size === "md") return <EUR />;
-        return <EURsm />;
+        return <USD size={logoSize} />;
       case "TZS":
-        if (size === "md") return <TZS />;
-        return <TZSsm />;
-      case "RWF":
-        if (size === "md") return <RWF />;
-        return <RWFsm />;
-      case "KES":
-        if (size === "md") return <KES />;
-        return <KESsm />;
-      case "MASTER":
-        return <MasterCardLogo />;
-      case "VISA":
-        return <VisaCardlogo />;
-      case "VISAMASTER":
-        return <VisaMasterLogo />;
-      case "SEPA":
-        return <SepaLogo />;
+        return <TZS size={logoSize} />;
       case "BLND":
         return (
           <img
             src="/icons/blnd-token.svg"
-            className={cn("w-auto", {
-              "h-4": size === "sm",
-              "h-[50px]": size === "md",
-            })}
+            className={cn("w-auto")}
+            style={{
+              height: logoSize,
+            }}
           />
         );
       case COLLATERAL_ASSET_CODE:
         return (
           <img
             src="/icons/logo.svg"
-            className={cn("w-auto", {
-              "h-4": size === "sm",
-              "h-[50px]": size === "md",
-            })}
+            className={cn("w-auto")}
+            style={{
+              height: logoSize,
+            }}
           />
         );
       case "BLND-USDC LP":
         return (
           <img
             src="/icons/lp-token.svg"
-            className={cn("w-auto", {
-              "h-4": size === "sm",
-              "h-[50px]": size === "md",
-            })}
+            className={cn("w-auto")}
+            style={{
+              height: logoSize,
+            }}
           />
         );
       default:
-        if (size === "md") return <XLM />;
-        return <XLMsm />;
+        return <XLM size={logoSize} />;
     }
   };
   return returnIcon();

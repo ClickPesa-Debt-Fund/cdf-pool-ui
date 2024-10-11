@@ -3,53 +3,64 @@ import { DetailContentItem } from "@clickpesa/components-library.data-display.de
 import { StatusTag } from "@clickpesa/components-library.status-tag";
 import Row from "antd/lib/row";
 import Col from "antd/lib/col";
-import notification from "antd/lib/notification";
-import { useWallet } from "@/contexts/wallet";
-import { useState } from "react";
 import { ArrowUpCircle } from "lucide-react";
-import { usePool, usePoolOracle } from "@/services";
+import { usePool, usePoolOracle, useRetroshades } from "@/services";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
   PARTICIPATING_MFIs,
   POOL_ID,
   STELLER_EXPERT_URL,
-  CPYT_ASSET_ID,
+  COLLATERAL_ASSET_ID,
+  POOL_STATUS,
 } from "@/constants";
-import { BackstopPoolEst, PoolEstimate } from "@blend-capital/blend-sdk";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
+import { PoolEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
 import { toCompactAddress, toPercentage } from "@/utils/formatter";
-import { useBackstop, useBackstopPool } from "../services";
-import TransactModal from "../transact";
 import { useNavigate } from "react-router-dom";
+import Info from "@/components/other/info";
+import { formatAmount } from "@/utils";
+import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
 
 const PoolDetails = () => {
   const navigate = useNavigate();
-  const { connected, connect } = useWallet();
-  const [openSupplyModal, setOpenSupplyModal] = useState(false);
+
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool, isLoading } = usePool(safePoolId, true);
-  const { data: backstop, isLoading: backstopLoading } = useBackstop();
-  const { data: backstopPoolData } = useBackstopPool(pool?.id || "");
   const { data: poolOracle } = usePoolOracle(pool);
 
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
-  const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
+  const collateralReserve = pool?.reserves.get(COLLATERAL_ASSET_ID);
 
-  if (isLoading || backstopLoading) {
+  const { data: repaidFunds } = useRetroshades({
+    command: RETROSHADES_COMMANDS.TOTAL_USDC_REPAID,
+  });
+
+  const { data: totalSupplyParticipants } = useRetroshades({
+    command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLY_PARTICIPANTS,
+  });
+
+  // const { data: totalBorrowParticipants } = useRetroshades({
+  //   command: RETROSHADES_COMMANDS.TOTAL_USDC_BORROW_PARTICIPANTS,
+  // });
+
+  const { data: totalCollateralParticipants } = useRetroshades({
+    command: RETROSHADES_COMMANDS.TOTAL_COLLATERAL_SUPPLY_PARTICIPANTS,
+  });
+
+  const USDCRepaidFunds = repaidFunds?.find(
+    (repaidFund: { reserve_address: string }) =>
+      repaidFund?.reserve_address === USDC_ASSET_ID
+  )?.sum;
+
+  if (isLoading) {
     return <Spinner />;
   }
 
-  if (!backstop || !backstopPoolData || !pool) {
+  if (!pool) {
     return <></>;
   }
-
-  const backstopPoolEst = BackstopPoolEst.build(
-    backstop?.backstopToken,
-    backstopPoolData?.poolBalance
-  );
 
   const marketSize =
     poolOracle !== undefined && pool !== undefined
@@ -62,10 +73,16 @@ const PoolDetails = () => {
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
-              title="Pool Status"
+              title={"Pool Status"}
               content={
                 <span className="w-fit flex text-font-semi-bold">
-                  <StatusTag name="Active" color="green" />
+                  <StatusTag
+                    // @ts-ignore
+                    name={POOL_STATUS?.[pool?.config?.status]}
+                    color={
+                      [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
+                    }
+                  />
                 </span>
               }
               style={{
@@ -73,7 +90,12 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="APR"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  APR <Info message="Annual Percentage Rate" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(
@@ -89,10 +111,16 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Supplied Funds"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Supplied Funds{" "}
+                  <Info message="Total funds in USD added to the pool" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(marketSize || 0, 3)}
+                  ${formatAmount(marketSize || 0, 7)}
                 </span>
               }
               style={{
@@ -100,10 +128,16 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Supplied Collateral"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Supplied Collateral{" "}
+                  <Info message="Total collateral in USD added to the pool" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
-                  {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 3)}{" "}
+                  {formatAmount(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
                   {COLLATERAL_ASSET_CODE}
                 </span>
               }
@@ -112,30 +146,10 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Backstop Size"
-              content={
-                <div className="flex gap-3 items-center">
-                  <span className="text-font-semi-bold">
-                    ${nFormatter(backstopPoolEst.totalSpotValue || 0, 3)}
-                  </span>
-                  <Button
-                    className="justify-start gap-4 "
-                    variant={"link"}
-                    onClick={() => navigate("/dashboard/backstop")}
-                  >
-                    Backstop
-                  </Button>
-                </div>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-            <DetailContentItem
-              title="Total Borrowed Funds"
+              title="Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(reserve?.totalLiabilitiesFloat() || 0, 3)}
+                  ${formatAmount(reserve?.totalLiabilitiesFloat() || 0, 7)}
                 </span>
               }
               style={{
@@ -143,8 +157,18 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Total Repaid Funds"
-              content={<span className="text-font-semi-bold">$12k</span>}
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Repaid Funds{" "}
+                  <Info message="Total refunds in USD done by the pool" />
+                </span>
+              }
+              content={
+                <span className="text-font-semi-bold">
+                  ${formatAmount(USDCRepaidFunds || 0, 7)}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
@@ -163,7 +187,29 @@ const PoolDetails = () => {
 
             <DetailContentItem
               title="Number of Participating Funders"
-              content={<span className="text-font-semi-bold">24</span>}
+              content={
+                <span className="text-font-semi-bold">
+                  {totalSupplyParticipants?.[0]?.number_of_participants || 0}
+                </span>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Number of Participating Collateral Suppliers{" "}
+                  <Info message="Total parties that added collateral" />
+                </span>
+              }
+              content={
+                <span className="text-font-semi-bold">
+                  {totalCollateralParticipants?.[0]?.number_of_participants ||
+                    0}
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
@@ -246,38 +292,26 @@ const PoolDetails = () => {
               </div>
             }
           />
-          <Button
-            className="w-full"
-            onClick={() => {
-              if (connected) {
-                setOpenSupplyModal(true);
-              } else {
-                connect((successful: boolean) => {
-                  if (successful) {
-                    notification.success({
-                      message: "Wallet connected.",
-                    });
-                    setOpenSupplyModal(true);
-                  } else {
-                    notification.error({
-                      message: "Unable to connect wallet.",
-                    });
-                  }
-                });
-              }
+          <DetailContentItem
+            title="Backstop"
+            full_width
+            content={
+              <div className="flex gap-3 items-center">
+                <Button
+                  className="justify-start gap-4 -ml-4"
+                  variant={"link"}
+                  onClick={() => navigate("/dashboard/backstop")}
+                >
+                  View Backstop
+                </Button>
+              </div>
+            }
+            style={{
+              marginTop: 0,
             }}
-          >
-            Supply
-          </Button>
+          />
         </Col>
       </Row>
-      <TransactModal
-        asset="USDC"
-        type={"SupplyCollateral"}
-        title="Supply USDC"
-        open={openSupplyModal}
-        close={() => setOpenSupplyModal(false)}
-      />
     </div>
   );
 };

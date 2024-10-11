@@ -12,12 +12,12 @@ import { Link, useLocation } from "react-router-dom";
 import * as formatter from "@/utils/formatter";
 import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
-import { useGetAccountBalance } from "@/pages/dashboard/services";
+import { useHorizonAccount } from "@/pages/dashboard/services";
 import { formatAmount } from "@/utils";
 import {
   BLND_ISSUER,
   USDC_ISSUER,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
   COLLATERAL_ASSET_CODE,
 } from "@/constants";
 
@@ -25,7 +25,7 @@ const Header = () => {
   const pathname = useLocation().pathname;
   const { connect, disconnect, connected, walletAddress, isLoading } =
     useWallet();
-  const { balance } = useGetAccountBalance(walletAddress || "");
+  const { data: balances } = useHorizonAccount();
   const handleConnectWallet = (successful: boolean) => {
     if (successful) {
       notification.success({
@@ -54,11 +54,11 @@ const Header = () => {
     });
   };
 
-  const supportedBalances = balance?.balances?.filter((balance) => {
+  const supportedBalances = balances?.balances?.filter((balance) => {
     return (
       (balance?.asset_issuer === BLND_ISSUER ||
         balance?.asset_issuer === USDC_ISSUER ||
-        balance?.asset_issuer === CPYT_ISSUER) &&
+        balance?.asset_issuer === COLLATERAL_ISSUER) &&
       (balance?.asset_code === "USDC" ||
         balance?.asset_code === COLLATERAL_ASSET_CODE ||
         balance?.asset_code === "BLND")
@@ -79,12 +79,12 @@ const Header = () => {
                   <div className="text-sm ">
                     Balances
                     <div className="flex flex-wrap items-center gap-2">
-                      {balance?.balances
+                      {balances?.balances
                         ?.filter((balance) => {
                           return (
                             (balance?.asset_issuer === BLND_ISSUER ||
                               balance?.asset_issuer === USDC_ISSUER ||
-                              balance?.asset_issuer === CPYT_ISSUER) &&
+                              balance?.asset_issuer === COLLATERAL_ISSUER) &&
                             (balance?.asset_code === "USDC" ||
                               balance?.asset_code === COLLATERAL_ASSET_CODE ||
                               balance?.asset_code === "BLND")
@@ -158,7 +158,7 @@ const Header = () => {
                 onClick={handleClickConnect}
                 disabled={isLoading}
               >
-                Connect Wallet
+                Connect Wallet To Participate
               </Button>
             )}
           </>

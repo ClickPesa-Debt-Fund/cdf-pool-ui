@@ -16,7 +16,7 @@ import {
   parseResult,
 } from "@blend-capital/blend-sdk";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
-import { toPercentage } from "@/utils/formatter";
+import { toBalance, toPercentage } from "@/utils/formatter";
 import { useWallet } from "@/contexts/wallet";
 import { useEffect, useState } from "react";
 import { SorobanRpc, scValToBigInt, xdr } from "@stellar/stellar-sdk";
@@ -139,18 +139,30 @@ const BackstopDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Q4W"
-              content={toPercentage(backstopPoolEst?.q4wPercentage)}
+              title="Queue For Withdraw"
+              content={
+                <span>
+                  {toBalance(backstopPoolData.poolBalance.q4w, 7)}
+                  &nbsp;({toPercentage(backstopPoolEst?.q4wPercentage)})
+                </span>
+              }
               style={{
                 marginTop: 0,
               }}
             />
             <DetailContentItem
-              title="Total Deposited"
+              title="Amount Deposited"
               content={`$${nFormatter(
                 backstopPoolEst?.totalSpotValue || 0,
                 3
               )}`}
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Number of Backstop Suppliers"
+              content={`12`}
               style={{
                 marginTop: 0,
               }}
