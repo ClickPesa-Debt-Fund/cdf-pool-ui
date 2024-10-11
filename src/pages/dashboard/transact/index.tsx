@@ -1,8 +1,6 @@
 import Modal from "antd/lib/modal";
 import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
-import { useWallet } from "@/contexts/wallet";
-import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";
@@ -10,9 +8,10 @@ import TransactForm from "./transact-form";
 import {
   BLND_ISSUER,
   COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
   USDC_ISSUER,
 } from "@/constants";
+import { useHorizonAccount } from "../services";
 
 export type TransactFormProps = {
   form: FormInstance<any>;
@@ -59,17 +58,14 @@ const TransactModal = ({
   );
 };
 
-const Transact = ({
-  form,
-
-  type,
-  asset,
-  close,
-}: TransactFormProps) => {
+const Transact = ({ form, type, asset, close }: TransactFormProps) => {
   const [isLoading, setLoading] = useState(false);
-  const { walletAddress } = useWallet();
-  const { balance, balanceError, balanceLoading, balanceRefetch } =
-    useGetAccountBalance(walletAddress || "");
+  const {
+    data: balance,
+    error: balanceError,
+    isLoading: balanceLoading,
+    refetch: balanceRefetch,
+  } = useHorizonAccount();
 
   const loading = isLoading || balanceLoading;
 
@@ -97,7 +93,7 @@ const Transact = ({
     return (
       (balance?.asset_issuer === BLND_ISSUER ||
         balance?.asset_issuer === USDC_ISSUER ||
-        balance?.asset_issuer === CPYT_ISSUER) &&
+        balance?.asset_issuer === COLLATERAL_ISSUER) &&
       balance?.asset_code === asset
     );
   });

@@ -40,7 +40,12 @@ import {
 import { useSettings } from "./settings";
 import { useQueryClientCacheCleaner } from "@/services";
 import axios from "axios";
-import { DEBOUNCE_DELAY, PLAYGROUND_API } from "@/constants";
+import {
+  BACKSTOP_CONTRACT,
+  DEBOUNCE_DELAY,
+  NETWORK_PASSPHRASE,
+  PLAYGROUND_API,
+} from "@/constants";
 
 export interface IWalletContext {
   connected: boolean;
@@ -487,9 +492,9 @@ export const WalletProvider = ({ children = null as any }) => {
     SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
     try {
-      if (connected && import.meta.env.VITE_BACKSTOP) {
+      if (connected && BACKSTOP_CONTRACT) {
         if (!sim) setLoading(true);
-        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let backstop = new BackstopContract(BACKSTOP_CONTRACT);
         let operation = xdr.Operation.fromXDR(backstop.deposit(args), "base64");
         if (sim) {
           return await simulateOperation(operation);
@@ -521,9 +526,9 @@ export const WalletProvider = ({ children = null as any }) => {
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
     try {
-      if (connected && import.meta.env.VITE_BACKSTOP) {
+      if (connected && BACKSTOP_CONTRACT) {
         if (!sim) setLoading(true);
-        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let backstop = new BackstopContract(BACKSTOP_CONTRACT);
         let operation = xdr.Operation.fromXDR(
           backstop.withdraw(args),
           "base64"
@@ -559,9 +564,9 @@ export const WalletProvider = ({ children = null as any }) => {
     SorobanRpc.Api.SimulateTransactionResponse | { message: string } | undefined
   > {
     try {
-      if (connected && import.meta.env.VITE_BACKSTOP) {
+      if (connected && BACKSTOP_CONTRACT) {
         if (!sim) setLoading(true);
-        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let backstop = new BackstopContract(BACKSTOP_CONTRACT);
         let operation = xdr.Operation.fromXDR(
           backstop.queueWithdrawal(args),
           "base64"
@@ -595,9 +600,9 @@ export const WalletProvider = ({ children = null as any }) => {
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
     try {
-      if (connected && import.meta.env.VITE_BACKSTOP) {
+      if (connected && BACKSTOP_CONTRACT) {
         if (!sim) setLoading(true);
-        let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+        let backstop = new BackstopContract(BACKSTOP_CONTRACT);
         let operation = xdr.Operation.fromXDR(
           backstop.dequeueWithdrawal(args),
           "base64"
@@ -629,8 +634,8 @@ export const WalletProvider = ({ children = null as any }) => {
     claimArgs: BackstopClaimArgs,
     sim: boolean
   ): Promise<SorobanRpc.Api.SimulateTransactionResponse | undefined> {
-    if (connected && import.meta.env.VITE_BACKSTOP) {
-      let backstop = new BackstopContract(import.meta.env.VITE_BACKSTOP);
+    if (connected && BACKSTOP_CONTRACT) {
+      let backstop = new BackstopContract(BACKSTOP_CONTRACT);
       let operation = xdr.Operation.fromXDR(
         backstop.claim(claimArgs),
         "base64"
@@ -737,10 +742,7 @@ export const WalletProvider = ({ children = null as any }) => {
   }
 
   async function faucet(collateral?: boolean): Promise<any> {
-    if (
-      connected &&
-      import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE === Networks.TESTNET
-    ) {
+    if (connected && NETWORK_PASSPHRASE === Networks.TESTNET) {
       const url = `${PLAYGROUND_API}/stellar-utils/${
         collateral ? "get-debt-fund-testing-assets" : "get-blend-testing-assets"
       }/${walletAddress}`;

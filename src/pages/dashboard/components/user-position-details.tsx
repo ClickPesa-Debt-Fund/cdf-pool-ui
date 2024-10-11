@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import * as formatter from "@/utils/formatter";
 import { useState } from "react";
 import TransactModal from "../transact";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { CurrencyLogos } from "@/components/other/currency-logos";
 import { POOL_ID } from "@/constants";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
+import { formatAmount } from "@/utils";
 
 const UserPositionDetails = () => {
   const { data: pool } = usePool(POOL_ID);
@@ -100,7 +100,7 @@ const PositionCard = ({
         <CurrencyLogos name="USDC" size={24} /> USDC
       </Col>
       <Col span={6} className="text-font-semi-bold text-green-600">
-        ${nFormatter(assetFloat, 7)}
+        ${formatAmount(assetFloat, 7)}
       </Col>
       <Col span={6} className="text-font-semi-bold">
         {formatter.toPercentage(supplyApr)}

@@ -8,11 +8,11 @@ import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { FixedMath, PositionsEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { Button } from "@/components/ui/button";
 import { toPercentage } from "@/utils/formatter";
 import TransactModal from "../transact";
 import Info from "@/components/other/info";
+import { formatAmount } from "@/utils";
 
 const AdminPosition = () => {
   const { connected, connect } = useWallet();
@@ -125,7 +125,7 @@ const AdminPosition = () => {
               }
               content={
                 <span className="text-font-semi-bold">
-                  {nFormatter(
+                  {formatAmount(
                     poolUser?.[0]?.assetFloat || 0,
                     reserve?.config.decimals
                   )}{" "}
@@ -142,7 +142,7 @@ const AdminPosition = () => {
                 content={
                   <span className="text-font-semi-bold">
                     $
-                    {nFormatter(
+                    {formatAmount(
                       userPoolData?.getLiabilitiesFloat(reserve) || 0,
                       reserve?.config.decimals
                     )}
@@ -165,7 +165,7 @@ const AdminPosition = () => {
               }
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(userEst?.borrowCap || 0, 7)}
+                  ${formatAmount(userEst?.borrowCap || 0, 7)}
                 </span>
               }
               style={{
@@ -176,7 +176,7 @@ const AdminPosition = () => {
               title="Total Available To Borrow"
               content={
                 <span className="text-font-semi-bold">
-                  ${nFormatter(availableToBorrow, reserve?.config.decimals)}
+                  ${formatAmount(availableToBorrow, reserve?.config.decimals)}
                 </span>
               }
               style={{
@@ -188,7 +188,7 @@ const AdminPosition = () => {
               content={
                 <span className="text-font-semi-bold">
                   $
-                  {nFormatter(
+                  {formatAmount(
                     userAvailableAmountToBorrow,
                     reserve?.config.decimals
                   )}

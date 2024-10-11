@@ -2,11 +2,7 @@ import Form from "antd/lib/form";
 import { TransactFormProps } from ".";
 import AmountInput from "./amount-input";
 import { useWallet } from "@/contexts/wallet";
-import {
-  useGetAccountBalance,
-  useHorizonAccount,
-  useTokenBalance,
-} from "@/pages/dashboard/services";
+import { useHorizonAccount, useTokenBalance } from "@/pages/dashboard/services";
 import { formatErrorMessage } from "@/utils";
 import {
   FixedMath,
@@ -27,7 +23,8 @@ import { getAssetReserve } from "@/utils/horizon";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
+  COLLATERAL_ASSET_ID,
   POOL_ID,
   USDC_ISSUER,
   DEBOUNCE_DELAY,
@@ -36,18 +33,17 @@ import WithdrawSummary from "./summary/withdraw";
 import SupplySummary from "./summary/supply";
 import BorrowSummary from "./summary/borrow";
 import RepaySummary from "./summary/repay";
-import { CPYT_ASSET_ID } from "@/constants";
 import { Button } from "@/components/ui/button";
 
 const TransactForm = ({ form, type, asset, close }: TransactFormProps) => {
   const amount = Form.useWatch("amount", form);
   const { walletAddress, poolSubmit, connected, txType } = useWallet();
-  const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
+  const { data: balance, refetch: balanceRefetch } = useHorizonAccount();
 
   const { data: pool } = usePool(POOL_ID);
   const { data: poolOracle } = usePoolOracle(pool);
   const { data: userPoolData } = usePoolUser(pool);
-  let assetId = asset === COLLATERAL_ASSET_CODE ? CPYT_ASSET_ID : USDC_ASSET_ID;
+  let assetId = asset === COLLATERAL_ASSET_CODE ? COLLATERAL_ASSET_ID : USDC_ASSET_ID;
   const reserve = pool?.reserves.get(assetId);
   const assetToBase = poolOracle?.getPriceFloat(assetId);
 
@@ -81,7 +77,7 @@ const TransactForm = ({ form, type, asset, close }: TransactFormProps) => {
     const supportedBalance = balance?.balances?.find(
       (balance) =>
         balance?.asset_code === COLLATERAL_ASSET_CODE &&
-        balance?.asset_issuer === CPYT_ISSUER
+        balance?.asset_issuer === COLLATERAL_ISSUER
     );
     if (supportedBalance) {
       maxAmount = +supportedBalance?.balance;
@@ -202,8 +198,6 @@ const TransactForm = ({ form, type, asset, close }: TransactFormProps) => {
     [amount, txType],
     DEBOUNCE_DELAY
   );
-
-  console.log(simResponse, parsedSimResult);
 
   return (
     <Form

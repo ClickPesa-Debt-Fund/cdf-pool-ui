@@ -1,51 +1,56 @@
 import { CurrencyLogos } from "@/components/other/currency-logos";
 import Table from "@/components/other/table";
-import { COLLATERAL_ASSET_CODE, stellarExpertHashUrl } from "@/constants";
+import { USDC_ASSET_ID, STELLER_EXPERT_URL } from "@/constants";
+import { useRetroshades } from "@/services";
 import { formatAmount, formatDate } from "@/utils";
+import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
 
 const Transactions = ({
-  // type,
+  type,
   walletAddress,
-  asset,
 }: {
   walletAddress?: string;
-  asset?: typeof COLLATERAL_ASSET_CODE | "USDC";
-  type: "SUPPLY" | "BORROW";
+  type: RETROSHADES_COMMANDS;
 }) => {
-  const transactionsData = generateTransactionData(
-    100,
-    walletAddresses,
-    COLLATERAL_ASSET_CODE
-  )?.filter(
-    (record) =>
-      (record?.asset === asset || !asset) &&
-      (!walletAddress || walletAddress === record?.source)
-  );
+  const { data, isLoading } = useRetroshades({ command: type, walletAddress });
 
   return (
     <div>
       <Table
-        data={transactionsData?.map((record) => {
-          return {
-            ...record,
-            timestamp: formatDate(record?.timestamp, "MMMM DD, YYYY HH:mm"),
-            action: (
-              <a
-                target="_blank"
-                className="link"
-                href={stellarExpertHashUrl + record?.ledger}
-              >
-                View On Stellar Expert
-              </a>
-            ),
-            amount: (
-              <span className="inline-flex  items-center gap-3 ">
-                {formatAmount(+record?.amount, 7)}{" "}
-                <CurrencyLogos name={record?.asset as any} size={"sm"} />
-              </span>
-            ),
-          };
-        })}
+        data={removeDuplicates(data || [], "transaction")?.map(
+          (record: any) => {
+            return {
+              ...record,
+              timestamp: formatDate(
+                new Date(Number(record?.timestamp + "000")).toISOString(),
+                "MMMM DD, YYYY HH:mm"
+              ),
+              action: (
+                <a
+                  target="_blank"
+                  className="link"
+                  href={STELLER_EXPERT_URL + "/tx/" + record?.transaction}
+                >
+                  View On Stellar Expert
+                </a>
+              ),
+              amount: (
+                <span className="inline-flex  items-center gap-3 ">
+                  {formatAmount(+record?.usdc_amount, 7)}{" "}
+                  {record?.reserve_address === USDC_ASSET_ID ? "USDC" : "CPYT"}
+                  <CurrencyLogos
+                    name={
+                      record?.reserve_address === USDC_ASSET_ID
+                        ? "USDC"
+                        : "CPYT"
+                    }
+                    size={"sm"}
+                  />
+                </span>
+              ),
+            };
+          }
+        )}
         columns={[
           {
             title: "Date",
@@ -56,11 +61,22 @@ const Transactions = ({
             title: "Amount",
             name: "amount",
             align: "right",
-            width: 140,
+            width: 200,
           },
+          // {
+          //   title: "Action Type",
+          //   name: "action_type",
+          //   align: "right",
+          //   width: 200,
+          // },
           {
             title: "Source",
-            name: "source",
+            name: "user_address",
+            width: 530,
+          },
+          {
+            title: "Asset ID",
+            name: "reserve_address",
             width: 530,
           },
           {
@@ -69,59 +85,34 @@ const Transactions = ({
             width: 200,
           },
           {
+            title: "Transaction Hash",
+            name: "transaction",
+            width: 560,
+          },
+          {
             title: "Action",
             name: "action",
-            width: 150,
+            width: 180,
             fixed: "right",
           },
         ]}
-        loading={false}
+        loading={isLoading}
         rowKey="ledger"
-        totalCount={transactionsData?.length}
+        totalCount={data?.length}
       />
     </div>
   );
 };
 
-export default Transactions;
-
-type Transaction = {
-  action: string;
-  timestamp: string;
-  ledger: string; // Ledger is a hash
-  asset: string;
-  source: string;
-  amount: string;
+const removeDuplicates = (arr: any[], key: string) => {
+  const seen = new Set();
+  return arr.reduce((acc, current) => {
+    if (!seen.has(current[key])) {
+      seen.add(current[key]);
+      acc.push(current);
+    }
+    return acc;
+  }, []);
 };
 
-function generateTransactionData(
-  numRecords: number,
-  walletAddresses: string[],
-  assetCode: string
-): Transaction[] {
-  const transactions: Transaction[] = [];
-
-  for (let i = 0; i < numRecords; i++) {
-    const transaction: Transaction = {
-      action: "Collateral",
-      timestamp: new Date(
-        Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)
-      ).toISOString(),
-      ledger: `ledger_hash_${i}`,
-      asset: Math.random() > 0.5 ? "USDC" : assetCode, // Randomly select between USDC or assetCode
-      source:
-        walletAddresses[Math.floor(Math.random() * walletAddresses.length)], // Random wallet address
-      amount: (
-        Math.floor(Math.random() * (100000 - 1000 + 1)) + 1000
-      ).toString(), // Random amount between 1,000 and 100,000
-    };
-    transactions.push(transaction);
-  }
-
-  return transactions;
-}
-const walletAddresses = [
-  "GAPA74UEBLLFTMXDZKCRZTDED3W5AFLF5FKN52O6ZT4UOSB4LOF2Q4QO",
-  "GDLFWOISLDAE7MWTQXE6DZOJZYM2CTBKSQX3CE6B6ITBM7SUXJX7HLFL",
-  "GDP253EYABCLUTTICY5DRAR54I73YCIQGZ7YLCP3TOCH6GYTDUTPGOEB",
-];
+export default Transactions;

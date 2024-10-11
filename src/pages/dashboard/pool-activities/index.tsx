@@ -1,9 +1,9 @@
 import Tabs from "antd/lib/tabs";
 import Summary from "./summary";
 import Transactions from "./transactions";
-import { COLLATERAL_ASSET_CODE } from "@/constants";
 import { SelectInput } from "@clickpesa/components-library.inputs.select-input";
 import { useEffect, useState } from "react";
+import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
 
 const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
   const [selectedFilter, setSelectedFilter] = useState("ALL");
@@ -49,7 +49,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
           }}
         />
       </h3>
-      <Summary />
+      <Summary walletAddress={userWalletAddress} />
       <Tabs
         items={[
           {
@@ -58,8 +58,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Supplies",
             children: (
               <Transactions
-                type="SUPPLY"
-                asset="USDC"
+                type={RETROSHADES_COMMANDS.SUPPLY_USDC_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),
@@ -70,8 +69,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Collateral Supplies",
             children: (
               <Transactions
-                type="SUPPLY"
-                asset={COLLATERAL_ASSET_CODE}
+                type={RETROSHADES_COMMANDS.SUPPLY_COLLATERAL_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),
@@ -82,8 +80,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Borrow",
             children: (
               <Transactions
-                type="BORROW"
-                asset="USDC"
+                type={RETROSHADES_COMMANDS.BORROW_USDC_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),
@@ -94,8 +91,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Repayments",
             children: (
               <Transactions
-                type="SUPPLY"
-                asset="USDC"
+                type={RETROSHADES_COMMANDS.REPAY_USDC_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),
@@ -106,8 +102,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Withdraws",
             children: (
               <Transactions
-                type="SUPPLY"
-                asset="USDC"
+                type={RETROSHADES_COMMANDS.WITHDRAW_USDC_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),
@@ -118,8 +113,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
             label: "Withdraw Collateral",
             children: (
               <Transactions
-                type="SUPPLY"
-                asset={COLLATERAL_ASSET_CODE}
+                type={RETROSHADES_COMMANDS.WITHDRAW_COLLATERAL_TRXS}
                 walletAddress={userWalletAddress}
               />
             ),

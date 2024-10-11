@@ -3,7 +3,6 @@ import Modal from "antd/lib/modal";
 import { BalancesProps } from "../join";
 import { requiresTrustline } from "@/utils/horizon";
 import { BLND_ASSET, USDC_ASSET } from "@/constants";
-import { AccountResponse } from "node_modules/@stellar/stellar-sdk/lib/horizon";
 import ExitForm from "./exit-form";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
@@ -26,7 +25,7 @@ const ExitModal = ({
 }: {
   open: boolean;
   close: () => void;
-  horizonAccount: AccountResponse;
+  horizonAccount: HorizonAccountType;
 } & BalancesProps) => {
   const { createTrustline } = useWallet();
   const [form] = Form.useForm();

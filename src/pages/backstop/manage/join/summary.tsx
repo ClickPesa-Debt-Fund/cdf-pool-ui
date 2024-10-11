@@ -28,8 +28,6 @@ const Summary = ({
   isJoin: boolean;
   decimals?: number;
 }) => {
-  console.log(!!lpBalance, (Number(lpBalance) / 10 ** 7 + toMint).toString());
-
   return (
     <div className="mb-6">
       <DetailsRow

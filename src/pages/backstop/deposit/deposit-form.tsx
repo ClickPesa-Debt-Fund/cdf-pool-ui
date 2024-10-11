@@ -15,14 +15,14 @@ import { bigintToInput, scaleInputToBigInt } from "@/utils/scval";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { currencies } from "@/shared/data/currencies";
 import { Button } from "@/components/ui/button";
-import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { formatAmount, formatErrorMessage } from "@/utils";
 import Summary from "./summary";
+import { useHorizonAccount } from "@/pages/dashboard/services";
 
 const DepositForm = ({ form, lpBalance, close }: DepositFormProps) => {
   const amount = Form.useWatch("amount", form);
   const { connected, walletAddress, backstopDeposit } = useWallet();
-  const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
+  const { refetch: balanceRefetch } = useHorizonAccount();
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<bigint>();

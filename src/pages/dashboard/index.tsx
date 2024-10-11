@@ -3,7 +3,6 @@ import PoolDetails from "./components/pool-details";
 import UserPositionDetails from "./components/user-position-details";
 import { useWallet } from "@/contexts/wallet";
 import notification from "antd/lib/notification";
-import { useGetAccountBalance } from "@/pages/dashboard/services";
 import { Button } from "@/components/ui/button";
 import { toCompactAddress } from "@/utils/formatter";
 import { Alert } from "@clickpesa/components-library.alert";
@@ -11,7 +10,8 @@ import { ArrowRight } from "lucide-react";
 import {
   BLND_ISSUER,
   COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
+  NETWORK_PASSPHRASE,
   POOL_ID,
   USDC_ISSUER,
 } from "@/constants";
@@ -21,17 +21,20 @@ import AdminPosition from "./components/admin-position";
 import { Networks } from "@stellar/stellar-sdk";
 import { formatErrorMessage } from "@/utils";
 import { CurrencyLogos } from "@/components/other/currency-logos";
+import { useHorizonAccount } from "./services";
 
 const Dashboard = () => {
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
 
-  const { isLoading, data } = usePool(safePoolId, true);
+  const { isLoading } = usePool(safePoolId, true);
 
   const { connected, walletAddress, faucet } = useWallet();
-  const { balance, balanceError, balanceRefetch } = useGetAccountBalance(
-    walletAddress || ""
-  );
+  const {
+    data: balance,
+    error: balanceError,
+    refetch: balanceRefetch,
+  } = useHorizonAccount();
 
   const supportedBalances = balance?.balances?.filter((balance) => {
     return (
@@ -43,7 +46,7 @@ const Dashboard = () => {
 
   const supportedCollateralBalances = balance?.balances?.filter((balance) => {
     return (
-      balance?.asset_issuer === CPYT_ISSUER &&
+      balance?.asset_issuer === COLLATERAL_ISSUER &&
       balance?.asset_code === COLLATERAL_ASSET_CODE
     );
   });
@@ -76,8 +79,6 @@ const Dashboard = () => {
 
   const notFound = balanceError?.response?.status === 404;
 
-  console.log("pool data", data);
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -99,8 +100,7 @@ const Dashboard = () => {
               />
             )}
 
-            {import.meta.env.VITE_STELLAR_NETWORK_PASSPHRASE ===
-              Networks.TESTNET && (
+            {NETWORK_PASSPHRASE === Networks.TESTNET && (
               <div>
                 {needsFaucet && (
                   <>

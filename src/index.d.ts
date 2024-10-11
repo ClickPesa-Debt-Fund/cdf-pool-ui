@@ -35,4 +35,22 @@ type CurrencyNames =
   | "TZS"
   | "BLND"
   | "BLND-USDC LP"
-  | "CPYT";
+  | "CPYT"
+  | "CPCT";
+
+type HorizonAccountType = {
+  balances: {
+    balance: string;
+    limit: string;
+    buying_liabilities: string;
+    selling_liabilities: string;
+    last_modified_ledger: number;
+    is_authorized: boolean;
+    is_authorized_to_maintain_liabilities: boolean;
+    asset_type: "credit_alphanum4" | "native" | "liquidity_pool_shares";
+    asset_code: string;
+    asset_issuer: string;
+  }[];
+  last_modified_ledger: string;
+  subentry_count: number;
+};
