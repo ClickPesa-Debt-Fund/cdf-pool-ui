@@ -4,7 +4,6 @@ import { BLND_ISSUER, USDC_ISSUER } from "@/constants";
 import { useWallet } from "@/contexts/wallet";
 import {
   useBackstop,
-  useGetAccountBalance,
   useHorizonAccount,
   useTokenBalance,
 } from "@/pages/dashboard/services";
@@ -23,9 +22,13 @@ const ManageBackstop = () => {
   const [openJoin, setOpenJoin] = useState(false);
   const [openExit, setOpenExit] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const { walletAddress, connected, connect } = useWallet();
-  const { balance, balanceError, balanceLoading, balanceRefetch } =
-    useGetAccountBalance(walletAddress || "");
+  const { connected, connect } = useWallet();
+  const {
+    data: balance,
+    error: balanceError,
+    isLoading: balanceLoading,
+    refetch: balanceRefetch,
+  } = useHorizonAccount();
   const { data: backstop, refetch: backstopRefetch } = useBackstop();
   const {
     data: horizonAccount,

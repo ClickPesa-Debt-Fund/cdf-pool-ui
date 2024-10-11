@@ -1,8 +1,6 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
-import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
@@ -42,9 +40,9 @@ const WithdrawSummary = ({
         <div>
           <DetailsRow
             amount={{
-              label: "Amount to supply",
+              label: "Amount to withdraw",
               value: amount,
-              currency: "USDC",
+              currency: symbol as any,
             }}
           />
           <DetailsRow
@@ -71,17 +69,11 @@ const WithdrawSummary = ({
                 label: "Withdraw Amount",
                 start: {
                   currency: symbol,
-                  value: `${nFormatter(
-                    poolUser?.getCollateralFloat(reserve) || 0,
-                    decimals
-                  )}`,
+                  value: `${poolUser?.getCollateralFloat(reserve) || 0}`,
                 },
                 end: {
                   currency: symbol,
-                  value: `${nFormatter(
-                    newPoolUser?.getCollateralFloat(reserve) || 0,
-                    decimals
-                  )}`,
+                  value: `${newPoolUser?.getCollateralFloat(reserve) || 0}`,
                 },
               }}
             />
@@ -91,11 +83,11 @@ const WithdrawSummary = ({
               label: "Borrow capacity",
               start: {
                 value: `${curBorrowCap}`,
-                currency: symbol,
+                currency: "USDC",
               },
               end: {
                 value: `${nextBorrowCap}`,
-                currency: symbol,
+                currency: "USDC",
               },
             }}
           />
@@ -114,7 +106,6 @@ const WithdrawSummary = ({
           />
         </div>
       </div>
-      <Button className="w-full">Continue</Button>
     </div>
   );
 };

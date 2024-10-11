@@ -12,7 +12,6 @@ import { scaleInputToBigInt } from "@/utils/scval";
 import { estJoinPool } from "@/utils/comet";
 import { useWallet } from "@/contexts/wallet";
 import { delay, formatAmount, formatErrorMessage } from "@/utils";
-import { cn } from "@/lib/utils";
 import Summary from "./summary";
 import { BalancesProps, JoinFormProps } from ".";
 import { DEBOUNCE_DELAY } from "@/constants";
@@ -23,15 +22,9 @@ const JoinForm = ({
   usdcBalance,
   blndBalance,
   backstop,
-  current,
-  updateCurrent,
   close,
   refetch,
-  updateLoading,
-}: JoinFormProps &
-  BalancesProps & {
-    updateLoading: (loading: boolean) => void;
-  }) => {
+}: JoinFormProps & BalancesProps) => {
   const amount = Form.useWatch("amount", form);
   const slippage = Form.useWatch("slippage", form);
   const currency = Form.useWatch("currency", form);
@@ -48,9 +41,9 @@ const JoinForm = ({
   const validDecimals =
     (amount?.toString()?.split(".")[1]?.length ?? 0) <= decimals;
 
-  const blndBalanceRes = +(blndBalance || 0) ?? BigInt(0);
-  const usdcBalanceRes = +(usdcBalance || 0) ?? BigInt(0);
-  const lpBalanceRes = lpBalance ?? BigInt(0);
+  const blndBalanceRes = +(blndBalance || 0) || BigInt(0);
+  const usdcBalanceRes = +(usdcBalance || 0) || BigInt(0);
+  const lpBalanceRes = lpBalance || BigInt(0);
 
   const curTokenBalance =
     currency === "USDC"
@@ -175,7 +168,6 @@ const JoinForm = ({
 
   async function handleSubmitJoin() {
     if (validDecimals && backstop?.config.backstopTkn) {
-      updateLoading(true);
       await cometJoin(
         backstop?.config.backstopTkn,
         {
@@ -196,29 +188,24 @@ const JoinForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }
 
   async function handleSubmitDeposit() {
     if (validDecimals && backstop?.config.backstopTkn && address) {
-      updateLoading(true);
       await cometSingleSidedDeposit(
         backstop?.config.backstopTkn,
         {
@@ -239,22 +226,18 @@ const JoinForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }
@@ -267,21 +250,12 @@ const JoinForm = ({
         slippage: "1",
       }}
       onFinish={async () => {
-        if (loadingEstimate) {
-          return;
+        if (!loadingEstimate && simResponse) {
+          isJoin ? handleSubmitJoin() : handleSubmitDeposit();
         }
-        if (current === 1) {
-          await form.validateFields();
-          return updateCurrent(2);
-        }
-        isJoin ? handleSubmitJoin() : handleSubmitDeposit();
       }}
     >
-      <div
-        className={cn({
-          hidden: current !== 1,
-        })}
-      >
+      <div>
         <WizardAmountInput
           currency={{
             options:
@@ -371,7 +345,7 @@ const JoinForm = ({
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
       </div>
-      {current === 2 && (
+      {simResponse && (
         <Summary
           amount={amount}
           currency={currency}

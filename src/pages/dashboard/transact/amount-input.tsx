@@ -1,17 +1,19 @@
-import { Button } from "@/components/ui/button";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { formatAmount } from "@/utils";
 import { COLLATERAL_ASSET_CODE } from "@/constants";
 import { currencies } from "@/shared/data/currencies";
+import Spin from "antd/lib/spin";
 
 const AmountInput = ({
   maxAmount,
   asset,
   decimals = 7,
+  loadingSimulation,
 }: {
   maxAmount: number | string;
   asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
   decimals?: number;
+  loadingSimulation: boolean;
 }) => {
   return (
     <div className="space-y-6">
@@ -46,7 +48,11 @@ const AmountInput = ({
         decimalsLimit={decimals}
       />
       <p>{`Maximum Amount: ${formatAmount(maxAmount, decimals)} ${asset}`}</p>
-      <Button className="w-full">Continue</Button>
+      {loadingSimulation && (
+        <div className="flex justify-end items-center gap-3">
+          <Spin size="small" /> Loading
+        </div>
+      )}
     </div>
   );
 };

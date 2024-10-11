@@ -1065,6 +1065,17 @@
     antd "5.3.2"
     core-js "^3.0.0"
 
+"@clickpesa/components-library.data-preview-table@^0.0.17":
+  version "0.0.17"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.data-preview-table/-/components-library.data-preview-table-0.0.17.tgz#d6c9d97f74158fddd74ff689eeef8afc488ad4e9"
+  integrity sha512-F6+9t/Oydbai+IJyihUKQqTHNi+mSCQvYewe6dX9LNphFRTU1LgDH2HJYMbXoRou+1tfbUFR7Mkiirnc4hD7ow==
+  dependencies:
+    "@ant-design/icons" "^5.2.5"
+    "@clickpesa/components-library.button" "0.0.5"
+    "@clickpesa/components-library.inputs.text-input" "0.0.4"
+    antd "5.3.2"
+    core-js "^3.0.0"
+
 "@clickpesa/components-library.details-row@^0.0.17":
   version "0.0.17"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.details-row/-/components-library.details-row-0.0.17.tgz#9cc4a2e20f85a1f855d12300fce07ebd6acdae62"

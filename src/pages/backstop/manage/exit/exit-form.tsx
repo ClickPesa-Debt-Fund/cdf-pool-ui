@@ -9,7 +9,6 @@ import useDebounce from "@/hooks/use-debounce";
 import { useWallet } from "@/contexts/wallet";
 import { scaleInputToBigInt } from "@/utils/scval";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
-import { cn } from "@/lib/utils";
 import { currencies } from "@/shared/data/currencies";
 import { Button } from "@/components/ui/button";
 import { formatAmount, formatErrorMessage } from "@/utils";
@@ -23,15 +22,9 @@ const ExitForm = ({
   blndBalance,
   usdcBalance,
   lpBalance,
-  current,
   close,
-  updateCurrent,
-  updateLoading,
   refetch,
-}: ExitFormProps &
-  BalancesProps & {
-    updateLoading: (loading: boolean) => void;
-  }) => {
+}: ExitFormProps & BalancesProps) => {
   const { cometExit, walletAddress } = useWallet();
   const amount = Form.useWatch("amount", form);
   const currency = Form.useWatch("currency", form);
@@ -95,7 +88,6 @@ const ExitForm = ({
     const validDecimals =
       (amount?.toString()?.split(".")[1]?.length ?? 0) <= decimals;
     if (validDecimals && backstop?.config.backstopTkn) {
-      updateLoading(true);
       await cometExit(
         backstop?.config.backstopTkn,
         {
@@ -116,22 +108,18 @@ const ExitForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
               message: "Something went wrong",
             });
-            updateLoading(false);
           }
         })
         .catch((e) => {
           notification.error({
             message: formatErrorMessage(e),
           });
-        })
-        .finally(() => {
-          updateLoading(false);
         });
     }
   }
@@ -145,19 +133,13 @@ const ExitForm = ({
       }}
       onFinish={async () => {
         await form.validateFields();
-        if (current === 1) {
-          updateCurrent(2);
-        }
-        if (current === 2) {
+
+        if (simResponse) {
           handleSubmitExit();
         }
       }}
     >
-      <div
-        className={cn({
-          hidden: current !== 1,
-        })}
-      >
+      <div>
         <WizardAmountInput
           currency={{
             options:
@@ -229,7 +211,7 @@ const ExitForm = ({
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
       </div>
-      {current === 2 && (
+      {simResponse && (
         <Summary
           simResponse={simResponse}
           lpBalance={lpBalance}

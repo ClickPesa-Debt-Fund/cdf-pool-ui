@@ -2,13 +2,7 @@ import { Network } from "@blend-capital/blend-sdk";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 import React, { useContext, useState } from "react";
 import { useLocalStorageState } from "../hooks";
-
-const DEFAULT_RPC =
-  process.env.VITE_RPC_URL || "https://soroban-testnet.stellar.org";
-const DEFAULT_HORIZON =
-  process.env.VITE_HORIZON_URL || "https://horizon-testnet.stellar.org";
-const DEFAULT_PASSPHRASE =
-  process.env.VITE_PASSPHRASE || "Test SDF Network ; September 2015";
+import { HORIZON_URL, NETWORK_PASSPHRASE, RPC_URL } from "@/constants";
 
 export enum ViewType {
   MOBILE,
@@ -46,10 +40,10 @@ const SettingsContext = React.createContext<ISettingsContext | undefined>(
 
 export const SettingsProvider = ({ children = null as any }) => {
   const [network, setNetwork] = useState<Network & { horizonUrl: string }>({
-    rpc: DEFAULT_RPC,
-    passphrase: DEFAULT_PASSPHRASE,
+    rpc: RPC_URL,
+    passphrase: NETWORK_PASSPHRASE,
     opts: undefined,
-    horizonUrl: DEFAULT_HORIZON,
+    horizonUrl: HORIZON_URL,
   });
 
   const [lastPool, setLastPool] = useLocalStorageState("lastPool", undefined);
@@ -69,7 +63,7 @@ export const SettingsProvider = ({ children = null as any }) => {
   ) {
     setNetwork({
       rpc: newRpcUrl,
-      passphrase: DEFAULT_PASSPHRASE,
+      passphrase: NETWORK_PASSPHRASE,
       opts,
       horizonUrl: newHorizonUrl,
     });

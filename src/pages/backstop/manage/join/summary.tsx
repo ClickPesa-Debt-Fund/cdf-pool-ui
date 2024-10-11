@@ -32,7 +32,7 @@ const Summary = ({
     <div className="mb-6">
       <DetailsRow
         amount={{
-          label: "Amount to Borrow",
+          label: "Amount",
           value: amount?.toString(),
           currency: currency as any,
         }}
@@ -93,7 +93,7 @@ const Summary = ({
               },
               end: {
                 value: (+(usdcBalance || "0") - maxUSDCIn).toString(),
-                currency: "USC" as any,
+                currency: "USDC",
                 digits: 7,
               },
             }}
@@ -120,7 +120,7 @@ const Summary = ({
               end: {
                 value: lpBalance
                   ? (Number(lpBalance) / 10 ** 7 + toMint).toString()
-                  : "",
+                  : toMint.toString(),
                 currency: "BLND-USDC LP" as any,
                 digits: 7,
               },

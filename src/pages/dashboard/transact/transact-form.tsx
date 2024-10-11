@@ -1,17 +1,9 @@
 import Form from "antd/lib/form";
-import Steps from "antd/lib/steps";
 import { TransactFormProps } from ".";
 import AmountInput from "./amount-input";
-import { TxStatus, useWallet } from "@/contexts/wallet";
-import {
-  useGetAccountBalance,
-  useGetKYC,
-  useHorizonAccount,
-  useSubmitKYC,
-  useTokenBalance,
-} from "@/pages/dashboard/services";
-import KycForm from "../../../components/other/kyc-form";
-import { compareObjects, formatErrorMessage } from "@/utils";
+import { useWallet } from "@/contexts/wallet";
+import { useHorizonAccount, useTokenBalance } from "@/pages/dashboard/services";
+import { formatErrorMessage } from "@/utils";
 import {
   FixedMath,
   PoolContract,
@@ -23,17 +15,16 @@ import {
 } from "@blend-capital/blend-sdk";
 import { scaleInputToBigInt } from "@/utils/scval";
 import { SorobanRpc } from "@stellar/stellar-sdk";
-import FullPageSpinner from "@/components/other/full-page-loader";
 import { useState } from "react";
 import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { getAssetReserve } from "@/utils/horizon";
-import { cn } from "@/lib/utils";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
+  COLLATERAL_ASSET_ID,
   POOL_ID,
   USDC_ISSUER,
   DEBOUNCE_DELAY,
@@ -42,29 +33,19 @@ import WithdrawSummary from "./summary/withdraw";
 import SupplySummary from "./summary/supply";
 import BorrowSummary from "./summary/borrow";
 import RepaySummary from "./summary/repay";
-import { CPYT_ASSET_ID } from "@/constants";
+import { Button } from "@/components/ui/button";
 
-const TransactForm = ({
-  form,
-  current,
-  type,
-  asset,
-  updateCurrent,
-  close,
-}: TransactFormProps) => {
+const TransactForm = ({ form, type, asset, close }: TransactFormProps) => {
   const amount = Form.useWatch("amount", form);
-  const poolId = POOL_ID;
-  const { walletAddress, poolSubmit, connected, txStatus, txType } =
-    useWallet();
-  const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
-  const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
-  const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
+  const { walletAddress, poolSubmit, connected, txType } = useWallet();
+  const { data: balance, refetch: balanceRefetch } = useHorizonAccount();
 
-  const { data: pool } = usePool(poolId);
+  const { data: pool } = usePool(POOL_ID);
   const { data: poolOracle } = usePoolOracle(pool);
-  const { data: poolUser } = usePoolUser(pool);
-  let assetId = asset === COLLATERAL_ASSET_CODE ? CPYT_ASSET_ID : USDC_ASSET_ID;
+  const { data: userPoolData } = usePoolUser(pool);
+  let assetId = asset === COLLATERAL_ASSET_CODE ? COLLATERAL_ASSET_ID : USDC_ASSET_ID;
   const reserve = pool?.reserves.get(assetId);
+  const assetToBase = poolOracle?.getPriceFloat(assetId);
 
   const { data: horizonAccount } = useHorizonAccount();
   const { data: tokenBalance } = useTokenBalance(
@@ -76,8 +57,8 @@ const TransactForm = ({
   let maxAmount = 0;
   if (type === "WithdrawCollateral") {
     maxAmount =
-      reserve && poolUser && poolUser.getCollateralFloat(reserve)
-        ? poolUser.getCollateralFloat(reserve)
+      reserve && userPoolData && userPoolData.getCollateralFloat(reserve)
+        ? userPoolData.getCollateralFloat(reserve)
         : 0;
   }
 
@@ -96,7 +77,7 @@ const TransactForm = ({
     const supportedBalance = balance?.balances?.find(
       (balance) =>
         balance?.asset_code === COLLATERAL_ASSET_CODE &&
-        balance?.asset_issuer === CPYT_ISSUER
+        balance?.asset_issuer === COLLATERAL_ISSUER
     );
     if (supportedBalance) {
       maxAmount = +supportedBalance?.balance;
@@ -111,7 +92,8 @@ const TransactForm = ({
           balance?.asset_issuer === USDC_ISSUER
       )?.balance || "0";
     const debtAmount =
-      reserve && poolUser ? poolUser.getLiabilitiesFloat(reserve) : 0;
+      reserve && userPoolData ? userPoolData.getLiabilitiesFloat(reserve) : 0;
+
     if (+supportedBalance > debtAmount) {
       maxAmount = debtAmount;
     } else {
@@ -119,26 +101,15 @@ const TransactForm = ({
     }
   }
 
-  if (type === "Borrow") {
-    const maxUtilFloat = reserve
-      ? FixedMath.toFloat(BigInt(reserve.config.max_util), 7)
-      : 1;
-    const totalSupplied = reserve ? reserve.totalSupplyFloat() : 0;
-    maxAmount = reserve
-      ? totalSupplied * maxUtilFloat - reserve.totalLiabilitiesFloat()
-      : 0;
-  }
-
   const decimals = reserve?.config.decimals ?? 7;
 
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<Positions>();
-  const [isLoading, setloading] = useState(false);
-
+  const [loadingSimulation, setLoadingSimulation] = useState(false);
   const curPositionsEstimate =
-    pool && poolOracle && poolUser
-      ? PositionsEstimate.build(pool, poolOracle, poolUser.positions)
+    pool && poolOracle && userPoolData
+      ? PositionsEstimate.build(pool, poolOracle, userPoolData.positions)
       : undefined;
 
   const newPositionsEstimate =
@@ -146,7 +117,6 @@ const TransactForm = ({
       ? PositionsEstimate.build(pool, poolOracle, parsedSimResult)
       : undefined;
 
-  const curBorrowCap = curPositionsEstimate?.borrowCap;
   const nextBorrowCap = newPositionsEstimate?.borrowCap;
   const curBorrowLimit =
     curPositionsEstimate && Number.isFinite(curPositionsEstimate?.borrowLimit)
@@ -156,6 +126,37 @@ const TransactForm = ({
     newPositionsEstimate && Number.isFinite(newPositionsEstimate?.borrowLimit)
       ? newPositionsEstimate?.borrowLimit
       : 0;
+
+  const assetToEffectiveLiability =
+    assetToBase && reserve
+      ? assetToBase * reserve?.getLiabilityFactor()
+      : undefined;
+
+  const curBorrowCap =
+    curPositionsEstimate && assetToEffectiveLiability
+      ? curPositionsEstimate.borrowCap / assetToEffectiveLiability
+      : undefined;
+
+  if (type === "Borrow") {
+    if (reserve && curPositionsEstimate && assetToBase) {
+      let to_bounded_hf =
+        (curPositionsEstimate?.totalEffectiveCollateral -
+          curPositionsEstimate?.totalEffectiveLiabilities *
+            reserve?.getLiabilityFactor()) /
+        reserve?.getLiabilityFactor();
+
+      let userAvailableAmountToBorrow = Math.min(
+        to_bounded_hf / (assetToBase * reserve.getLiabilityFactor()),
+        reserve.totalSupplyFloat() *
+          (FixedMath.toFloat(BigInt(reserve.config.max_util), 7) - 0.01) -
+          reserve.totalLiabilitiesFloat()
+      );
+
+      maxAmount = userAvailableAmountToBorrow;
+    } else {
+      maxAmount = 0;
+    }
+  }
 
   const handleSubmitTransaction = async (sim: boolean) => {
     if (amount && connected && reserve) {
@@ -171,7 +172,7 @@ const TransactForm = ({
           },
         ],
       };
-      return await poolSubmit(poolId, submitArgs, sim);
+      return await poolSubmit(POOL_ID, submitArgs, sim);
     }
   };
 
@@ -179,6 +180,7 @@ const TransactForm = ({
     async () => {
       setSimResponse(undefined);
       setParsedSimResult(undefined);
+      setLoadingSimulation(true);
       let response = await handleSubmitTransaction(true);
 
       if (response) {
@@ -191,6 +193,7 @@ const TransactForm = ({
           );
         }
       }
+      setLoadingSimulation(false);
     },
     [amount, txType],
     DEBOUNCE_DELAY
@@ -203,42 +206,9 @@ const TransactForm = ({
         currency: asset,
       }}
       className="space-y-6 max-w-full w-[700px] my-5 mx-auto"
-      onFinish={async (data) => {
-        if (current === 1) {
-          await form.validateFields(["amount"]);
-          updateCurrent(2);
-        }
-        if (current === 2) {
-          await form.validateFields();
-          if (
-            !kycData ||
-            (kyc &&
-              !compareObjects(
-                {
-                  email: kyc?.email,
-                  first_name: kyc?.first_name,
-                  last_name: kyc?.last_name,
-                  phone: kyc?.phone,
-                  country: kyc?.country,
-                  city: kyc?.city,
-                  physical_address: kyc?.physical_address,
-                },
-                data
-              ))
-          ) {
-            submitKyc({
-              user: data,
-              publicKey: walletAddress,
-            }).then(() => {
-              kycRefetch();
-              updateCurrent(3);
-            });
-          } else {
-            updateCurrent(3);
-          }
-        }
-        if (current === 3) {
-          setloading(true);
+      onFinish={async () => {
+        await form.validateFields(["amount"]);
+        if (!loadingSimulation && parsedSimResult) {
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -256,54 +226,18 @@ const TransactForm = ({
               notification.error({
                 message: formatErrorMessage(error),
               });
-            })
-            .finally(() => setloading(false));
+            });
         }
       }}
     >
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) && (
-        <FullPageSpinner
-          message={
-            txStatus === TxStatus.BUILDING
-              ? "Preparing your transaction..."
-              : txStatus === TxStatus.SIGNING
-              ? "Please confirm the transaction in your wallet."
-              : txStatus === TxStatus.SUBMITTING
-              ? "Submitting your transaction..."
-              : ""
-          }
-        />
-      )}
-
-      <Steps
-        current={current - 1}
-        className="mb-6"
-        items={[
-          {
-            title: "Amount",
-          },
-          {
-            title: "KYC",
-          },
-          {
-            title: "Summary",
-          },
-        ]}
+      <AmountInput
+        asset={asset}
+        maxAmount={maxAmount}
+        decimals={decimals}
+        loadingSimulation={loadingSimulation}
       />
-      <div className={cn({ block: current === 1, hidden: current !== 1 })}>
-        <AmountInput asset={asset} maxAmount={maxAmount} decimals={decimals} />
-      </div>
 
-      {current === 2 && (
-        <KycForm
-          loading={kycLoading || kycRefetching}
-          publicKey={walletAddress}
-        />
-      )}
-      {current === 3 && (
+      {parsedSimResult && simResponse && (
         <>
           {type === "WithdrawCollateral" && (
             <WithdrawSummary
@@ -311,7 +245,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -325,7 +259,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -340,7 +274,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -354,7 +288,7 @@ const TransactForm = ({
               simResponse={simResponse}
               parsedSimResult={parsedSimResult}
               decimals={decimals}
-              poolUser={poolUser}
+              poolUser={userPoolData}
               reserve={reserve}
               curBorrowCap={curBorrowCap}
               nextBorrowCap={nextBorrowCap}
@@ -364,6 +298,9 @@ const TransactForm = ({
           )}
         </>
       )}
+      <Button className="w-full" disabled={loadingSimulation || !amount}>
+        Continue
+      </Button>
     </Form>
   );
 };

@@ -1,10 +1,6 @@
 import Modal from "antd/lib/modal";
 import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useWallet } from "@/contexts/wallet";
-import { useGetAccountBalance } from "@/pages/dashboard/services";
 import ErrorComponent from "@/components/other/error-component";
 import { formatErrorMessage } from "@/utils";
 import Spinner from "@/components/other/spinner";
@@ -12,17 +8,17 @@ import TransactForm from "./transact-form";
 import {
   BLND_ISSUER,
   COLLATERAL_ASSET_CODE,
-  CPYT_ISSUER,
+  COLLATERAL_ISSUER,
   USDC_ISSUER,
 } from "@/constants";
+import { useHorizonAccount } from "../services";
 
 export type TransactFormProps = {
   form: FormInstance<any>;
-  current: number;
+
   type: RequestTypeProp;
   asset: "USDC" | typeof COLLATERAL_ASSET_CODE;
   close: () => void;
-  updateCurrent: (current: number) => void;
 };
 
 const TransactModal = ({
@@ -38,12 +34,10 @@ const TransactModal = ({
   title?: string;
   close: () => void;
 }) => {
-  const [current, setCurrent] = useState(1);
-
   const [form] = Form.useForm();
   const onClose = () => {
     form.resetFields();
-    setCurrent(1);
+
     close();
   };
   return (
@@ -52,19 +46,6 @@ const TransactModal = ({
       onCancel={onClose}
       title={
         <span className="inline-flex items-center gap-3">
-          {current > 1 && (
-            <Button
-              size={"sm"}
-              variant={"ghost"}
-              className="-ml-4"
-              type="button"
-              onClick={() => {
-                setCurrent(current - 1);
-              }}
-            >
-              <ArrowLeft />
-            </Button>
-          )}
           {title || `Transact ${asset}`}
         </span>
       }
@@ -72,30 +53,19 @@ const TransactModal = ({
       destroyOnClose
       maskClosable={false}
     >
-      <Transact
-        form={form}
-        current={current}
-        updateCurrent={(current) => setCurrent(current)}
-        close={onClose}
-        type={type}
-        asset={asset}
-      />
+      <Transact form={form} close={onClose} type={type} asset={asset} />
     </Modal>
   );
 };
 
-const Transact = ({
-  form,
-  current,
-  type,
-  asset,
-  close,
-  updateCurrent,
-}: TransactFormProps) => {
+const Transact = ({ form, type, asset, close }: TransactFormProps) => {
   const [isLoading, setLoading] = useState(false);
-  const { walletAddress } = useWallet();
-  const { balance, balanceError, balanceLoading, balanceRefetch } =
-    useGetAccountBalance(walletAddress || "");
+  const {
+    data: balance,
+    error: balanceError,
+    isLoading: balanceLoading,
+    refetch: balanceRefetch,
+  } = useHorizonAccount();
 
   const loading = isLoading || balanceLoading;
 
@@ -123,7 +93,7 @@ const Transact = ({
     return (
       (balance?.asset_issuer === BLND_ISSUER ||
         balance?.asset_issuer === USDC_ISSUER ||
-        balance?.asset_issuer === CPYT_ISSUER) &&
+        balance?.asset_issuer === COLLATERAL_ISSUER) &&
       balance?.asset_code === asset
     );
   });
@@ -131,16 +101,7 @@ const Transact = ({
   if (!supportedBalances?.length) {
     return <ErrorComponent message="You have no supported asset" />;
   }
-  return (
-    <TransactForm
-      close={close}
-      form={form}
-      current={current}
-      updateCurrent={updateCurrent}
-      type={type}
-      asset={asset}
-    />
-  );
+  return <TransactForm close={close} form={form} type={type} asset={asset} />;
 };
 
 export default TransactModal;

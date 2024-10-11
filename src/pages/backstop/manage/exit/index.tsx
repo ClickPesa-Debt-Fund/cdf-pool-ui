@@ -1,22 +1,16 @@
 import Form, { FormInstance } from "antd/lib/form";
 import Modal from "antd/lib/modal";
-import Steps from "antd/lib/steps";
 import { BalancesProps } from "../join";
 import { requiresTrustline } from "@/utils/horizon";
 import { BLND_ASSET, USDC_ASSET } from "@/constants";
-import { AccountResponse } from "node_modules/@stellar/stellar-sdk/lib/horizon";
 import ExitForm from "./exit-form";
 import { Button } from "@/components/ui/button";
-import { TxStatus, useWallet } from "@/contexts/wallet";
-import { useState } from "react";
-import FullPageSpinner from "@/components/other/full-page-loader";
-import { ArrowLeft } from "lucide-react";
+import { useWallet } from "@/contexts/wallet";
 
 export type ExitFormProps = {
   form: FormInstance<any>;
-  current: number;
+
   close: () => void;
-  updateCurrent: (current: number) => void;
 };
 
 const ExitModal = ({
@@ -31,12 +25,11 @@ const ExitModal = ({
 }: {
   open: boolean;
   close: () => void;
-  horizonAccount: AccountResponse;
+  horizonAccount: HorizonAccountType;
 } & BalancesProps) => {
-  const { createTrustline, txStatus } = useWallet();
+  const { createTrustline } = useWallet();
   const [form] = Form.useForm();
-  const [current, setCurrent] = useState(1);
-  const [isLoading, setLoading] = useState(false);
+
   const hasBLNDTrustline = !requiresTrustline(horizonAccount, BLND_ASSET);
   const hasUSDCTrustline = !requiresTrustline(horizonAccount, USDC_ASSET);
 
@@ -47,41 +40,11 @@ const ExitModal = ({
 
   return (
     <>
-      {([TxStatus.BUILDING, TxStatus.SIGNING, TxStatus.SUBMITTING].includes(
-        txStatus
-      ) ||
-        isLoading) &&
-        open && (
-          <FullPageSpinner
-            message={
-              txStatus === TxStatus.BUILDING
-                ? "Preparing your transaction..."
-                : txStatus === TxStatus.SIGNING
-                ? "Please confirm the transaction in your wallet."
-                : txStatus === TxStatus.SUBMITTING
-                ? "Submitting your transaction..."
-                : ""
-            }
-          />
-        )}
       <Modal
         open={open}
         onCancel={onClose}
         title={
           <span className="inline-flex items-center gap-3">
-            {current > 1 && (
-              <Button
-                size={"sm"}
-                variant={"ghost"}
-                className="-ml-4"
-                type="button"
-                onClick={() => {
-                  setCurrent(current - 1);
-                }}
-              >
-                <ArrowLeft />
-              </Button>
-            )}
             {`Exit BLND-USDC Liquidity Pool`}
           </span>
         }
@@ -120,20 +83,7 @@ const ExitModal = ({
         )}
         {hasBLNDTrustline && hasUSDCTrustline && (
           <>
-            <Steps
-              current={current - 1}
-              className="mb-4 mt-3"
-              items={[
-                {
-                  title: "Enter Details",
-                },
-                {
-                  title: "Summary",
-                },
-              ]}
-            />
             <ExitForm
-              current={current}
               form={form}
               lpBalance={lpBalance}
               usdcBalance={usdcBalance}
@@ -141,8 +91,6 @@ const ExitModal = ({
               backstop={backstop}
               close={onClose}
               refetch={refetch}
-              updateCurrent={(current) => setCurrent(current)}
-              updateLoading={(loading) => setLoading(loading)}
             />
           </>
         )}
