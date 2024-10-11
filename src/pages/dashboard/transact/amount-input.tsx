@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { formatAmount } from "@/utils";
 import { COLLATERAL_ASSET_CODE } from "@/constants";
@@ -54,9 +53,6 @@ const AmountInput = ({
           <Spin size="small" /> Loading
         </div>
       )}
-      <Button className="w-full" disabled={loadingSimulation}>
-        Continue
-      </Button>
     </div>
   );
 };

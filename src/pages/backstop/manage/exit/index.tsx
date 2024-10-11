@@ -1,6 +1,5 @@
 import Form, { FormInstance } from "antd/lib/form";
 import Modal from "antd/lib/modal";
-import Steps from "antd/lib/steps";
 import { BalancesProps } from "../join";
 import { requiresTrustline } from "@/utils/horizon";
 import { BLND_ASSET, USDC_ASSET } from "@/constants";
@@ -8,14 +7,11 @@ import { AccountResponse } from "node_modules/@stellar/stellar-sdk/lib/horizon";
 import ExitForm from "./exit-form";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
-import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
 
 export type ExitFormProps = {
   form: FormInstance<any>;
-  current: number;
+
   close: () => void;
-  updateCurrent: (current: number) => void;
 };
 
 const ExitModal = ({
@@ -34,7 +30,7 @@ const ExitModal = ({
 } & BalancesProps) => {
   const { createTrustline } = useWallet();
   const [form] = Form.useForm();
-  const [current, setCurrent] = useState(1);
+
   const hasBLNDTrustline = !requiresTrustline(horizonAccount, BLND_ASSET);
   const hasUSDCTrustline = !requiresTrustline(horizonAccount, USDC_ASSET);
 
@@ -50,19 +46,6 @@ const ExitModal = ({
         onCancel={onClose}
         title={
           <span className="inline-flex items-center gap-3">
-            {current > 1 && (
-              <Button
-                size={"sm"}
-                variant={"ghost"}
-                className="-ml-4"
-                type="button"
-                onClick={() => {
-                  setCurrent(current - 1);
-                }}
-              >
-                <ArrowLeft />
-              </Button>
-            )}
             {`Exit BLND-USDC Liquidity Pool`}
           </span>
         }
@@ -101,20 +84,7 @@ const ExitModal = ({
         )}
         {hasBLNDTrustline && hasUSDCTrustline && (
           <>
-            <Steps
-              current={current - 1}
-              className="mb-4 mt-3"
-              items={[
-                {
-                  title: "Enter Details",
-                },
-                {
-                  title: "Summary",
-                },
-              ]}
-            />
             <ExitForm
-              current={current}
               form={form}
               lpBalance={lpBalance}
               usdcBalance={usdcBalance}
@@ -122,7 +92,6 @@ const ExitModal = ({
               backstop={backstop}
               close={onClose}
               refetch={refetch}
-              updateCurrent={(current) => setCurrent(current)}
             />
           </>
         )}

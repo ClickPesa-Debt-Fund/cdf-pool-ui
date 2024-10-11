@@ -12,12 +12,14 @@ import {
   POOL_ID,
   STELLER_EXPERT_URL,
   CPYT_ASSET_ID,
+  POOL_STATUS,
 } from "@/constants";
 import { PoolEstimate } from "@blend-capital/blend-sdk";
 import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
 import Spinner from "@/components/other/spinner";
 import { toCompactAddress, toPercentage } from "@/utils/formatter";
 import { useNavigate } from "react-router-dom";
+import Info from "@/components/other/info";
 
 const PoolDetails = () => {
   const navigate = useNavigate();
@@ -29,6 +31,8 @@ const PoolDetails = () => {
 
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
   const collateralReserve = pool?.reserves.get(CPYT_ASSET_ID);
+
+  console.log(pool, poolOracle);
 
   if (isLoading) {
     return <Spinner />;
@@ -49,10 +53,16 @@ const PoolDetails = () => {
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
-              title="Pool Status"
+              title={"Pool Status"}
               content={
                 <span className="w-fit flex text-font-semi-bold">
-                  <StatusTag name="Active" color="green" />
+                  <StatusTag
+                    // @ts-ignore
+                    name={POOL_STATUS?.[pool?.config?.status]}
+                    color={
+                      [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
+                    }
+                  />
                 </span>
               }
               style={{
@@ -60,7 +70,12 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="APR"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  APR <Info message="Annual Percentage Rate" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(
@@ -76,7 +91,13 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Supplied Funds"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Supplied Funds{" "}
+                  <Info message="Total funds in USD added to the pool" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   ${nFormatter(marketSize || 0, 7)}
@@ -87,7 +108,13 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Supplied Collateral"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Supplied Collateral{" "}
+                  <Info message="Total collateral in USD added to the pool" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   {nFormatter(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
@@ -110,7 +137,13 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Repaid Funds"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Repaid Funds{" "}
+                  <Info message="Total refunds in USD done by the pool" />
+                </span>
+              }
               content={<span className="text-font-semi-bold">$12k</span>}
               style={{
                 marginTop: 0,
@@ -136,7 +169,13 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="Number of Participating Collateral Suppliers"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Number of Participating Collateral Suppliers{" "}
+                  <Info message="Total parties that added collateral" />
+                </span>
+              }
               content={<span className="text-font-semi-bold">1</span>}
               style={{
                 marginTop: 0,

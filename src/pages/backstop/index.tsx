@@ -18,6 +18,8 @@ const Backstop = () => {
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
 
+  console.log(backstop);
+
   if (!pool || !backstop || !backstopPoolData) {
     return <Spinner />;
   }

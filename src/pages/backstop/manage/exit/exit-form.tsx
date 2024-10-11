@@ -9,7 +9,6 @@ import useDebounce from "@/hooks/use-debounce";
 import { useWallet } from "@/contexts/wallet";
 import { scaleInputToBigInt } from "@/utils/scval";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
-import { cn } from "@/lib/utils";
 import { currencies } from "@/shared/data/currencies";
 import { Button } from "@/components/ui/button";
 import { formatAmount, formatErrorMessage } from "@/utils";
@@ -23,9 +22,7 @@ const ExitForm = ({
   blndBalance,
   usdcBalance,
   lpBalance,
-  current,
   close,
-  updateCurrent,
   refetch,
 }: ExitFormProps & BalancesProps) => {
   const { cometExit, walletAddress } = useWallet();
@@ -111,7 +108,7 @@ const ExitForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
@@ -136,19 +133,13 @@ const ExitForm = ({
       }}
       onFinish={async () => {
         await form.validateFields();
-        if (current === 1) {
-          updateCurrent(2);
-        }
-        if (current === 2) {
+
+        if (simResponse) {
           handleSubmitExit();
         }
       }}
     >
-      <div
-        className={cn({
-          hidden: current !== 1,
-        })}
-      >
+      <div>
         <WizardAmountInput
           currency={{
             options:
@@ -220,7 +211,7 @@ const ExitForm = ({
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
       </div>
-      {current === 2 && (
+      {simResponse && (
         <Summary
           simResponse={simResponse}
           lpBalance={lpBalance}

@@ -28,11 +28,13 @@ const Summary = ({
   isJoin: boolean;
   decimals?: number;
 }) => {
+  console.log(!!lpBalance, (Number(lpBalance) / 10 ** 7 + toMint).toString());
+
   return (
     <div className="mb-6">
       <DetailsRow
         amount={{
-          label: "Amount to Borrow",
+          label: "Amount",
           value: amount?.toString(),
           currency: currency as any,
         }}
@@ -120,7 +122,7 @@ const Summary = ({
               end: {
                 value: lpBalance
                   ? (Number(lpBalance) / 10 ** 7 + toMint).toString()
-                  : "",
+                  : toMint.toString(),
                 currency: "BLND-USDC LP" as any,
                 digits: 7,
               },

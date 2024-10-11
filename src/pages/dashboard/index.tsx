@@ -25,7 +25,8 @@ import { CurrencyLogos } from "@/components/other/currency-logos";
 const Dashboard = () => {
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
-  const { isLoading } = usePool(safePoolId, true);
+
+  const { isLoading, data } = usePool(safePoolId, true);
 
   const { connected, walletAddress, faucet } = useWallet();
   const { balance, balanceError, balanceRefetch } = useGetAccountBalance(
@@ -74,6 +75,8 @@ const Dashboard = () => {
   };
 
   const notFound = balanceError?.response?.status === 404;
+
+  console.log("pool data", data);
 
   if (isLoading) {
     return <Spinner />;

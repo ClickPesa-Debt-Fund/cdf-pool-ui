@@ -108,3 +108,9 @@ export function usePoolUser(
     },
   });
 }
+
+// get historical data
+export const useRetroshades = ({  }: { command: string }) => {
+  const {} = useQuery([], () => {}, {});
+  return {};
+};

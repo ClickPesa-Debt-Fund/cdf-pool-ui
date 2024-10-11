@@ -1,9 +1,6 @@
 import Modal from "antd/lib/modal";
 import { useState } from "react";
 import Form, { FormInstance } from "antd/lib/form";
-import Steps from "antd/lib/steps";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import {
   useBackstop,
   useHorizonAccount,
@@ -16,9 +13,9 @@ import DepositForm from "./deposit-form";
 
 export type DepositFormProps = {
   form: FormInstance<any>;
-  current: number;
+
   close: () => void;
-  updateCurrent: (current: number) => void;
+
   lpBalance: bigint;
 };
 
@@ -29,12 +26,10 @@ const DepositModal = ({
   open: boolean;
   close: () => void;
 }) => {
-  const [current, setCurrent] = useState(1);
-
   const [form] = Form.useForm();
   const onClose = () => {
     form.resetFields();
-    setCurrent(1);
+
     close();
   };
   return (
@@ -43,19 +38,6 @@ const DepositModal = ({
       onCancel={onClose}
       title={
         <span className="inline-flex items-center gap-3">
-          {current > 1 && (
-            <Button
-              size={"sm"}
-              variant={"ghost"}
-              className="-ml-4"
-              type="button"
-              onClick={() => {
-                setCurrent(current - 1);
-              }}
-            >
-              <ArrowLeft />
-            </Button>
-          )}
           {"Deposit BLND-USDC LP"}
         </span>
       }
@@ -63,18 +45,12 @@ const DepositModal = ({
       destroyOnClose
       maskClosable={false}
     >
-      <Deposit
-        form={form}
-        current={current}
-        updateCurrent={(current) => setCurrent(current)}
-        close={onClose}
-        lpBalance={0n}
-      />
+      <Deposit form={form} close={onClose} lpBalance={0n} />
     </Modal>
   );
 };
 
-const Deposit = ({ form, current, close, updateCurrent }: DepositFormProps) => {
+const Deposit = ({ form, close }: DepositFormProps) => {
   const [isLoading, setLoading] = useState(false);
   const { data: backstop } = useBackstop();
   const {
@@ -126,28 +102,7 @@ const Deposit = ({ form, current, close, updateCurrent }: DepositFormProps) => {
   if (!lpBalance) return null;
   return (
     <>
-      <Steps
-        current={current - 1}
-        className="mb-4 mt-3"
-        items={[
-          {
-            title: "Amount",
-          },
-          {
-            title: "KYC",
-          },
-          {
-            title: "Summary",
-          },
-        ]}
-      />
-      <DepositForm
-        form={form}
-        current={current}
-        updateCurrent={updateCurrent}
-        close={close}
-        lpBalance={lpBalance}
-      />
+      <DepositForm form={form} close={close} lpBalance={lpBalance} />
     </>
   );
 };

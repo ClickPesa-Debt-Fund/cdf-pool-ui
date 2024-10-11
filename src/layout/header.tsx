@@ -158,7 +158,7 @@ const Header = () => {
                 onClick={handleClickConnect}
                 disabled={isLoading}
               >
-                Connect Wallet
+                Connect Wallet To Participate
               </Button>
             )}
           </>

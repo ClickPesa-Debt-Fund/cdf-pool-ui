@@ -12,6 +12,7 @@ import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-grap
 import { Button } from "@/components/ui/button";
 import { toPercentage } from "@/utils/formatter";
 import TransactModal from "../transact";
+import Info from "@/components/other/info";
 
 const AdminPosition = () => {
   const { connected, connect } = useWallet();
@@ -115,7 +116,13 @@ const AdminPosition = () => {
               }}
             />
             <DetailContentItem
-              title="Supplied Collateral"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Supplied Collateral{" "}
+                  <Info message="Your supply in USD added to the pool" />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   {nFormatter(
@@ -147,7 +154,15 @@ const AdminPosition = () => {
               />
             )}
             <DetailContentItem
-              title="Maximum Borrow Cap"
+              // @ts-ignore
+              title={
+                <span className="inline-flex items-center gap-2">
+                  Maximum Borrow Cap{" "}
+                  <Info
+                    message={`Your maximum that can be borrowed by with supplied ${COLLATERAL_ASSET_CODE}`}
+                  />
+                </span>
+              }
               content={
                 <span className="text-font-semi-bold">
                   ${nFormatter(userEst?.borrowCap || 0, 7)}

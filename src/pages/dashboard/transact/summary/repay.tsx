@@ -1,6 +1,5 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
-import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
@@ -108,7 +107,7 @@ const RepaySummary = ({
           />
         </div>
       </div>
-      <Button className="w-full">Continue</Button>
+      
     </div>
   );
 };

@@ -1,17 +1,13 @@
 import Form from "antd/lib/form";
-import Steps from "antd/lib/steps";
 import { TransactFormProps } from ".";
 import AmountInput from "./amount-input";
 import { useWallet } from "@/contexts/wallet";
 import {
   useGetAccountBalance,
-  useGetKYC,
   useHorizonAccount,
-  useSubmitKYC,
   useTokenBalance,
 } from "@/pages/dashboard/services";
-import KycForm from "../../../components/other/kyc-form";
-import { compareObjects, formatErrorMessage } from "@/utils";
+import { formatErrorMessage } from "@/utils";
 import {
   FixedMath,
   PoolContract,
@@ -28,7 +24,6 @@ import notification from "antd/lib/notification";
 import useDebounce from "@/hooks/use-debounce";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { getAssetReserve } from "@/utils/horizon";
-import { cn } from "@/lib/utils";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
@@ -42,20 +37,12 @@ import SupplySummary from "./summary/supply";
 import BorrowSummary from "./summary/borrow";
 import RepaySummary from "./summary/repay";
 import { CPYT_ASSET_ID } from "@/constants";
+import { Button } from "@/components/ui/button";
 
-const TransactForm = ({
-  form,
-  current,
-  type,
-  asset,
-  updateCurrent,
-  close,
-}: TransactFormProps) => {
+const TransactForm = ({ form, type, asset, close }: TransactFormProps) => {
   const amount = Form.useWatch("amount", form);
   const { walletAddress, poolSubmit, connected, txType } = useWallet();
   const { balance, balanceRefetch } = useGetAccountBalance(walletAddress || "");
-  const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
-  const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
   const { data: pool } = usePool(POOL_ID);
   const { data: poolOracle } = usePoolOracle(pool);
@@ -134,7 +121,6 @@ const TransactForm = ({
       ? PositionsEstimate.build(pool, poolOracle, parsedSimResult)
       : undefined;
 
-  const curBorrowCap = curPositionsEstimate?.borrowCap;
   const nextBorrowCap = newPositionsEstimate?.borrowCap;
   const curBorrowLimit =
     curPositionsEstimate && Number.isFinite(curPositionsEstimate?.borrowLimit)
@@ -144,6 +130,16 @@ const TransactForm = ({
     newPositionsEstimate && Number.isFinite(newPositionsEstimate?.borrowLimit)
       ? newPositionsEstimate?.borrowLimit
       : 0;
+
+  const assetToEffectiveLiability =
+    assetToBase && reserve
+      ? assetToBase * reserve?.getLiabilityFactor()
+      : undefined;
+
+  const curBorrowCap =
+    curPositionsEstimate && assetToEffectiveLiability
+      ? curPositionsEstimate.borrowCap / assetToEffectiveLiability
+      : undefined;
 
   if (type === "Borrow") {
     if (reserve && curPositionsEstimate && assetToBase) {
@@ -216,41 +212,9 @@ const TransactForm = ({
         currency: asset,
       }}
       className="space-y-6 max-w-full w-[700px] my-5 mx-auto"
-      onFinish={async (data) => {
-        if (current === 1) {
-          await form.validateFields(["amount"]);
-          if (parsedSimResult) updateCurrent(2);
-        }
-        if (current === 2) {
-          await form.validateFields();
-          if (
-            !kycData ||
-            (kyc &&
-              !compareObjects(
-                {
-                  email: kyc?.email,
-                  first_name: kyc?.first_name,
-                  last_name: kyc?.last_name,
-                  phone: kyc?.phone,
-                  country: kyc?.country,
-                  city: kyc?.city,
-                  physical_address: kyc?.physical_address,
-                },
-                data
-              ))
-          ) {
-            submitKyc({
-              user: data,
-              publicKey: walletAddress,
-            }).then(() => {
-              kycRefetch();
-              updateCurrent(3);
-            });
-          } else {
-            updateCurrent(3);
-          }
-        }
-        if (current === 3) {
+      onFinish={async () => {
+        await form.validateFields(["amount"]);
+        if (!loadingSimulation && parsedSimResult) {
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -272,37 +236,14 @@ const TransactForm = ({
         }
       }}
     >
-      <Steps
-        current={current - 1}
-        className="mb-6"
-        items={[
-          {
-            title: "Amount",
-          },
-          {
-            title: "KYC",
-          },
-          {
-            title: "Summary",
-          },
-        ]}
+      <AmountInput
+        asset={asset}
+        maxAmount={maxAmount}
+        decimals={decimals}
+        loadingSimulation={loadingSimulation}
       />
-      <div className={cn({ block: current === 1, hidden: current !== 1 })}>
-        <AmountInput
-          asset={asset}
-          maxAmount={maxAmount}
-          decimals={decimals}
-          loadingSimulation={loadingSimulation}
-        />
-      </div>
 
-      {current === 2 && (
-        <KycForm
-          loading={kycLoading || kycRefetching}
-          publicKey={walletAddress}
-        />
-      )}
-      {current === 3 && (
+      {parsedSimResult && simResponse && (
         <>
           {type === "WithdrawCollateral" && (
             <WithdrawSummary
@@ -363,6 +304,9 @@ const TransactForm = ({
           )}
         </>
       )}
+      <Button className="w-full" disabled={loadingSimulation || !amount}>
+        Continue
+      </Button>
     </Form>
   );
 };

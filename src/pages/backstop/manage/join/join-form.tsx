@@ -12,7 +12,6 @@ import { scaleInputToBigInt } from "@/utils/scval";
 import { estJoinPool } from "@/utils/comet";
 import { useWallet } from "@/contexts/wallet";
 import { delay, formatAmount, formatErrorMessage } from "@/utils";
-import { cn } from "@/lib/utils";
 import Summary from "./summary";
 import { BalancesProps, JoinFormProps } from ".";
 import { DEBOUNCE_DELAY } from "@/constants";
@@ -23,8 +22,6 @@ const JoinForm = ({
   usdcBalance,
   blndBalance,
   backstop,
-  current,
-  updateCurrent,
   close,
   refetch,
 }: JoinFormProps & BalancesProps) => {
@@ -191,7 +188,7 @@ const JoinForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
@@ -229,7 +226,7 @@ const JoinForm = ({
             refetch();
             close();
             form.resetFields();
-            updateCurrent(1);
+
             close();
           } else {
             notification.error({
@@ -253,21 +250,12 @@ const JoinForm = ({
         slippage: "1",
       }}
       onFinish={async () => {
-        if (loadingEstimate) {
-          return;
+        if (!loadingEstimate && simResponse) {
+          isJoin ? handleSubmitJoin() : handleSubmitDeposit();
         }
-        if (current === 1) {
-          await form.validateFields();
-          return updateCurrent(2);
-        }
-        isJoin ? handleSubmitJoin() : handleSubmitDeposit();
       }}
     >
-      <div
-        className={cn({
-          hidden: current !== 1,
-        })}
-      >
+      <div>
         <WizardAmountInput
           currency={{
             options:
@@ -357,7 +345,7 @@ const JoinForm = ({
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>
       </div>
-      {current === 2 && (
+      {simResponse && (
         <Summary
           amount={amount}
           currency={currency}

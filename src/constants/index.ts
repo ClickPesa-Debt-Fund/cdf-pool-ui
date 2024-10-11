@@ -22,3 +22,12 @@ export const stellarExpertHashUrl = `https://stellar.expert/explorer/${
     ? "testnet"
     : "public"
 }/tx/`;
+
+export const POOL_STATUS = {
+  0: "ADMIN ACTIVE",
+  1: "ACTIVE",
+  2: "ADMIN-ON ICE",
+  3: "ON ICE",
+  4: "ADMIN FROZEN",
+  5: "FROZEN",
+};

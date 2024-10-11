@@ -15,31 +15,17 @@ import { bigintToInput, scaleInputToBigInt } from "@/utils/scval";
 import WizardAmountInput from "@/components/other/wizard-amount-input";
 import { currencies } from "@/shared/data/currencies";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import KycForm from "@/components/other/kyc-form";
-import {
-  useGetAccountBalance,
-  useGetKYC,
-  useSubmitKYC,
-} from "@/pages/dashboard/services";
-import { compareObjects, formatAmount, formatErrorMessage } from "@/utils";
+import { useGetAccountBalance } from "@/pages/dashboard/services";
+import { formatAmount, formatErrorMessage } from "@/utils";
 import Summary from "./summary";
 
-const DepositForm = ({
-  form,
-  lpBalance,
-  close,
-  current,
-  updateCurrent,
-}: DepositFormProps) => {
+const DepositForm = ({ form, lpBalance, close }: DepositFormProps) => {
   const amount = Form.useWatch("amount", form);
   const { connected, walletAddress, backstopDeposit } = useWallet();
   const { balanceRefetch } = useGetAccountBalance(walletAddress || "");
   const [simResponse, setSimResponse] =
     useState<SorobanRpc.Api.SimulateTransactionResponse>();
   const [parsedSimResult, setParsedSimResult] = useState<bigint>();
-  const { kyc: submitKyc, kycData, kycLoading } = useSubmitKYC();
-  const { kyc, kycRefetch, kycRefetching } = useGetKYC(walletAddress);
 
   useDebounce(
     async () => {
@@ -84,41 +70,10 @@ const DepositForm = ({
       initialValues={{
         currency: "BLND-USDC LP",
       }}
-      onFinish={async (data) => {
-        if (current === 1) {
-          await form.validateFields(["amount"]);
-          updateCurrent(2);
-        }
-        if (current === 2) {
-          await form.validateFields();
-          if (
-            !kycData ||
-            (kyc &&
-              !compareObjects(
-                {
-                  email: kyc?.email,
-                  first_name: kyc?.first_name,
-                  last_name: kyc?.last_name,
-                  phone: kyc?.phone,
-                  country: kyc?.country,
-                  city: kyc?.city,
-                  physical_address: kyc?.physical_address,
-                },
-                data
-              ))
-          ) {
-            submitKyc({
-              user: data,
-              publicKey: walletAddress,
-            }).then(() => {
-              kycRefetch();
-              updateCurrent(3);
-            });
-          } else {
-            updateCurrent(3);
-          }
-        }
-        if (current === 3) {
+      onFinish={async () => {
+        await form.validateFields(["amount"]);
+
+        if (parsedSimResult) {
           handleSubmitTransaction(false)
             .then((res) => {
               // @ts-ignore
@@ -140,11 +95,7 @@ const DepositForm = ({
         }
       }}
     >
-      <div
-        className={cn({
-          hidden: current !== 1,
-        })}
-      >
+      <div>
         <WizardAmountInput
           currency={{
             options:
@@ -180,25 +131,16 @@ const DepositForm = ({
         )} BLND-USDC LP`}</p>
         <br />
       </div>
-      <div
-        className={cn({
-          hidden: current !== 2,
-        })}
-      >
-        <KycForm
-          loading={kycLoading || kycRefetching}
-          publicKey={walletAddress}
-        />
-      </div>
-      {current === 3 && (
+
+      {parsedSimResult ? (
         <Summary
           amount={amount}
           simResponse={simResponse}
           lpBalance={maxAmount}
           parsedSimResult={parsedSimResult}
         />
-      )}
-      {current !== 2 && <Button className="w-full">Continue</Button>}
+      ) : null}
+      <Button className="w-full">Continue</Button>
     </Form>
   );
 };
