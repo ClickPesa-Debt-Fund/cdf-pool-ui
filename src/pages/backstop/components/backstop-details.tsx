@@ -20,7 +20,7 @@ import { toBalance, toPercentage } from "@/utils/formatter";
 import { useWallet } from "@/contexts/wallet";
 import { useEffect, useState } from "react";
 import { SorobanRpc, scValToBigInt, xdr } from "@stellar/stellar-sdk";
-import { nFormatter } from "@/pages/landing-page/earning-calculator/earning-graph";
+import { formatAmount } from "@/utils";
 
 const BackstopDetails = () => {
   const [lpTokenEmissions, setLpTokenEmissions] = useState<bigint>();
@@ -152,9 +152,9 @@ const BackstopDetails = () => {
             />
             <DetailContentItem
               title="Amount Deposited"
-              content={`$${nFormatter(
+              content={`$${formatAmount(
                 backstopPoolEst?.totalSpotValue || 0,
-                3
+                7
               )}`}
               style={{
                 marginTop: 0,
