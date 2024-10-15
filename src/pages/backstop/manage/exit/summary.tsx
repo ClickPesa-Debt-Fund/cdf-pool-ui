@@ -1,5 +1,6 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
+import { useTheme } from "@/contexts/theme";
 import { toBalance } from "@/utils/formatter";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 
@@ -24,6 +25,7 @@ const Summary = ({
   blndBalance?: string | number;
   decimals?: number;
 }) => {
+  const { theme } = useTheme();
   return (
     <div className="mb-6">
       <DetailsRow
@@ -32,6 +34,7 @@ const Summary = ({
           value: amount?.toString(),
           currency: currency as any,
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -47,6 +50,7 @@ const Summary = ({
           )}`,
           currency: "XLM" as any,
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -65,6 +69,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -72,6 +77,7 @@ const Summary = ({
           value: minBLNDOut.toString(),
           currency: "BLND" as any,
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -87,6 +93,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -94,6 +101,7 @@ const Summary = ({
           value: minUSDCOut.toString(),
           currency: "USDC" as any,
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -109,6 +117,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
     </div>
   );

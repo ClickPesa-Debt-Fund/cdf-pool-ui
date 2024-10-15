@@ -4,8 +4,12 @@ import Form from "./form";
 import EarningGraph from "./earning-graph";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
+import { cn } from "@/lib/utils";
 
 const EarningCalculator = () => {
+  const { theme } = useTheme();
   const [amount, setAmount] = useState("300");
   const navigate = useNavigate();
   return (
@@ -45,9 +49,14 @@ const EarningCalculator = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
+      <SectionTemplate
+        mode={theme}
+        className={cn("md:rounded-2xl rounded-lg", {
+          "!bg-[#272F35]": theme === "dark",
+        })}
+      >
         <EarningGraph amount={amount} />
-      </div>
+      </SectionTemplate>
     </section>
   );
 };

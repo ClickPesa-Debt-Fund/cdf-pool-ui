@@ -1167,6 +1167,13 @@
     core-js "^3.0.0"
     react-phone-input-2 "2.15.1"
 
+"@clickpesa/components-library.section-template@^0.0.12":
+  version "0.0.12"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.section-template/-/components-library.section-template-0.0.12.tgz#8aa556ada89747353366f8ec6bf1551728b588dc"
+  integrity sha512-2enRGqxlRls3Ehl08VY7UAHmZKe0z8OYtxTVZq4zKLp7CQBdkzUhCAIbJRoMhpWrfg6ZL+LuR7mALlvLX3dNXw==
+  dependencies:
+    core-js "^3.0.0"
+
 "@clickpesa/components-library.shared.shared-functions@0.0.4":
   version "0.0.4"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.shared.shared-functions/-/components-library.shared.shared-functions-0.0.4.tgz#ebc7ecd63b54b22021ef6460b7f6b2f79b48392d"

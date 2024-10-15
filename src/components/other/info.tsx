@@ -11,7 +11,7 @@ const Info = ({ message, icon }: { message?: string; icon?: ReactNode }) => {
       onOpenChange={setOpen}
       trigger={"hover"}
     >
-      {icon || <InfoIcon className="text-primary" size={14} />}
+      {icon || <InfoIcon className="text-primary min-w-4" size={14} />}
     </Popover>
   );
 };

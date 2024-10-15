@@ -15,6 +15,7 @@ import { delay, formatAmount, formatErrorMessage } from "@/utils";
 import Summary from "./summary";
 import { BalancesProps, JoinFormProps } from ".";
 import { DEBOUNCE_DELAY } from "@/constants";
+import { useTheme } from "@/contexts/theme";
 
 const JoinForm = ({
   form,
@@ -25,6 +26,7 @@ const JoinForm = ({
   close,
   refetch,
 }: JoinFormProps & BalancesProps) => {
+  const { theme } = useTheme();
   const amount = Form.useWatch("amount", form);
   const slippage = Form.useWatch("slippage", form);
   const currency = Form.useWatch("currency", form);
@@ -126,6 +128,7 @@ const JoinForm = ({
             inputAsBigInt,
             slippageAsNum
           );
+
           setMaxBLNDIn(blnd);
           setMaxUSDCIn(usdc);
 
@@ -340,7 +343,7 @@ const JoinForm = ({
               },
             },
           ]}
-          className={`basic-text-input`}
+          className={`basic-text-input ${theme}`}
         >
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>

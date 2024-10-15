@@ -12,27 +12,39 @@ import { Link, useLocation } from "react-router-dom";
 import * as formatter from "@/utils/formatter";
 import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
-import { useHorizonAccount } from "@/pages/dashboard/services";
+import {
+  useBackstop,
+  useHorizonAccount,
+  useTokenBalance,
+} from "@/pages/dashboard/services";
 import { formatAmount } from "@/utils";
 import {
   BLND_ISSUER,
   USDC_ISSUER,
   COLLATERAL_ISSUER,
   COLLATERAL_ASSET_CODE,
+  CONNECTION_ERROR_MESSAGE,
 } from "@/constants";
 
 const Header = () => {
   const pathname = useLocation().pathname;
   const { connect, disconnect, connected, walletAddress, isLoading } =
     useWallet();
+  const { data: backstop } = useBackstop();
   const { data: balances } = useHorizonAccount();
+
+  const { data: lpBalance } = useTokenBalance(
+    backstop?.backstopToken?.id ?? "",
+    undefined,
+    balances
+  );
   const handleConnectWallet = (successful: boolean) => {
     if (successful) {
       notification.success({
         message: "Wallet connected.",
       });
     } else {
-      notification.error({ message: "Unable to connect wallet." });
+      notification.error({ message: CONNECTION_ERROR_MESSAGE });
     }
   };
 
@@ -66,16 +78,16 @@ const Header = () => {
   });
 
   return (
-    <div className="bg-white fixed top-0 left-0 w-full z-10">
+    <header className="bg-white fixed top-0 left-0 w-full z-10">
       <div className="container max-w-[1270px] flex flex-wrap justify-between gap-5 items-center py-3">
         <Link to="/" className="min-w-[50px]">
           <img src="/icons/logo.svg" alt="" />
         </Link>
-        {pathname.includes("dashboard") ? (
+        {pathname.includes("dashboard") || pathname.includes("backstop") ? (
           <>
             {connected ? (
               <div className="flex items-center gap-5 flex-wrap">
-                {supportedBalances?.length ? (
+                {supportedBalances?.length || lpBalance ? (
                   <div className="text-sm ">
                     Balances
                     <div className="flex flex-wrap items-center gap-2">
@@ -93,13 +105,16 @@ const Header = () => {
                         ?.map((balance, index) => {
                           return (
                             <span key={index} className="text-font-semi-bold">
-                              {formatAmount(balance?.balance)}{" "}
+                              {formatAmount(balance?.balance, 2)}{" "}
                               {balance?.asset_type === "native"
                                 ? "XLM"
                                 : balance?.asset_code}
                             </span>
                           );
                         })}
+                      <span className="text-font-semi-bold">
+                        {formatAmount(Number(lpBalance) / 10 ** 7, 2)} LP Token
+                      </span>
                     </div>
                   </div>
                 ) : null}
@@ -127,7 +142,7 @@ const Header = () => {
                         key: 1,
                         label: (
                           <Button
-                            className="w-full justify-between text-red-600 gap-3"
+                            className="w-full justify-between !text-red-500 gap-3"
                             variant={"ghost"}
                             size={"sm"}
                             onClick={() => {
@@ -168,7 +183,7 @@ const Header = () => {
           </Link>
         )}
       </div>
-    </div>
+    </header>
   );
 };
 

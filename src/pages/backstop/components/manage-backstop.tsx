@@ -1,6 +1,10 @@
 import ErrorComponent from "@/components/other/error-component";
 import Spinner from "@/components/other/spinner";
-import { BLND_ISSUER, USDC_ISSUER } from "@/constants";
+import {
+  BLND_ISSUER,
+  CONNECTION_ERROR_MESSAGE,
+  USDC_ISSUER,
+} from "@/constants";
 import { useWallet } from "@/contexts/wallet";
 import {
   useBackstop,
@@ -16,8 +20,11 @@ import { DetailContentItem } from "@clickpesa/components-library.data-display.de
 import { Button } from "@/components/ui/button";
 import JoinModal from "../manage/join";
 import ExitModal from "../manage/exit";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
 
 const ManageBackstop = () => {
+  const { theme } = useTheme();
   const [openJoin, setOpenJoin] = useState(false);
   const [openExit, setOpenExit] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -29,24 +36,14 @@ const ManageBackstop = () => {
     refetch: balanceRefetch,
   } = useHorizonAccount();
   const { data: backstop, refetch: backstopRefetch } = useBackstop();
-  const {
-    data: horizonAccount,
-    isLoading: horizonLoading,
-    error: horizonError,
-    refetch: horizonRefetch,
-  } = useHorizonAccount();
+
   const {
     data: lpBalance,
     error: lpError,
     refetch: lpRefetch,
     isLoading: lpBalanceLoading,
-  } = useTokenBalance(
-    backstop?.backstopToken?.id ?? "",
-    undefined,
-    horizonAccount
-  );
-  const loading =
-    isLoading || balanceLoading || lpBalanceLoading || horizonLoading;
+  } = useTokenBalance(backstop?.backstopToken?.id ?? "", undefined, balance);
+  const loading = isLoading || balanceLoading || lpBalanceLoading;
 
   if (loading)
     return (
@@ -77,19 +74,6 @@ const ManageBackstop = () => {
       />
     );
 
-  if (horizonError)
-    return (
-      <ErrorComponent
-        message={formatErrorMessage(horizonError)}
-        onClick={() => {
-          setLoading(true);
-          horizonRefetch().finally(() => setLoading(false));
-        }}
-      />
-    );
-
-  if (!balance) return null;
-
   const usdcBalance =
     balance?.balances?.find((balance) => {
       return (
@@ -105,17 +89,17 @@ const ManageBackstop = () => {
     })?.balance || "0";
 
   return (
-    <div>
-      <h3 className="text-font-semi-bold mb-6">Manage Backstop Token</h3>
+    <SectionTemplate sectionTitle="Manage Backstop Token" mode={theme}>
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Your LP Token Balance"
-              content={formatAmount(Number(lpBalance) / 10 ** 7, 7)}
+              content={formatAmount(Number(lpBalance || 0) / 10 ** 7, 7)}
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Your BLND Balance"
@@ -123,6 +107,7 @@ const ManageBackstop = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Your USDC Balance"
@@ -130,6 +115,7 @@ const ManageBackstop = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
           </Row>
         </Col>
@@ -148,7 +134,7 @@ const ManageBackstop = () => {
                     setOpenJoin(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -172,7 +158,7 @@ const ManageBackstop = () => {
                     setOpenExit(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -196,7 +182,7 @@ const ManageBackstop = () => {
         }}
         backstop={backstop}
       />
-      {horizonAccount && (
+      {balance && (
         <ExitModal
           open={openExit}
           close={() => setOpenExit(false)}
@@ -205,14 +191,14 @@ const ManageBackstop = () => {
             lpRefetch();
             backstopRefetch();
           }}
-          horizonAccount={horizonAccount}
+          horizonAccount={balance}
           backstop={backstop}
           lpBalance={lpBalance}
           usdcBalance={usdcBalance}
           blndBalance={blndBalance}
         />
       )}
-    </div>
+    </SectionTemplate>
   );
 };
 

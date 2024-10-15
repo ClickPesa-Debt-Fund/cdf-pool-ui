@@ -148,8 +148,7 @@ const Dashboard = () => {
                         color="blue"
                         subtitle={
                           <div className="flex justify-between">
-                            Click here to receive CPYT assets for the
-                            Collateral.
+                            Click here to receive testing CPCT tokens
                             <ArrowRight />
                           </div>
                         }
@@ -161,22 +160,18 @@ const Dashboard = () => {
             )}
           </div>
         ) : null}
-        <div className="flex items-center gap-2 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
-          <CurrencyLogos name={"USDC"} />
-          <span className="inline-flex h-[50px] min-w-[50px] bg-[#2775CA]/10 rounded-full justify-center items-center">
-            <img
-              src="/icons/logo.svg"
-              alt=""
-              className="md:h-[34px] h-[34px]"
-            />
+        <p className="flex items-center gap-4 [font-size:_clamp(22px,5vw,32px)] font-bold text-font-bold">
+          <span className="inline-flex gap-4 items-center">
+            <CurrencyLogos name={"USDC"} />
+            <CurrencyLogos name={COLLATERAL_ASSET_CODE} size={30} />
           </span>
           DebtFund SME Pool
-        </div>
+        </p>
       </div>
       <PoolDetails />
-      {supportedCollateralBalances?.length ? <AdminPosition /> : null}
+      <AdminPosition />
       <UserPositionDetails />
-      <PoolActivities walletAddress={walletAddress} />
+      <PoolActivities />
     </div>
   );
 };

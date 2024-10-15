@@ -13,6 +13,7 @@ import {
   STELLER_EXPERT_URL,
   COLLATERAL_ASSET_ID,
   POOL_STATUS,
+  SME_PORTFOLIO_SIZE,
 } from "@/constants";
 import { PoolEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
@@ -21,8 +22,11 @@ import { useNavigate } from "react-router-dom";
 import Info from "@/components/other/info";
 import { formatAmount } from "@/utils";
 import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
 
 const PoolDetails = () => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const safePoolId =
@@ -68,17 +72,22 @@ const PoolDetails = () => {
       : 0;
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
+    <SectionTemplate
+      className="md:rounded-2xl rounded-lg"
+      mode={theme}
+    >
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
+              mode={theme}
               title={"Pool Status"}
               content={
                 <span className="w-fit flex text-font-semi-bold">
                   <StatusTag
                     // @ts-ignore
                     name={POOL_STATUS?.[pool?.config?.status]}
+                    mode={theme}
                     color={
                       [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
                     }
@@ -96,6 +105,7 @@ const PoolDetails = () => {
                   APR <Info message="Annual Percentage Rate" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(
@@ -118,6 +128,7 @@ const PoolDetails = () => {
                   <Info message="Total funds in USD added to the pool" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   ${formatAmount(marketSize || 0, 7)}
@@ -135,6 +146,7 @@ const PoolDetails = () => {
                   <Info message="Total collateral in USD added to the pool" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {formatAmount(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
@@ -152,6 +164,7 @@ const PoolDetails = () => {
                   ${formatAmount(reserve?.totalLiabilitiesFloat() || 0, 7)}
                 </span>
               }
+              mode={theme}
               style={{
                 marginTop: 0,
               }}
@@ -164,20 +177,10 @@ const PoolDetails = () => {
                   <Info message="Total refunds in USD done by the pool" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   ${formatAmount(USDCRepaidFunds || 0, 7)}
-                </span>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
-            <DetailContentItem
-              title="Number of Participating MFIs"
-              content={
-                <span className="text-font-semi-bold">
-                  {PARTICIPATING_MFIs}
                 </span>
               }
               style={{
@@ -192,6 +195,7 @@ const PoolDetails = () => {
                   {totalSupplyParticipants?.[0]?.number_of_participants || 0}
                 </span>
               }
+              mode={theme}
               style={{
                 marginTop: 0,
               }}
@@ -204,6 +208,7 @@ const PoolDetails = () => {
                   <Info message="Total parties that added collateral" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {totalCollateralParticipants?.[0]?.number_of_participants ||
@@ -214,12 +219,37 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
+            <DetailContentItem
+              title="Number of Participating MFIs"
+              content={
+                <span className="text-font-semi-bold">
+                  {PARTICIPATING_MFIs}
+                </span>
+              }
+              mode={theme}
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="SMEs Portfolio Size"
+              content={
+                <span className="text-font-semi-bold">
+                  ${formatAmount(SME_PORTFOLIO_SIZE, 7)}
+                </span>
+              }
+              mode={theme}
+              style={{
+                marginTop: 0,
+              }}
+            />
           </Row>
         </Col>
         <Col md={6} span={24} className="space-y-4">
           <DetailContentItem
             title={`Pool`}
             full_width
+            mode={theme}
             content={
               <div>
                 <p className="!mb-0">{toCompactAddress(pool?.id)}</p>
@@ -242,6 +272,7 @@ const PoolDetails = () => {
           <DetailContentItem
             title={`Oracle`}
             full_width
+            mode={theme}
             content={
               <div>
                 <p className="!mb-0">
@@ -266,6 +297,7 @@ const PoolDetails = () => {
           <DetailContentItem
             title={`Admin`}
             full_width
+            mode={theme}
             content={
               <div>
                 <p className="!mb-0">{toCompactAddress(pool?.config.admin)}</p>
@@ -295,24 +327,22 @@ const PoolDetails = () => {
           <DetailContentItem
             title="Backstop"
             full_width
+            mode={theme}
             content={
               <div className="flex gap-3 items-center">
                 <Button
                   className="justify-start gap-4 -ml-4"
                   variant={"link"}
-                  onClick={() => navigate("/dashboard/backstop")}
+                  onClick={() => navigate("/backstop")}
                 >
                   View Backstop
                 </Button>
               </div>
             }
-            style={{
-              marginTop: 0,
-            }}
           />
         </Col>
       </Row>
-    </div>
+    </SectionTemplate>
   );
 };
 

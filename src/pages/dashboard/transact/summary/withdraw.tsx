@@ -1,5 +1,6 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
+import { useTheme } from "@/contexts/theme";
 import { useWallet } from "@/contexts/wallet";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
@@ -28,6 +29,7 @@ const WithdrawSummary = ({
   curBorrowLimit?: number;
   nextBorrowLimit?: number;
 }) => {
+  const { theme } = useTheme();
   const { walletAddress } = useWallet();
   const newPoolUser =
     parsedSimResult && new PoolUser(walletAddress, parsedSimResult, new Map());
@@ -44,6 +46,7 @@ const WithdrawSummary = ({
               value: amount,
               currency: symbol as any,
             }}
+            mode={theme}
           />
           <DetailsRow
             amount={{
@@ -62,6 +65,7 @@ const WithdrawSummary = ({
               currency: "XLM",
               digits: 2,
             }}
+            mode={theme}
           />
           {reserve && (
             <DetailsRow
@@ -76,6 +80,7 @@ const WithdrawSummary = ({
                   value: `${newPoolUser?.getCollateralFloat(reserve) || 0}`,
                 },
               }}
+              mode={theme}
             />
           )}
           <DetailsRow
@@ -90,6 +95,7 @@ const WithdrawSummary = ({
                 currency: "USDC",
               },
             }}
+            mode={theme}
           />
           <DetailsRow
             exchangeRate={{
@@ -103,6 +109,7 @@ const WithdrawSummary = ({
                 currency: "%" as any,
               },
             }}
+            mode={theme}
           />
         </div>
       </div>

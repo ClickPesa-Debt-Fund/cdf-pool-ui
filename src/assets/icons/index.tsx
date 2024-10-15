@@ -136,3 +136,5 @@ export const Gasicon = ({ size, style, className }: BaseIconProps) => (
     />
   </svg>
 );
+
+export const DebtfundIcon = ({}: BaseIconProps) => <></>;

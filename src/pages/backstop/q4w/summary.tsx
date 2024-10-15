@@ -1,6 +1,7 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
 import { POOL_ID } from "@/constants";
+import { useTheme } from "@/contexts/theme";
 import {
   useBackstop,
   useBackstopPool,
@@ -21,6 +22,7 @@ const Summary = ({
   decimals?: number;
   parsedSimResult: Q4W | undefined;
 }) => {
+  const { theme } = useTheme();
   const { data: backstop } = useBackstop();
   const { data: backstopUserData } = useBackstopPoolUser(POOL_ID);
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
@@ -46,6 +48,7 @@ const Summary = ({
           currency: "BLND-USDC LP",
           digits: decimals,
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -61,6 +64,7 @@ const Summary = ({
           )}`,
           currency: "XLM",
         }}
+        mode={theme}
       />
       <DetailsRow
         text={{
@@ -71,6 +75,7 @@ const Summary = ({
             : new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
           )?.toISOString(),
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -90,6 +95,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
     </div>
   );

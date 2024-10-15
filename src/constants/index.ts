@@ -18,6 +18,7 @@ export const COLLATERAL_ASSET_ID =
   import.meta.env.VITE_COLLATERAL_ASSET_CONTRACT || "";
 export const STELLER_EXPERT_URL = import.meta.env.VITE_STELLAR_EXPERT_URL;
 export const PARTICIPATING_MFIs = import.meta.env.VITE_PARTICIPATING_MFIS;
+export const SME_PORTFOLIO_SIZE = import.meta.env.VITE_SME_PORTFOLIO_SIZE;
 export const BORROW_TABLE = import.meta.env.VITE_MERCURY_BORROW_TABLE_NAME;
 export const COLLATERAL_SUPPLY_TABLE = import.meta.env
   .VITE_MERCURY_COLLATERAL_TABLE_NAME;
@@ -34,6 +35,8 @@ export const COLLATERAL_ASSET = new Asset(
 export const USDC_ASSET = new Asset("USDC", USDC_ISSUER || "");
 export const BLND_ASSET = new Asset("BLND", BLND_ISSUER || "");
 export const DEBOUNCE_DELAY = 750;
+export const CONNECTION_ERROR_MESSAGE =
+  "Unable to connect wallet. Please try again";
 
 export const POOL_STATUS = {
   0: "ADMIN ACTIVE",
