@@ -1,5 +1,6 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
+import { useTheme } from "@/contexts/theme";
 import { useWallet } from "@/contexts/wallet";
 import { toBalance } from "@/utils/formatter";
 import { PoolUser, Positions, Reserve } from "@blend-capital/blend-sdk";
@@ -28,6 +29,7 @@ const RepaySummary = ({
   curBorrowLimit?: number;
   nextBorrowLimit?: number;
 }) => {
+  const { theme } = useTheme();
   const { walletAddress } = useWallet();
   const newPoolUser =
     parsedSimResult && new PoolUser(walletAddress, parsedSimResult, new Map());
@@ -44,6 +46,7 @@ const RepaySummary = ({
               value: amount,
               currency: "USDC",
             }}
+            mode={theme}
           />
           <DetailsRow
             amount={{
@@ -62,6 +65,7 @@ const RepaySummary = ({
               currency: "XLM",
               digits: 2,
             }}
+            mode={theme}
           />
 
           {reserve && (
@@ -77,6 +81,7 @@ const RepaySummary = ({
                   currency: symbol,
                 },
               }}
+              mode={theme}
             />
           )}
           <DetailsRow
@@ -91,6 +96,7 @@ const RepaySummary = ({
                 currency: symbol,
               },
             }}
+            mode={theme}
           />
           <DetailsRow
             exchangeRate={{
@@ -104,10 +110,10 @@ const RepaySummary = ({
                 currency: "%" as any,
               },
             }}
+            mode={theme}
           />
         </div>
       </div>
-      
     </div>
   );
 };

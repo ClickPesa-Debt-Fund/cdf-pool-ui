@@ -1,5 +1,5 @@
-import { BackstopToken } from '@blend-capital/blend-sdk';
-import { Contract, nativeToScVal, xdr } from '@stellar/stellar-sdk';
+import { BackstopToken } from "@blend-capital/blend-sdk";
+import { Contract, nativeToScVal, xdr } from "@stellar/stellar-sdk";
 
 /**
  * Estimate the amount of BLND and USDC that will be deposited into the pool during a join
@@ -9,7 +9,8 @@ export function estJoinPool(
   toMint: bigint,
   maxSlippage: number
 ): { blnd: number; usdc: number } {
-  const ratio = Number(pool_data.shares + toMint) / Number(pool_data.shares) - 1;
+  const ratio =
+    Number(pool_data.shares + toMint) / Number(pool_data.shares) - 1;
   let blnd = (Number(pool_data.blnd) / 1e7) * ratio * (1 + maxSlippage);
   let usdc = (Number(pool_data.usdc) / 1e7) * ratio * (1 + maxSlippage);
   return { blnd, usdc };
@@ -43,7 +44,8 @@ export function estExitPool(
   toBurn: bigint,
   maxSlippage: number
 ): { blnd: number; usdc: number } {
-  const ratio = 1 - Number(pool_data.shares - toBurn) / Number(pool_data.shares);
+  const ratio =
+    1 - Number(pool_data.shares - toBurn) / Number(pool_data.shares);
   let blnd = (Number(pool_data.blnd) / 1e7) * ratio * (1 - maxSlippage);
   let usdc = (Number(pool_data.usdc) / 1e7) * ratio * (1 - maxSlippage);
   return { blnd, usdc };
@@ -75,14 +77,16 @@ export class CometClient {
    * @param args - Arguments for the deposit operation
    * @returns - An XDR operation
    */
-  public depositTokenInGetLPOut(args: CometSingleSidedDepositArgs): xdr.Operation {
+  public depositTokenInGetLPOut(
+    args: CometSingleSidedDepositArgs
+  ): xdr.Operation {
     const invokeArgs = {
-      method: 'dep_tokn_amt_in_get_lp_tokns_out',
+      method: "dep_tokn_amt_in_get_lp_tokns_out",
       args: [
-        nativeToScVal(args.depositTokenAddress, { type: 'address' }),
-        nativeToScVal(args.depositTokenAmount, { type: 'i128' }),
-        nativeToScVal(args.minLPTokenAmount, { type: 'i128' }),
-        nativeToScVal(args.user, { type: 'address' }),
+        nativeToScVal(args.depositTokenAddress, { type: "address" }),
+        nativeToScVal(args.depositTokenAmount, { type: "i128" }),
+        nativeToScVal(args.minLPTokenAmount, { type: "i128" }),
+        nativeToScVal(args.user, { type: "address" }),
       ],
     };
     return this.comet.call(invokeArgs.method, ...invokeArgs.args);
@@ -95,11 +99,13 @@ export class CometClient {
    */
   public join(args: CometLiquidityArgs): xdr.Operation {
     const invokeArgs = {
-      method: 'join_pool',
+      method: "join_pool",
       args: [
-        nativeToScVal(args.poolAmount, { type: 'i128' }),
-        nativeToScVal([args.blndLimitAmount, args.usdcLimitAmount], { type: 'i128' }),
-        nativeToScVal(args.user, { type: 'address' }),
+        nativeToScVal(args.poolAmount, { type: "i128" }),
+        nativeToScVal([args.blndLimitAmount, args.usdcLimitAmount], {
+          type: "i128",
+        }),
+        nativeToScVal(args.user, { type: "address" }),
       ],
     };
     return this.comet.call(invokeArgs.method, ...invokeArgs.args);
@@ -112,11 +118,13 @@ export class CometClient {
    */
   public exit(args: CometLiquidityArgs): xdr.Operation {
     const invokeArgs = {
-      method: 'exit_pool',
+      method: "exit_pool",
       args: [
-        nativeToScVal(args.poolAmount, { type: 'i128' }),
-        nativeToScVal([args.blndLimitAmount, args.usdcLimitAmount], { type: 'i128' }),
-        nativeToScVal(args.user, { type: 'address' }),
+        nativeToScVal(args.poolAmount, { type: "i128" }),
+        nativeToScVal([args.blndLimitAmount, args.usdcLimitAmount], {
+          type: "i128",
+        }),
+        nativeToScVal(args.user, { type: "address" }),
       ],
     };
     return this.comet.call(invokeArgs.method, ...invokeArgs.args);

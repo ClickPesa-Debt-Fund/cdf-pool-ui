@@ -3,7 +3,12 @@ import Col from "antd/lib/col";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { useState } from "react";
-import { USDC_ASSET_ID, COLLATERAL_ASSET_CODE, POOL_ID } from "@/constants";
+import {
+  USDC_ASSET_ID,
+  COLLATERAL_ASSET_CODE,
+  POOL_ID,
+  CONNECTION_ERROR_MESSAGE,
+} from "@/constants";
 import { usePool, usePoolOracle, usePoolUser } from "@/services";
 import { FixedMath, PositionsEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
@@ -13,8 +18,11 @@ import { toPercentage } from "@/utils/formatter";
 import TransactModal from "../transact";
 import Info from "@/components/other/info";
 import { formatAmount } from "@/utils";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
 
 const AdminPosition = () => {
+  const { theme } = useTheme();
   const { connected, connect } = useWallet();
   const [openSupplyModal, setOpenSupplyModal] = useState(false);
   const [openBorrowModal, setOpenBorrowModal] = useState(false);
@@ -88,13 +96,17 @@ const AdminPosition = () => {
     : undefined;
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Borrowing Position</h3>
+    <SectionTemplate
+      className="md:rounded-2xl rounded-lg"
+      mode={theme}
+      sectionTitle="Your Borrowing Position"
+    >
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
             <DetailContentItem
               title="Borrow APR"
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(reserve?.borrowApr)}
@@ -106,6 +118,7 @@ const AdminPosition = () => {
             />
             <DetailContentItem
               title="Liability factor"
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {toPercentage(reserve?.getLiabilityFactor())}
@@ -123,6 +136,7 @@ const AdminPosition = () => {
                   <Info message="Your supply in USD added to the pool" />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   {formatAmount(
@@ -139,6 +153,7 @@ const AdminPosition = () => {
             {poolUser && reserve && (
               <DetailContentItem
                 title="Total Owed"
+                mode={theme}
                 content={
                   <span className="text-font-semi-bold">
                     $
@@ -163,6 +178,7 @@ const AdminPosition = () => {
                   />
                 </span>
               }
+              mode={theme}
               content={
                 <span className="text-font-semi-bold">
                   ${formatAmount(userEst?.borrowCap || 0, 7)}
@@ -179,6 +195,7 @@ const AdminPosition = () => {
                   ${formatAmount(availableToBorrow, reserve?.config.decimals)}
                 </span>
               }
+              mode={theme}
               style={{
                 marginTop: 0,
               }}
@@ -194,6 +211,7 @@ const AdminPosition = () => {
                   )}
                 </span>
               }
+              mode={theme}
               style={{
                 marginTop: 0,
               }}
@@ -215,7 +233,7 @@ const AdminPosition = () => {
                     setOpenSupplyModal(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -238,7 +256,7 @@ const AdminPosition = () => {
                     setOpenBorrowModal(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -262,7 +280,7 @@ const AdminPosition = () => {
                     setOpenRepayModal(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -286,7 +304,7 @@ const AdminPosition = () => {
                     setOpenWithdrawModal(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -326,7 +344,7 @@ const AdminPosition = () => {
         open={openWithdrawModal}
         close={() => setOpenWithdrawModal(false)}
       />
-    </div>
+    </SectionTemplate>
   );
 };
 

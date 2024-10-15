@@ -68,13 +68,13 @@ const Q4wItem = ({
       <div className="flex items-center gap-4">
         <CurrencyLogos name="BLND-USDC LP" size="md" />
         <div>
-          <div className=" flex items-center gap-1">
+          <p className=" flex items-center gap-1">
             <strong className="text-font-semi-bold text-lg">
               {toBalance(inTokens)}
             </strong>{" "}
             <span>BLND-USDC LP</span>
-          </div>
-          <div className="flex items-center gap-2">
+          </p>
+          <p className="flex items-center gap-2 opacity-60">
             {timeLeft > 0 ? (
               <div className="w-[15px]">
                 <RoundedProgressBar
@@ -86,7 +86,7 @@ const Q4wItem = ({
               </div>
             ) : null}
             {timeLeft > 0 ? toTimeSpan(timeLeft) : "Unlocked"}
-          </div>
+          </p>
         </div>
       </div>
       <Popover

@@ -3,6 +3,7 @@ import {
   COLLATERAL_ASSET_ID,
   USDC_ASSET_ID,
 } from "@/constants";
+import { useTheme } from "@/contexts/theme";
 import { useRetroshades } from "@/services";
 import { formatAmount } from "@/utils";
 import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
@@ -16,6 +17,8 @@ const Summary = ({
   walletAddress?: string;
   type: RETROSHADES_COMMANDS;
 }) => {
+  const { theme } = useTheme();
+
   const { data: totalUSDCSupplied } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLIED,
     walletAddress,
@@ -83,6 +86,7 @@ const Summary = ({
                 ${formatAmount(USDCTotalBorrowedFunds || 0, 7)}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}
@@ -96,6 +100,7 @@ const Summary = ({
                 ${formatAmount(USDCRepaidFunds || 0, 7)}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}
@@ -110,6 +115,7 @@ const Summary = ({
                 ${formatAmount(USDCTotalSuppliedFunds || 0, 7)}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}
@@ -124,6 +130,7 @@ const Summary = ({
                 {COLLATERAL_ASSET_CODE}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}
@@ -140,6 +147,7 @@ const Summary = ({
               )}
             </span>
           }
+          mode={theme}
           style={{
             marginTop: 0,
           }}
@@ -151,6 +159,7 @@ const Summary = ({
               {toBalance(24000, 7)} {COLLATERAL_ASSET_CODE}
             </span>
           }
+          mode={theme}
           style={{
             marginTop: 0,
           }}
@@ -163,6 +172,7 @@ const Summary = ({
                 ${formatAmount(USDCTotalWithdrawFunds || 0, 7)}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}
@@ -177,6 +187,7 @@ const Summary = ({
                 {COLLATERAL_ASSET_CODE}
               </span>
             }
+            mode={theme}
             style={{
               marginTop: 0,
             }}

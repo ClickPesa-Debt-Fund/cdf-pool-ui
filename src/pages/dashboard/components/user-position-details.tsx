@@ -7,13 +7,16 @@ import * as formatter from "@/utils/formatter";
 import { useState } from "react";
 import TransactModal from "../transact";
 import { CurrencyLogos } from "@/components/other/currency-logos";
-import { POOL_ID } from "@/constants";
+import { CONNECTION_ERROR_MESSAGE, POOL_ID } from "@/constants";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { formatAmount } from "@/utils";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { useTheme } from "@/contexts/theme";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
 
 const UserPositionDetails = () => {
+  const { theme } = useTheme();
   const { data: pool } = usePool(POOL_ID);
   const { data: poolUser, isLoading } = usePoolUser(pool);
 
@@ -37,18 +40,11 @@ const UserPositionDetails = () => {
   );
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <Row
-        gutter={[12, 12]}
-        align={"middle"}
-        justify={"space-between"}
-        className="mb-6"
-      >
-        <Col span={18} className="">
-          <h3 className="text-font-semi-bold">Your Lending Position</h3>
-        </Col>
-        <Col span={6}></Col>
-      </Row>
+    <SectionTemplate
+      className="md:rounded-2xl rounded-lg"
+      mode={theme}
+      sectionTitle="Your Lending Position"
+    >
       {!poolUser && (
         <div>You have not yet supplied any funds. Supply to start earning</div>
       )}
@@ -75,7 +71,7 @@ const UserPositionDetails = () => {
           </Col>
         </Row>
       )}
-    </div>
+    </SectionTemplate>
   );
 };
 
@@ -118,7 +114,7 @@ const PositionCard = ({
                     setOpenSupplyModal(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -159,7 +155,7 @@ const PositionCard = ({
                       setOpenSupplyModal(true);
                     } else {
                       notification.error({
-                        message: "Unable to connect wallet.",
+                        message: CONNECTION_ERROR_MESSAGE,
                       });
                     }
                   });

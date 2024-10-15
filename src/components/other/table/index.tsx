@@ -4,6 +4,7 @@ import {
 } from "@clickpesa/components-library.data-preview-table";
 import { FC, ReactNode } from "react";
 import { formatTableFilters } from "./utils";
+import { useTheme } from "@/contexts/theme";
 
 type TableProps = {
   data: any[];
@@ -38,9 +39,11 @@ const Table: FC<TableProps> = ({
   defaultLimit,
   summary,
 }) => {
+  const { theme } = useTheme();
   return (
     <DataPreviewTable
       loading={!!loading}
+      mode={theme}
       columns={columns}
       platform="clickpesa"
       data={data}

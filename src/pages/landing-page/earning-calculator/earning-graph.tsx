@@ -17,8 +17,11 @@ import {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 import { PMT } from "./summary";
+import { useTheme } from "@/contexts/theme";
+import { cn } from "@/lib/utils";
 
 const EarningGraph = ({ amount }: { amount: string }) => {
+  const { theme } = useTheme();
   const { width } = useWindowSize();
   const amountPerQuarter = PMT(Number(amount));
   const data = [
@@ -42,25 +45,38 @@ const EarningGraph = ({ amount }: { amount: string }) => {
           <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)]">
             Estimated Earnings
           </h1>
-          <span className="inline-flex gap-2 items-center">
+          <p className="inline-flex gap-2 items-center">
             <span className="inline-flex h-[15px] w-[15px] bg-primary rounded-full" />{" "}
             Accumulated Amount
-          </span>
+          </p>
         </div>
         <div className="md:order-2 order-1 space-y-2 ">
           <div>
-            <span className="text-font-medium font-medium">
-              Payback Period:
-            </span>{" "}
-            <span className="text-font-bold font-bold !text-gray-500">
+            <p className="text-font-medium font-medium">Payback Period:</p>{" "}
+            <span
+              className={cn("text-font-bold font-bold", {
+                "!text-gray-500": theme === "light",
+                "!text-white/70": theme === "dark",
+              })}
+            >
               Quarterly
             </span>
           </div>
-          <div>
+          <div
+            className={cn({
+              "!text-gray-500": theme === "light",
+              "!text-white/70": theme === "dark",
+            })}
+          >
             <span className="text-font-medium font-medium">
               Final Balance on 30 Sep, 2025:
             </span>{" "}
-            <span className="text-font-bold font-bold !text-gray-500">
+            <span
+              className={cn("text-font-bold font-bold", {
+                "!text-gray-500": theme === "light",
+                "!text-white/70": theme === "dark",
+              })}
+            >
               {formatAmount(amountPerQuarter * 3)} USDC
             </span>
           </div>
@@ -92,7 +108,7 @@ const EarningGraph = ({ amount }: { amount: string }) => {
             dataKey="name"
             axisLine={false}
             tick={{
-              fill: "#4B5563",
+              fill: theme === "dark" ? "white" : "#4B5563",
               opacity: 0.6,
             }}
             dy={10}
@@ -106,7 +122,7 @@ const EarningGraph = ({ amount }: { amount: string }) => {
             width={40}
             tickCount={8}
             tick={{
-              fill: "#4B5563",
+              fill: theme === "dark" ? "white" : "#4B5563",
               opacity: 0.6,
             }}
             tickFormatter={(text) => {
@@ -176,6 +192,7 @@ export const CustomTooltip = ({
     y: string;
   };
 }) => {
+  const { theme } = useTheme();
   let value = payload?.[0]?.payload?.value;
   if (active && payload && payload.length) {
     return (
@@ -185,7 +202,7 @@ export const CustomTooltip = ({
             boxShadow: "-2px 2px 10px 0px rgba(112, 112, 117, 0.30)",
             minWidth: "100px",
             width: "max-content",
-            background: "#ffffff",
+            background: theme === "dark" ? "#2B343B" : "#ffffff",
             padding: 13,
             borderRadius: "13px",
           }}

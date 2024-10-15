@@ -1,7 +1,7 @@
 import Row from "antd/lib/row";
 import Col from "antd/lib/col";
 import notification from "antd/lib/notification";
-import { POOL_ID } from "@/constants";
+import { CONNECTION_ERROR_MESSAGE, POOL_ID } from "@/constants";
 import { useWallet } from "@/contexts/wallet";
 import {
   useBackstop,
@@ -20,8 +20,11 @@ import { Button } from "@/components/ui/button";
 import DepositModal from "../deposit";
 import Q4WModal from "../q4w";
 import { formatAmount } from "@/utils";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
 
 const YourPosition = () => {
+  const { theme } = useTheme();
   const { connected, cometSingleSidedDeposit, connect } = useWallet();
   const [openDeposit, setOpenDeposit] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
@@ -100,8 +103,11 @@ const YourPosition = () => {
   }, [userBackstopPoolData]);
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-      <h3 className="text-font-semi-bold mb-6">Your Position</h3>
+    <SectionTemplate
+      className=" md:rounded-2xl rounded-lg"
+      mode={theme}
+      sectionTitle={"Your Position"}
+    >
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
@@ -114,6 +120,7 @@ const YourPosition = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Your backstop deposit (USD)"
@@ -121,6 +128,7 @@ const YourPosition = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
           </Row>
         </Col>
@@ -139,7 +147,7 @@ const YourPosition = () => {
                     setOpenDeposit(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -163,7 +171,7 @@ const YourPosition = () => {
                     setOpenWithdraw(true);
                   } else {
                     notification.error({
-                      message: "Unable to connect wallet.",
+                      message: CONNECTION_ERROR_MESSAGE,
                     });
                   }
                 });
@@ -186,7 +194,7 @@ const YourPosition = () => {
           setOpenWithdraw(false);
         }}
       />
-    </div>
+    </SectionTemplate>
   );
 };
 

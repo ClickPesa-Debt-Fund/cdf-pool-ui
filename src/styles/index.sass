@@ -39,6 +39,85 @@ html, body
   background: theme("colors.gray.100")
   scroll-behavior: smooth
 
+.section-template-container
+  box-shadow: none !important
+
+.ant-modal
+  .ant-modal-content
+    padding: 0 !important
+    padding-bottom: 20px !important
+    .ant-modal-close
+      top: 10px !important
+    .ant-modal-header
+      padding: 10px 24px
+      border-bottom: 1px solid rgba(0, 0, 0, .1)
+      margin-bottom: 1rem
+    .ant-modal-footer
+      padding: 10px 24px 0px
+      border-top: 1px solid rgba(0, 0, 0, .1)
+      margin-top: 1rem
+
+.ant-modal-root
+  .ant-modal
+    .ant-modal-content
+      .ant-modal-body
+        padding: 10px 24px
+
+body.dark
+  background: #1E272E
+  color: white
+  header
+    background: #2B343A
+  p, h1, h2, h3, h4, h5, h6, label
+    color: white !important
+  .ant-tabs-nav
+    &::before
+      border-width: 1px !important
+      border-color: rgba(255, 255, 255, .1 )
+    .ant-tabs-tab
+      color: white !important
+    .ant-tabs-tab.ant-tabs-tab-disabled
+      opacity: .5
+    .ant-tabs-nav-more
+      svg
+        color: white !important
+    .ant-tabs-dropdown
+      ul
+        background: #2B343B !important
+        li
+          color: rgba(255, 255, 255, 0.85) !important
+  .ant-modal
+    .ant-modal-content
+      background: #2B343A !important
+      .ant-modal-close
+        color: white !important
+      .ant-modal-header
+        border-color: rgba(255, 255, 255, .1)
+        background: #2B343A !important
+        .ant-modal-title
+          color: white !important
+      .ant-modal-footer
+        border-top: 1px solid rgba(255, 255, 255, .1)
+
+  .ant-notification-notice
+    background: #1E272E
+    .ant-notification-notice-message, .ant-notification-notice-description, .ant-notification-notice-close
+      color: white
+
+  .ant-dropdown .ant-dropdown-menu
+    background: #2B343A
+    button
+      color: white
+  .ant-popover
+    --antd-arrow-background-color: #2B343A
+    .ant-popover-inner
+      background: #2B343A
+      .ant-popover-inner-content
+        color: white
+
+  .bare-outlined-text
+    -webkit-text-stroke: 1px theme("colors.white/70")
+
 @layer base
   :root
     --background: 0 0% 100%

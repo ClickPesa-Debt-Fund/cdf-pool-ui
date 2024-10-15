@@ -7,13 +7,11 @@ import { POOL_ID } from "@/constants";
 import { useBackstop, useBackstopPool } from "../dashboard/services";
 import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
-import { useWallet } from "@/contexts/wallet";
 import YourPosition from "./components/your-position";
 import BackstopActivities from "./backstop-activities";
 
 const Backstop = () => {
   const navigate = useNavigate();
-  const { connected, walletAddress } = useWallet();
   const { data: pool } = usePool(POOL_ID);
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
@@ -34,13 +32,9 @@ const Backstop = () => {
         </Button>
       </div>
       <BackstopDetails />
-      {connected && <YourPosition />}
-      {connected && (
-        <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
-          <ManageBackstop />
-        </div>
-      )}
-      <BackstopActivities walletAddress={walletAddress} />
+      <YourPosition />
+      <ManageBackstop />
+      <BackstopActivities />
     </div>
   );
 };

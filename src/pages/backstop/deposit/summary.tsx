@@ -1,6 +1,7 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
 import { POOL_ID } from "@/constants";
+import { useTheme } from "@/contexts/theme";
 import {
   useBackstop,
   useBackstopPool,
@@ -23,6 +24,7 @@ const Summary = ({
   lpBalance: string;
   decimals?: number;
 }) => {
+  const { theme } = useTheme();
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
   const { data: userBackstopPoolData } = useBackstopPoolUser(POOL_ID);
@@ -52,6 +54,7 @@ const Summary = ({
           currency: "BLND-USDC LP",
           digits: decimals,
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -67,6 +70,7 @@ const Summary = ({
           )}`,
           currency: "XLM",
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -85,6 +89,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
       <DetailsRow
         exchangeRate={{
@@ -104,6 +109,7 @@ const Summary = ({
             digits: 7,
           },
         }}
+        mode={theme}
       />
     </div>
   );

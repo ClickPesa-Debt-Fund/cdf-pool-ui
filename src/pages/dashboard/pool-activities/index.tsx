@@ -2,8 +2,13 @@ import Tabs from "antd/lib/tabs";
 import notification from "antd/lib/notification";
 import Activities from "./activities";
 import { useEffect, useState } from "react";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
+import { useWallet } from "@/contexts/wallet";
 
-const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
+const PoolActivities = () => {
+  const { walletAddress } = useWallet();
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState("pool_activities");
   useEffect(() => {
     if (!walletAddress) {
@@ -11,7 +16,10 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
     }
   }, [walletAddress]);
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8 space-y-4">
+    <SectionTemplate
+      className="bg-white md:rounded-2xl rounded-lg"
+      mode={theme}
+    >
       <Tabs
         items={[
           {
@@ -35,7 +43,7 @@ const PoolActivities = ({ walletAddress }: { walletAddress?: string }) => {
           setActiveTab(tab);
         }}
       />
-    </div>
+    </SectionTemplate>
   );
 };
 

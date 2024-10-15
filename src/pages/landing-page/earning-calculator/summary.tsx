@@ -1,8 +1,10 @@
+import { useTheme } from "@/contexts/theme";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { formatDate } from "@/utils";
 import { DetailsRow } from "@clickpesa/components-library.details-row";
 
 const Summary = ({ amount }: { amount: string }) => {
+  const { theme } = useTheme();
   const amountPerQuarter = PMT(Number(amount));
 
   const { width } = useWindowSize();
@@ -16,6 +18,7 @@ const Summary = ({ amount }: { amount: string }) => {
           value: amount,
           label: "Amount",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -23,6 +26,7 @@ const Summary = ({ amount }: { amount: string }) => {
           label: "Duration",
           value: "9 Months",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -30,6 +34,7 @@ const Summary = ({ amount }: { amount: string }) => {
           label: "Annual Percentage Yield (APR)",
           value: "12%",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -37,6 +42,7 @@ const Summary = ({ amount }: { amount: string }) => {
           label: "Payback Period",
           value: "Quarterly",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -45,6 +51,7 @@ const Summary = ({ amount }: { amount: string }) => {
           value: amountPerQuarter + "",
           currency: "USDC",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -53,6 +60,7 @@ const Summary = ({ amount }: { amount: string }) => {
           value: amountPerQuarter * 3 - Number(amount) + "",
           currency: "USDC",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -61,6 +69,7 @@ const Summary = ({ amount }: { amount: string }) => {
           value: amountPerQuarter * 3 + "",
           currency: "USDC",
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -70,6 +79,7 @@ const Summary = ({ amount }: { amount: string }) => {
             new Date("03-31-2025".replace(/-/g, "/")).toISOString()
           ),
         }}
+        mode={theme}
         isMobile={isMobile}
       />
       <DetailsRow
@@ -79,6 +89,7 @@ const Summary = ({ amount }: { amount: string }) => {
             new Date("09-30-2025".replace(/-/g, "/")).toISOString()
           ),
         }}
+        mode={theme}
         isMobile={isMobile}
       />
     </div>

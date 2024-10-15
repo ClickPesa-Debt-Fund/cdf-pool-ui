@@ -35,6 +35,8 @@ export const COLLATERAL_ASSET = new Asset(
 export const USDC_ASSET = new Asset("USDC", USDC_ISSUER || "");
 export const BLND_ASSET = new Asset("BLND", BLND_ISSUER || "");
 export const DEBOUNCE_DELAY = 750;
+export const CONNECTION_ERROR_MESSAGE =
+  "Unable to connect wallet. Please try again";
 
 export const POOL_STATUS = {
   0: "ADMIN ACTIVE",

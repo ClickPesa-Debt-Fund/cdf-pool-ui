@@ -1,39 +1,43 @@
+import { useTheme } from "@/contexts/theme";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+
 const LearnMore = () => {
+  const { theme } = useTheme();
   return (
     <>
-      <section
-        id="learn-more"
-        className="flex flex-col items-center gap-8 md:flex-row bg-white md:rounded-2xl rounded-lg p-6 md:p-8"
-      >
-        <div className="order-1 md:order-2 flex-1 space-y-4">
-          <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)]">
-            Unlocking Potential of SMEs and Women-Owned Businesses with DeFi
-          </h1>
-          <div className="space-y-3">
-            <p>
-              The ClickPesa Debt Fund offers a platform for global investors to
-              generate financial returns while making a positive and sustainable
-              impact on the local business ecosystem. Investing in the ClickPesa
-              Debt Fund represents a strategic opportunity to align one’s
-              financial resources with a mission-driven initiative.
-            </p>
-            <p>
-              Our approach is multifaceted and strategic. We channel our efforts
-              towards partnering with Microfinance Institutions (MFIs) that have
-              a wealth of experience and a robust network, specifically tailored
-              to cater to the unique needs of SMEs and women-owned businesses
-              throughout Africa. We only fund MFIs serve as essential
-              intermediaries in our mission.
-            </p>
+      <SectionTemplate className="md:rounded-2xl rounded-lg " mode={theme}>
+        <div className="flex flex-col items-center gap-8 md:flex-row">
+          <div className="order-1 md:order-2 flex-1 space-y-4" id="learn-more">
+            <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)]">
+              Unlocking Potential of SMEs and Women-Owned Businesses with DeFi
+            </h1>
+            <div className="space-y-3">
+              <p>
+                The ClickPesa Debt Fund offers a platform for global investors
+                to generate financial returns while making a positive and
+                sustainable impact on the local business ecosystem. Investing in
+                the ClickPesa Debt Fund represents a strategic opportunity to
+                align one’s financial resources with a mission-driven
+                initiative.
+              </p>
+              <p>
+                Our approach is multifaceted and strategic. We channel our
+                efforts towards partnering with Microfinance Institutions (MFIs)
+                that have a wealth of experience and a robust network,
+                specifically tailored to cater to the unique needs of SMEs and
+                women-owned businesses throughout Africa. We only fund MFIs
+                serve as essential intermediaries in our mission.
+              </p>
+            </div>
+          </div>
+          <div className="order-2 md:order-1 flex-1">
+            <img
+              src="/images/women.svg"
+              className="object-cover h-full w-full md:rounded-2xl rounded-lg"
+            />
           </div>
         </div>
-        <div className="order-2 md:order-1 flex-1">
-          <img
-            src="/images/women.svg"
-            className="object-cover h-full w-full md:rounded-2xl rounded-lg"
-          />
-        </div>
-      </section>
+      </SectionTemplate>
       <section className="px-6 md:px-8 space-y-8">
         <h1 className="font-bold text-font-bold text-center [font-size:_clamp(24px,5vw,24px)]">
           Why choose earning with ClickPesa Debt Fund?

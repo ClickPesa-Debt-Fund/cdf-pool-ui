@@ -16,7 +16,6 @@ const Transactions = ({
   type: RETROSHADES_COMMANDS;
 }) => {
   const { data, isLoading } = useRetroshades({ command: type, walletAddress });
-
   return (
     <div>
       <Summary walletAddress={walletAddress} type={type} />

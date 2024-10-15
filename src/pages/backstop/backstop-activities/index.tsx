@@ -2,8 +2,13 @@ import Tabs from "antd/lib/tabs";
 import { useEffect, useState } from "react";
 import notification from "antd/lib/notification";
 import Activities from "./activities";
+import { useWallet } from "@/contexts/wallet";
+import { useTheme } from "@/contexts/theme";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
 
-const BackstopActivities = ({ walletAddress }: { walletAddress?: string }) => {
+const BackstopActivities = () => {
+  const { theme } = useTheme();
+  const { walletAddress } = useWallet();
   const [activeTab, setActiveTab] = useState("backstop_activities");
   useEffect(() => {
     if (!walletAddress) {
@@ -12,7 +17,7 @@ const BackstopActivities = ({ walletAddress }: { walletAddress?: string }) => {
   }, [walletAddress]);
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 px-3 md:p-8 md:px-3">
+    <SectionTemplate className="md:rounded-2xl rounded-lg" mode={theme}>
       <Tabs
         items={[
           {
@@ -36,7 +41,7 @@ const BackstopActivities = ({ walletAddress }: { walletAddress?: string }) => {
           setActiveTab(tab);
         }}
       />
-    </div>
+    </SectionTemplate>
   );
 };
 

@@ -23,6 +23,7 @@ import {
   USDC_ISSUER,
   COLLATERAL_ISSUER,
   COLLATERAL_ASSET_CODE,
+  CONNECTION_ERROR_MESSAGE,
 } from "@/constants";
 
 const Header = () => {
@@ -43,7 +44,7 @@ const Header = () => {
         message: "Wallet connected.",
       });
     } else {
-      notification.error({ message: "Unable to connect wallet." });
+      notification.error({ message: CONNECTION_ERROR_MESSAGE });
     }
   };
 
@@ -77,7 +78,7 @@ const Header = () => {
   });
 
   return (
-    <div className="bg-white fixed top-0 left-0 w-full z-10">
+    <header className="bg-white fixed top-0 left-0 w-full z-10">
       <div className="container max-w-[1270px] flex flex-wrap justify-between gap-5 items-center py-3">
         <Link to="/" className="min-w-[50px]">
           <img src="/icons/logo.svg" alt="" />
@@ -141,7 +142,7 @@ const Header = () => {
                         key: 1,
                         label: (
                           <Button
-                            className="w-full justify-between text-red-600 gap-3"
+                            className="w-full justify-between !text-red-500 gap-3"
                             variant={"ghost"}
                             size={"sm"}
                             onClick={() => {
@@ -182,7 +183,7 @@ const Header = () => {
           </Link>
         )}
       </div>
-    </div>
+    </header>
   );
 };
 

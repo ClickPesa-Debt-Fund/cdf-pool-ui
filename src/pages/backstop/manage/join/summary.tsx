@@ -1,5 +1,6 @@
 import { Gasicon } from "@/assets/icons";
 import { DetailsRow } from "@/components/other/details-row";
+import { useTheme } from "@/contexts/theme";
 import { toBalance } from "@/utils/formatter";
 import { SorobanRpc } from "@stellar/stellar-sdk";
 
@@ -28,6 +29,7 @@ const Summary = ({
   isJoin: boolean;
   decimals?: number;
 }) => {
+  const { theme } = useTheme();
   return (
     <div className="mb-6">
       <DetailsRow
@@ -36,6 +38,7 @@ const Summary = ({
           value: amount?.toString(),
           currency: currency as any,
         }}
+        mode={theme}
       />
       <DetailsRow
         amount={{
@@ -51,6 +54,7 @@ const Summary = ({
           )}`,
           currency: "XLM" as any,
         }}
+        mode={theme}
       />
       {isJoin && (
         <>
@@ -60,6 +64,7 @@ const Summary = ({
               value: maxBLNDIn.toString(),
               currency: "BLND" as any,
             }}
+            mode={theme}
           />
           <DetailsRow
             exchangeRate={{
@@ -67,14 +72,15 @@ const Summary = ({
               start: {
                 value: blndBalance?.toString() || "",
                 currency: "BLND" as any,
-                digits: 7,
+                digits: decimals,
               },
               end: {
                 value: (+(blndBalance || "0") - maxBLNDIn).toString(),
                 currency: "BLND" as any,
-                digits: 7,
+                digits: decimals,
               },
             }}
+            mode={theme}
           />
           <DetailsRow
             amount={{
@@ -82,6 +88,7 @@ const Summary = ({
               value: maxUSDCIn.toString(),
               currency: "USDC" as any,
             }}
+            mode={theme}
           />
           <DetailsRow
             exchangeRate={{
@@ -89,14 +96,15 @@ const Summary = ({
               start: {
                 value: usdcBalance?.toString() || "",
                 currency: "USDC" as any,
-                digits: 7,
+                digits: decimals,
               },
               end: {
                 value: (+(usdcBalance || "0") - maxUSDCIn).toString(),
                 currency: "USDC",
-                digits: 7,
+                digits: decimals,
               },
             }}
+            mode={theme}
           />
         </>
       )}
@@ -107,7 +115,9 @@ const Summary = ({
               label: "Min BLND-USDC LP tokens minted",
               value: toMint.toString(),
               currency: "BLND-USDC LP" as any,
+              digits: decimals,
             }}
+            mode={theme}
           />
           <DetailsRow
             exchangeRate={{
@@ -115,16 +125,17 @@ const Summary = ({
               start: {
                 value: (Number(lpBalance) / 10 ** 7)?.toString() || "",
                 currency: "BLND-USDC LP" as any,
-                digits: 7,
+                digits: decimals,
               },
               end: {
                 value: lpBalance
                   ? (Number(lpBalance) / 10 ** 7 + toMint).toString()
                   : toMint.toString(),
                 currency: "BLND-USDC LP" as any,
-                digits: 7,
+                digits: decimals,
               },
             }}
+            mode={theme}
           />
         </>
       )}
