@@ -1,6 +1,6 @@
 import { CurrencyLogos } from "@/components/other/currency-logos";
 import Table from "@/components/other/table";
-import { USDC_ASSET_ID, STELLER_EXPERT_URL } from "@/constants";
+import { USDC_ASSET_ID, STELLER_EXPERT_URL, COLLATERAL_ASSET_CODE } from "@/constants";
 import { useRetroshades } from "@/services";
 import { formatAmount, formatDate } from "@/utils";
 import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
@@ -43,12 +43,12 @@ const Transactions = ({
               amount: (
                 <span className="inline-flex  items-center gap-3 ">
                   {formatAmount(+record?.usdc_amount, 7)}{" "}
-                  {record?.reserve_address === USDC_ASSET_ID ? "USDC" : "CPYT"}
+                  {record?.reserve_address === USDC_ASSET_ID ? "USDC" : COLLATERAL_ASSET_CODE}
                   <CurrencyLogos
                     name={
                       record?.reserve_address === USDC_ASSET_ID
                         ? "USDC"
-                        : "CPYT"
+                        : COLLATERAL_ASSET_CODE
                     }
                     size={"sm"}
                   />

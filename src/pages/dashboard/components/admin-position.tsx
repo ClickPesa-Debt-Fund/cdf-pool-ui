@@ -143,7 +143,7 @@ const AdminPosition = () => {
                     poolUser?.[0]?.assetFloat || 0,
                     reserve?.config.decimals
                   )}{" "}
-                  CPYT
+                  {COLLATERAL_ASSET_CODE}
                 </span>
               }
               style={{
