@@ -11,6 +11,7 @@ import { POOL_ID } from "@/constants";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { formatAmount } from "@/utils";
+import { useWindowSize } from "@/hooks/use-window-size";
 
 const UserPositionDetails = () => {
   const { data: pool } = usePool(POOL_ID);
@@ -55,11 +56,6 @@ const UserPositionDetails = () => {
       {poolUser && (
         <Row gutter={[12, 12]}>
           <Col md={24} span={24}>
-            <Row gutter={[12, 12]}>
-              <Col span={6}>Asset</Col>
-              <Col span={6}>Amount Supplied</Col>
-              <Col span={6}>APR</Col>
-            </Row>
             {!suppliedAssets?.length ? (
               <PositionCard supplyApr={0} assetFloat={0} />
             ) : null}
@@ -90,68 +86,114 @@ const PositionCard = ({
   assetFloat: number;
   supplyApr: number;
 }) => {
+  const { width } = useWindowSize();
   const { connected, connect } = useWallet();
   const [withdraw, setWithdraw] = useState(false);
   const [openSupplyModal, setOpenSupplyModal] = useState(false);
 
   return (
-    <Row gutter={[12, 12]} align={"middle"} className="py-3">
-      <Col span={6} className="text-font-semi-bold flex gap-2 items-center">
-        <CurrencyLogos name="USDC" size={24} /> USDC
-      </Col>
-      <Col span={6} className="text-font-semi-bold text-green-600">
-        ${formatAmount(assetFloat, 7)}
-      </Col>
-      <Col span={6} className="text-font-semi-bold">
-        {formatter.toPercentage(supplyApr)}
-      </Col>
-      <Col md={6} span={24} className="space-y-4">
-        <Button
-          className="w-full"
-          onClick={() => {
-            if (connected) {
-              setOpenSupplyModal(true);
-            } else {
-              connect((successful: boolean) => {
-                if (successful) {
-                  notification.success({
-                    message: "Wallet connected.",
-                  });
+    <div>
+      <Row gutter={[12, 12]}>
+        <Col md={6} span={8}>
+          Asset
+        </Col>
+        <Col md={6} span={8}>
+          Amount Supplied
+        </Col>
+        <Col md={6} span={8}>
+          APR
+        </Col>
+        <Col md={6} span={0} className="space-y-4">
+          <Button
+            className="w-full"
+            onClick={() => {
+              if (connected) {
+                setOpenSupplyModal(true);
+              } else {
+                connect((successful: boolean) => {
+                  if (successful) {
+                    notification.success({
+                      message: "Wallet connected.",
+                    });
+                    setOpenSupplyModal(true);
+                  } else {
+                    notification.error({
+                      message: "Unable to connect wallet.",
+                    });
+                  }
+                });
+              }
+            }}
+          >
+            Supply USDC
+          </Button>
+        </Col>
+      </Row>
+      <Row gutter={[12, 12]} align={"middle"} className="py-3">
+        <Col
+          md={6}
+          span={8}
+          className="text-font-semi-bold flex gap-2 items-center"
+        >
+          <CurrencyLogos name="USDC" size={24} /> USDC
+        </Col>
+        <Col md={6} span={8} className="text-font-semi-bold text-green-600">
+          ${formatAmount(assetFloat, 7)}
+        </Col>
+        <Col md={6} span={8} className="text-font-semi-bold">
+          {formatter.toPercentage(supplyApr)}
+        </Col>
+        <Col md={6} span={24} className="space-y-4">
+          {width < 767 && (
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (connected) {
                   setOpenSupplyModal(true);
                 } else {
-                  notification.error({
-                    message: "Unable to connect wallet.",
+                  connect((successful: boolean) => {
+                    if (successful) {
+                      notification.success({
+                        message: "Wallet connected.",
+                      });
+                      setOpenSupplyModal(true);
+                    } else {
+                      notification.error({
+                        message: "Unable to connect wallet.",
+                      });
+                    }
                   });
                 }
-              });
-            }
-          }}
-        >
-          Supply USDC
-        </Button>
-        <Button
-          className="w-full"
-          variant={"outline"}
-          onClick={() => setWithdraw(true)}
-        >
-          Withdraw USDC
-        </Button>
-      </Col>
-      <TransactModal
-        asset="USDC"
-        type={"WithdrawCollateral"}
-        title="Withdraw USDC"
-        open={withdraw}
-        close={() => setWithdraw(false)}
-      />
-      <TransactModal
-        asset="USDC"
-        type={"SupplyCollateral"}
-        title="Supply USDC"
-        open={openSupplyModal}
-        close={() => setOpenSupplyModal(false)}
-      />
-    </Row>
+              }}
+            >
+              Supply USDC
+            </Button>
+          )}
+
+          <Button
+            className="w-full"
+            variant={"outline"}
+            onClick={() => setWithdraw(true)}
+          >
+            Withdraw USDC
+          </Button>
+        </Col>
+        <TransactModal
+          asset="USDC"
+          type={"WithdrawCollateral"}
+          title="Withdraw USDC"
+          open={withdraw}
+          close={() => setWithdraw(false)}
+        />
+        <TransactModal
+          asset="USDC"
+          type={"SupplyCollateral"}
+          title="Supply USDC"
+          open={openSupplyModal}
+          close={() => setOpenSupplyModal(false)}
+        />
+      </Row>
+    </div>
   );
 };
 

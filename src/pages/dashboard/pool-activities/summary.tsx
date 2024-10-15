@@ -9,7 +9,13 @@ import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
 import { DetailContentItem } from "@clickpesa/components-library.data-display.detail-content-item";
 import Row from "antd/lib/row";
 
-const Summary = ({ walletAddress }: { walletAddress?: string }) => {
+const Summary = ({
+  walletAddress,
+  type,
+}: {
+  walletAddress?: string;
+  type: RETROSHADES_COMMANDS;
+}) => {
   const { data: totalUSDCSupplied } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLIED,
     walletAddress,
@@ -41,7 +47,6 @@ const Summary = ({ walletAddress }: { walletAddress?: string }) => {
       repaidFund?.reserve_address === USDC_ASSET_ID
   )?.sum;
 
-
   const USDCTotalBorrowedFunds = totalBorrowed?.find(
     (repaidFund: { reserve_address: string }) =>
       repaidFund?.reserve_address === USDC_ASSET_ID
@@ -68,65 +73,62 @@ const Summary = ({ walletAddress }: { walletAddress?: string }) => {
   )?.sum;
 
   return (
-    <div>
+    <div className="my-4">
       <Row gutter={[12, 12]} justify={"space-between"}>
-        {/* <DetailContentItem
-          title="Current borrowed funds"
-          content={
-            <span className="text-font-semi-bold">
-              ${formatAmount(10000, 7)}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        /> */}
-        <DetailContentItem
-          title="Total borrowed funds"
-          content={
-            <span className="text-font-semi-bold">
-              ${formatAmount(USDCTotalBorrowedFunds || 0, 7)}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
-        <DetailContentItem
-          title="Total repaid funds"
-          content={
-            <span className="text-font-semi-bold">
-              ${formatAmount(USDCRepaidFunds || 0, 7)}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
+        {type === RETROSHADES_COMMANDS.BORROW_USDC_TRXS && (
+          <DetailContentItem
+            title="Total borrowed funds"
+            content={
+              <span className="text-font-semi-bold">
+                ${formatAmount(USDCTotalBorrowedFunds || 0, 7)}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
+        {type === RETROSHADES_COMMANDS.REPAY_USDC_TRXS && (
+          <DetailContentItem
+            title="Total repaid funds"
+            content={
+              <span className="text-font-semi-bold">
+                ${formatAmount(USDCRepaidFunds || 0, 7)}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
 
-        <DetailContentItem
-          title="Total USDC supplied funds"
-          content={
-            <span className="text-font-semi-bold">
-              ${formatAmount(USDCTotalSuppliedFunds || 0, 7)}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
-        <DetailContentItem
-          title="Total Collateral supplied funds"
-          content={
-            <span className="text-font-semi-bold">
-              {formatAmount(CollateralTotalSuppliedFunds || 0, 7)}{" "}
-              {COLLATERAL_ASSET_CODE}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
+        {type === RETROSHADES_COMMANDS.SUPPLY_USDC_TRXS && (
+          <DetailContentItem
+            title="Total USDC supplied funds"
+            content={
+              <span className="text-font-semi-bold">
+                ${formatAmount(USDCTotalSuppliedFunds || 0, 7)}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
+        {type === RETROSHADES_COMMANDS.SUPPLY_COLLATERAL_TRXS && (
+          <DetailContentItem
+            title="Total Collateral supplied funds"
+            content={
+              <span className="text-font-semi-bold">
+                {formatAmount(CollateralTotalSuppliedFunds || 0, 7)}{" "}
+                {COLLATERAL_ASSET_CODE}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
         {/* <DetailContentItem
           title="Current supplied funds"
           content={
@@ -153,29 +155,33 @@ const Summary = ({ walletAddress }: { walletAddress?: string }) => {
             marginTop: 0,
           }}
         /> */}
-        <DetailContentItem
-          title="Total USDC withdrawn funds"
-          content={
-            <span className="text-font-semi-bold">
-              ${formatAmount(USDCTotalWithdrawFunds || 0, 7)}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
-        <DetailContentItem
-          title="Total Collateral withdrawn funds"
-          content={
-            <span className="text-font-semi-bold">
-              {formatAmount(CollateralTotalWithdrawFunds || 0, 7)}{" "}
-              {COLLATERAL_ASSET_CODE}
-            </span>
-          }
-          style={{
-            marginTop: 0,
-          }}
-        />
+        {type === RETROSHADES_COMMANDS.WITHDRAW_USDC_TRXS && (
+          <DetailContentItem
+            title="Total USDC withdrawn funds"
+            content={
+              <span className="text-font-semi-bold">
+                ${formatAmount(USDCTotalWithdrawFunds || 0, 7)}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
+        {type === RETROSHADES_COMMANDS.WITHDRAW_COLLATERAL_TRXS && (
+          <DetailContentItem
+            title="Total Collateral withdrawn funds"
+            content={
+              <span className="text-font-semi-bold">
+                {formatAmount(CollateralTotalWithdrawFunds || 0, 7)}{" "}
+                {COLLATERAL_ASSET_CODE}
+              </span>
+            }
+            style={{
+              marginTop: 0,
+            }}
+          />
+        )}
       </Row>
     </div>
   );

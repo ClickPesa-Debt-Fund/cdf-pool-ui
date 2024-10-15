@@ -13,6 +13,7 @@ import {
   STELLER_EXPERT_URL,
   COLLATERAL_ASSET_ID,
   POOL_STATUS,
+  SME_PORTFOLIO_SIZE,
 } from "@/constants";
 import { PoolEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
@@ -173,17 +174,6 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
-            <DetailContentItem
-              title="Number of Participating MFIs"
-              content={
-                <span className="text-font-semi-bold">
-                  {PARTICIPATING_MFIs}
-                </span>
-              }
-              style={{
-                marginTop: 0,
-              }}
-            />
 
             <DetailContentItem
               title="Number of Participating Funders"
@@ -208,6 +198,28 @@ const PoolDetails = () => {
                 <span className="text-font-semi-bold">
                   {totalCollateralParticipants?.[0]?.number_of_participants ||
                     0}
+                </span>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="Number of Participating MFIs"
+              content={
+                <span className="text-font-semi-bold">
+                  {PARTICIPATING_MFIs}
+                </span>
+              }
+              style={{
+                marginTop: 0,
+              }}
+            />
+            <DetailContentItem
+              title="SMEs Portfolio Size"
+              content={
+                <span className="text-font-semi-bold">
+                  {formatAmount(SME_PORTFOLIO_SIZE, 7)}
                 </span>
               }
               style={{

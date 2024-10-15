@@ -148,8 +148,7 @@ const Dashboard = () => {
                         color="blue"
                         subtitle={
                           <div className="flex justify-between">
-                            Click here to receive CPYT assets for the
-                            Collateral.
+                            Click here to receive testing CPCT tokens
                             <ArrowRight />
                           </div>
                         }
@@ -174,7 +173,7 @@ const Dashboard = () => {
         </div>
       </div>
       <PoolDetails />
-      {supportedCollateralBalances?.length ? <AdminPosition /> : null}
+      <AdminPosition />
       <UserPositionDetails />
       <PoolActivities walletAddress={walletAddress} />
     </div>

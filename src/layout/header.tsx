@@ -12,7 +12,11 @@ import { Link, useLocation } from "react-router-dom";
 import * as formatter from "@/utils/formatter";
 import Dropdown from "antd/lib/dropdown";
 import notification from "antd/lib/notification";
-import { useHorizonAccount } from "@/pages/dashboard/services";
+import {
+  useBackstop,
+  useHorizonAccount,
+  useTokenBalance,
+} from "@/pages/dashboard/services";
 import { formatAmount } from "@/utils";
 import {
   BLND_ISSUER,
@@ -25,7 +29,14 @@ const Header = () => {
   const pathname = useLocation().pathname;
   const { connect, disconnect, connected, walletAddress, isLoading } =
     useWallet();
+  const { data: backstop } = useBackstop();
   const { data: balances } = useHorizonAccount();
+
+  const { data: lpBalance } = useTokenBalance(
+    backstop?.backstopToken?.id ?? "",
+    undefined,
+    balances
+  );
   const handleConnectWallet = (successful: boolean) => {
     if (successful) {
       notification.success({
@@ -75,7 +86,7 @@ const Header = () => {
           <>
             {connected ? (
               <div className="flex items-center gap-5 flex-wrap">
-                {supportedBalances?.length ? (
+                {supportedBalances?.length || lpBalance ? (
                   <div className="text-sm ">
                     Balances
                     <div className="flex flex-wrap items-center gap-2">
@@ -93,13 +104,16 @@ const Header = () => {
                         ?.map((balance, index) => {
                           return (
                             <span key={index} className="text-font-semi-bold">
-                              {formatAmount(balance?.balance)}{" "}
+                              {formatAmount(balance?.balance, 2)}{" "}
                               {balance?.asset_type === "native"
                                 ? "XLM"
                                 : balance?.asset_code}
                             </span>
                           );
                         })}
+                      <span className="text-font-semi-bold">
+                        {formatAmount(Number(lpBalance) / 10 ** 7, 2)} LP Token
+                      </span>
                     </div>
                   </div>
                 ) : null}

@@ -29,24 +29,14 @@ const ManageBackstop = () => {
     refetch: balanceRefetch,
   } = useHorizonAccount();
   const { data: backstop, refetch: backstopRefetch } = useBackstop();
-  const {
-    data: horizonAccount,
-    isLoading: horizonLoading,
-    error: horizonError,
-    refetch: horizonRefetch,
-  } = useHorizonAccount();
+
   const {
     data: lpBalance,
     error: lpError,
     refetch: lpRefetch,
     isLoading: lpBalanceLoading,
-  } = useTokenBalance(
-    backstop?.backstopToken?.id ?? "",
-    undefined,
-    horizonAccount
-  );
-  const loading =
-    isLoading || balanceLoading || lpBalanceLoading || horizonLoading;
+  } = useTokenBalance(backstop?.backstopToken?.id ?? "", undefined, balance);
+  const loading = isLoading || balanceLoading || lpBalanceLoading;
 
   if (loading)
     return (
@@ -73,17 +63,6 @@ const ManageBackstop = () => {
         onClick={() => {
           setLoading(true);
           lpRefetch().finally(() => setLoading(false));
-        }}
-      />
-    );
-
-  if (horizonError)
-    return (
-      <ErrorComponent
-        message={formatErrorMessage(horizonError)}
-        onClick={() => {
-          setLoading(true);
-          horizonRefetch().finally(() => setLoading(false));
         }}
       />
     );
@@ -196,7 +175,7 @@ const ManageBackstop = () => {
         }}
         backstop={backstop}
       />
-      {horizonAccount && (
+      {balance && (
         <ExitModal
           open={openExit}
           close={() => setOpenExit(false)}
@@ -205,7 +184,7 @@ const ManageBackstop = () => {
             lpRefetch();
             backstopRefetch();
           }}
-          horizonAccount={horizonAccount}
+          horizonAccount={balance}
           backstop={backstop}
           lpBalance={lpBalance}
           usdcBalance={usdcBalance}
