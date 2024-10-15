@@ -4,6 +4,9 @@ import { USDC_ASSET_ID, STELLER_EXPERT_URL } from "@/constants";
 import { useRetroshades } from "@/services";
 import { formatAmount, formatDate } from "@/utils";
 import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
+import { EyeIcon } from "lucide-react";
+import { toCompactAddress } from "@/utils/formatter";
+import Summary from "./summary";
 
 const Transactions = ({
   type,
@@ -13,9 +16,9 @@ const Transactions = ({
   type: RETROSHADES_COMMANDS;
 }) => {
   const { data, isLoading } = useRetroshades({ command: type, walletAddress });
-
   return (
     <div>
+      <Summary walletAddress={walletAddress} type={type} />
       <Table
         data={removeDuplicates(data || [], "transaction")?.map(
           (record: any) => {
@@ -25,13 +28,16 @@ const Transactions = ({
                 new Date(Number(record?.timestamp + "000")).toISOString(),
                 "MMMM DD, YYYY HH:mm"
               ),
+              user_address: toCompactAddress(record?.user_address),
+              reserve_address: toCompactAddress(record?.reserve_address),
+              transaction: toCompactAddress(record?.transaction),
               action: (
                 <a
                   target="_blank"
                   className="link"
                   href={STELLER_EXPERT_URL + "/tx/" + record?.transaction}
                 >
-                  View On Stellar Expert
+                  <EyeIcon size={18} />
                 </a>
               ),
               amount: (
@@ -55,13 +61,13 @@ const Transactions = ({
           {
             title: "Date",
             name: "timestamp",
-            width: 200,
+            width: 150,
           },
           {
             title: "Amount",
             name: "amount",
             align: "right",
-            width: 200,
+            width: 180,
           },
           // {
           //   title: "Action Type",
@@ -72,28 +78,28 @@ const Transactions = ({
           {
             title: "Source",
             name: "user_address",
-            width: 530,
+            width: 110,
           },
           {
             title: "Asset ID",
             name: "reserve_address",
-            width: 530,
+            width: 120,
           },
           {
             title: "Ledger",
             name: "ledger",
-            width: 200,
+            width: 100,
           },
           {
-            title: "Transaction Hash",
+            title: "Hash",
             name: "transaction",
-            width: 560,
+            width: 110,
           },
           {
             title: "Action",
             name: "action",
-            width: 180,
-            fixed: "right",
+            width: 80,
+            // fixed: "right",
           },
         ]}
         loading={isLoading}

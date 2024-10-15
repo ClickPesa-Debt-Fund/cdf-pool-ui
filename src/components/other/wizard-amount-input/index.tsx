@@ -7,6 +7,7 @@ import { formatValue } from "react-currency-input-field";
 import { cleanValue } from "react-currency-input-field";
 import "./wizard-select.sass";
 import "./index.sass";
+import { useTheme } from "@/contexts/theme";
 
 const Option = Select.Option;
 
@@ -44,10 +45,6 @@ type WizardAmountProps = {
    */
   label?: ReactNode;
   /**
-   * renders in dark or light mode
-   */
-  mode?: "dark" | "light";
-  /**
    * input height (works only for textarea)
    */
   height?: number | string;
@@ -61,12 +58,12 @@ type WizardAmountProps = {
 const WizardAmountInput = ({
   amount,
   label = "Amount",
-  mode,
   height,
   containerStyle,
   currency: { options, ...currency },
   decimalsLimit = 7,
 }: WizardAmountProps) => {
+  const { theme: mode } = useTheme();
   const form = Form.useFormInstance();
   // @ts-ignore
   let formName = form?.__INTERNAL__?.name;

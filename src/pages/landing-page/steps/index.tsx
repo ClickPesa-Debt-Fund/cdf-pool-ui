@@ -3,15 +3,19 @@ import { steps } from "./data";
 import { cn } from "@/lib/utils";
 import Accordion from "./accordion";
 import { Link } from "react-router-dom";
+import { useTheme } from "@/contexts/theme";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
 
 const Steps = () => {
+  const { theme } = useTheme();
   const [active, setActive] = useState(1);
 
   return (
-    <section className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8 space-y-8">
-      <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)] text-center ">
-        How to Earn Passive Income with ClickPesa Debt Fund
-      </h1>
+    <SectionTemplate
+      className="md:rounded-2xl rounded-lg"
+      mode={theme}
+      sectionTitle=" How to Earn Passive Income with ClickPesa Debt Fund"
+    >
       <div className="flex md:flex-row flex-col gap-8">
         <div className="md:order-1 order-2 flex-1 flex gap-8">
           <div>
@@ -53,12 +57,19 @@ const Steps = () => {
                       <span
                         onClick={() => setActive(index + 1)}
                         className={cn(
-                          "transition-all inline-flex min-w-[25px] justify-center items-center font-bold text-font-bold ![font-size:_clamp(30px,5vw,32px)] bare-outlined-text"
+                          "transition-all inline-flex min-w-[25px] justify-center items-center text-font-bold ![font-size:_clamp(30px,5vw,32px)] bare-outlined-text",
+                          { "!text-white/70": theme === "dark" }
                         )}
                       >
                         {index + 1}.
                       </span>{" "}
-                      <span className="text-font-bold text-lg">{title}</span>
+                      <span
+                        className={cn("text-font-bold text-lg", {
+                          "!text-white/70": theme === "dark",
+                        })}
+                      >
+                        {title}
+                      </span>
                     </div>
                   }
                 >
@@ -81,7 +92,7 @@ const Steps = () => {
           </ul>
         </div>
       </div>
-    </section>
+    </SectionTemplate>
   );
 };
 

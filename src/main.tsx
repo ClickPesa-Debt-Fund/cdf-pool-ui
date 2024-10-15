@@ -11,6 +11,7 @@ import "@/styles/index.sass";
 import { SettingsProvider } from "./contexts/settings";
 import { WalletProvider } from "./contexts/wallet";
 import { FLAGSMITH_ENVIRONMENT_KEY } from "./constants";
+import { ThemeProvider } from "./contexts/theme";
 
 const queryClient = new QueryClient();
 
@@ -26,10 +27,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <SettingsProvider>
             <WalletProvider>
-              <ErrorBoundary>
-                <App />
-                <Toaster />
-              </ErrorBoundary>
+              <ThemeProvider>
+                <ErrorBoundary>
+                  <App />
+                  <Toaster />
+                </ErrorBoundary>
+              </ThemeProvider>
             </WalletProvider>
           </SettingsProvider>
         </QueryClientProvider>

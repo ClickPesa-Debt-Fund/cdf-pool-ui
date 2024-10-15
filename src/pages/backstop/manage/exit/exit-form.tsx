@@ -15,6 +15,7 @@ import { formatAmount, formatErrorMessage } from "@/utils";
 import { estExitPool } from "@/utils/comet";
 import Summary from "./summary";
 import { DEBOUNCE_DELAY } from "@/constants";
+import { useTheme } from "@/contexts/theme";
 
 const ExitForm = ({
   form,
@@ -25,6 +26,7 @@ const ExitForm = ({
   close,
   refetch,
 }: ExitFormProps & BalancesProps) => {
+  const { theme } = useTheme();
   const { cometExit, walletAddress } = useWallet();
   const amount = Form.useWatch("amount", form);
   const currency = Form.useWatch("currency", form);
@@ -206,7 +208,7 @@ const ExitForm = ({
               },
             },
           ]}
-          className={`basic-text-input`}
+          className={`basic-text-input ${theme}`}
         >
           <Input placeholder="Enter Slippage Percentage" prefix="%" />
         </Form.Item>

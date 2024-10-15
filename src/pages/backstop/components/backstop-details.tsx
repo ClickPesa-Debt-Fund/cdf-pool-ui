@@ -21,8 +21,11 @@ import { useWallet } from "@/contexts/wallet";
 import { useEffect, useState } from "react";
 import { SorobanRpc, scValToBigInt, xdr } from "@stellar/stellar-sdk";
 import { formatAmount } from "@/utils";
+import { SectionTemplate } from "@clickpesa/components-library.section-template";
+import { useTheme } from "@/contexts/theme";
 
 const BackstopDetails = () => {
+  const { theme } = useTheme();
   const [lpTokenEmissions, setLpTokenEmissions] = useState<bigint>();
   const { connected, cometSingleSidedDeposit } = useWallet();
 
@@ -127,7 +130,7 @@ const BackstopDetails = () => {
   }
 
   return (
-    <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8">
+    <SectionTemplate className="md:rounded-2xl rounded-lg" mode={theme}>
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={24} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
@@ -137,6 +140,7 @@ const BackstopDetails = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Queue For Withdraw"
@@ -149,6 +153,7 @@ const BackstopDetails = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Amount Deposited"
@@ -159,6 +164,7 @@ const BackstopDetails = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
             <DetailContentItem
               title="Number of Backstop Suppliers"
@@ -166,11 +172,12 @@ const BackstopDetails = () => {
               style={{
                 marginTop: 0,
               }}
+              mode={theme}
             />
           </Row>
         </Col>
       </Row>
-    </div>
+    </SectionTemplate>
   );
 };
 

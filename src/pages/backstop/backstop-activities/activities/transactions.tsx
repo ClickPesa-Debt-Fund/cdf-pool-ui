@@ -2,15 +2,18 @@ import { CurrencyLogos } from "@/components/other/currency-logos";
 import Table from "@/components/other/table";
 import { STELLER_EXPERT_URL } from "@/constants";
 import { formatAmount, formatDate } from "@/utils";
+import Summary from "../summary";
 
-const Transactions = ({}: // walletAddress,
-// type,
-{
+const Transactions = ({
+  walletAddress,
+  type,
+}: {
   walletAddress?: string;
   type: "DEPOSIT" | "WITHDRAW";
 }) => {
   return (
     <div>
+      <Summary type={type} walletAddress={walletAddress} />
       <Table
         data={[]?.map((record: any) => {
           return {

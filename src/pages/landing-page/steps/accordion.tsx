@@ -1,6 +1,8 @@
 import { useState, useRef, FC, useEffect, ReactNode } from "react";
 import styles from "./style.module.sass";
 import { ChevronDown } from "lucide-react";
+import { useTheme } from "@/contexts/theme";
+import { cn } from "@/lib/utils";
 
 interface Props {
   title: ReactNode;
@@ -10,6 +12,7 @@ interface Props {
 }
 
 const Accordion: FC<Props> = ({ title, children, active, updateActive }) => {
+  const { theme } = useTheme();
   const content = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<string>("0px");
 
@@ -29,11 +32,12 @@ const Accordion: FC<Props> = ({ title, children, active, updateActive }) => {
 
   return (
     <div
-      className={`${
-        styles.accordion
-      } border-b border-gray-300 transition-all p-4 ${
-        active ? "bg-gray-100" : ""
-      }`}
+      className={cn(`${styles.accordion} border-b transition-all p-4`, {
+        "border-gray-300": theme === "light",
+        "border-gray-600": theme === "dark",
+        "bg-gray-100": theme === "light" && active,
+        "bg-white/5": theme === "dark" && active,
+      })}
     >
       <div
         tabIndex={0}
