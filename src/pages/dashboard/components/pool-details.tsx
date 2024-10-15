@@ -219,7 +219,7 @@ const PoolDetails = () => {
               title="SMEs Portfolio Size"
               content={
                 <span className="text-font-semi-bold">
-                  {formatAmount(SME_PORTFOLIO_SIZE, 7)}
+                  ${formatAmount(SME_PORTFOLIO_SIZE, 7)}
                 </span>
               }
               style={{
@@ -312,15 +312,12 @@ const PoolDetails = () => {
                 <Button
                   className="justify-start gap-4 -ml-4"
                   variant={"link"}
-                  onClick={() => navigate("/dashboard/backstop")}
+                  onClick={() => navigate("/backstop")}
                 >
                   View Backstop
                 </Button>
               </div>
             }
-            style={{
-              marginTop: 0,
-            }}
           />
         </Col>
       </Row>

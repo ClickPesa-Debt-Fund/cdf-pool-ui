@@ -82,7 +82,7 @@ const Header = () => {
         <Link to="/" className="min-w-[50px]">
           <img src="/icons/logo.svg" alt="" />
         </Link>
-        {pathname.includes("dashboard") ? (
+        {pathname.includes("dashboard") || pathname.includes("backstop") ? (
           <>
             {connected ? (
               <div className="flex items-center gap-5 flex-wrap">

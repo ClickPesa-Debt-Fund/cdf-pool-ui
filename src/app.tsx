@@ -31,7 +31,7 @@ const App = () => {
       <Routes>
         <Route element={<LandingPage />} path="*" />
         <Route element={<Dashboard />} path="/dashboard" />
-        <Route element={<Backstop />} path="/dashboard/backstop" />
+        <Route element={<Backstop />} path="/backstop" />
       </Routes>
     </div>
   );
