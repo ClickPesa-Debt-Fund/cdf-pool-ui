@@ -81,7 +81,7 @@ const Header = () => {
     <header className="bg-white fixed top-0 left-0 w-full z-10">
       <div className="container max-w-[1270px] flex flex-wrap justify-between gap-5 items-center py-3">
         <Link to="/" className="min-w-[50px]">
-          <img src="/icons/logo.svg" alt="" />
+          <img src="/icons/logo.svg" alt="" className="h-12" />
         </Link>
         {pathname.includes("dashboard") || pathname.includes("backstop") ? (
           <>
