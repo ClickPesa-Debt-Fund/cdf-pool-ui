@@ -49,9 +49,9 @@ const AmountInput = ({
       />
       <p>{`Maximum Amount: ${formatAmount(maxAmount, decimals)} ${asset}`}</p>
       {loadingSimulation && (
-        <div className="flex justify-end items-center gap-3">
+        <p className="flex justify-end items-center gap-3">
           <Spin size="small" /> Loading
-        </div>
+        </p>
       )}
     </div>
   );
