@@ -16,12 +16,8 @@ const partners = [
     logo: "/icons/blend.svg",
   },
   {
-    name: "Beans",
-    logo: "/icons/beans.svg",
-  },
-  {
-    name: "Lobstr",
-    logo: "/icons/lobstr.svg",
+    name: "Xycloo Labs",
+    logo: "/icons/xycloolabs.png",
   },
 ];
 

@@ -24,6 +24,7 @@ import { CurrencyLogos } from "@/components/other/currency-logos";
 import { useHorizonAccount } from "./services";
 import { useTheme } from "@/contexts/theme";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const { theme } = useTheme();
@@ -81,6 +82,10 @@ const Dashboard = () => {
   };
 
   const notFound = balanceError?.response?.status === 404;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (isLoading) {
     return <Spinner />;
@@ -184,8 +189,8 @@ const Dashboard = () => {
         </p>
       </div>
       <PoolDetails />
-      <AdminPosition />
       <UserPositionDetails />
+      <AdminPosition />
       <PoolActivities />
     </div>
   );

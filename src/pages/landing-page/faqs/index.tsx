@@ -18,7 +18,7 @@ const FAQs = () => {
                 </span>
               }
             >
-              <p className="text-gray-600">{answer}</p>
+              <p className="text-gray-600 opacity-80">{answer}</p>
             </Accordion>
           </li>
         ))}

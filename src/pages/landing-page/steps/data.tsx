@@ -1,8 +1,9 @@
+import { COLLATERAL_ASSET_CODE } from "@/constants";
+
 export const steps = [
   {
     title: "Prepare your wallet to receive ClickPesa Debt Fund Token",
-    description:
-      "Establish a Trustline with CPYT on your Stellar wallet to allow receiving tokens in your wallet",
+    description: `Establish a Trustline with ${COLLATERAL_ASSET_CODE} on your Stellar wallet to allow receiving tokens in your wallet`,
     imgSrc: "/images/step-1.svg",
     link: "/trustline",
   },
@@ -14,14 +15,12 @@ export const steps = [
   },
   {
     title: "Select Pool and Buy it's ClickPesa Yield Token",
-    description:
-      "Send USDC to designated address and receive equivalent CPYT tokens in your wallet.",
+    description: `Send USDC to designated address and receive equivalent ${COLLATERAL_ASSET_CODE} tokens in your wallet.`,
     imgSrc: "/images/step-3.svg",
   },
   {
     title: "Keep track of your Earnings",
-    description:
-      "Monitor your Pools CPYT Earnings in real-time on the dashboard.",
+    description: `Monitor your Pools ${COLLATERAL_ASSET_CODE} Earnings in real-time on the dashboard.`,
     imgSrc: "/images/step-4.svg",
   },
   {

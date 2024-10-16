@@ -1,5 +1,6 @@
 import { Kbd } from "@/components/ui/kbd";
 import Footer from "../landing-page/footer";
+import { COLLATERAL_ASSET_CODE } from "@/constants";
 
 // const apps = [
 //   {
@@ -44,7 +45,7 @@ const laboratory_steps = [
   `Select the “Fetch next sequence number for account starting” button to automatically populate the Transaction Sequence Number.`,
   `Select “Change Trust” from the “Operation Type” drop down menu.`,
   `Select “Alphanumeric 4” if your token code is 4 or less characters long or select “Alphanumeric 12” if your token code is 5 to 12 characters long.`,
-  `Enter the token code in the “Asset Code” field. ---- <b class="font-bold text-font-bold">CPYT</b>`,
+  `Enter the token code in the “Asset Code” field. ---- <b class="font-bold text-font-bold">${COLLATERAL_ASSET_CODE}</b>`,
   `Input the Issuing Account address in the “Issuer Account ID” field. ---- <b class="font-bold text-font-bold">GAH572DYUPXZDOKBI76H54WRKMIHDXZFLOFVFBDPKL3WIUTPGGHCQ5K7</b>`,
   `Select “Sign in Transaction Signer” and sign the transaction. A Ledger wallet can be used to sign by selecting “Sign with BIP Path”.`,
 ];
@@ -55,13 +56,14 @@ const Trustline = () => {
       <div className="bg-white md:rounded-2xl rounded-lg p-6 md:p-8 space-y-4">
         <div>
           <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)]">
-            How do I accept a CPYT token’s trustline?
+            How do I accept a {COLLATERAL_ASSET_CODE} token’s trustline?
           </h1>
           <p>
             In order to send or receive a Stellar network token you must
             establish a trustline. Most Stellar wallets make this easy to do.
-            CPYT token can easily be found by searching by token code or the
-            token?s subdomain. On testnet CPYT subdomain is&nbsp;
+            {COLLATERAL_ASSET_CODE} token can easily be found by searching by
+            token code or the token?s subdomain. On testnet{" "}
+            {COLLATERAL_ASSET_CODE} subdomain is&nbsp;
             <Kbd>sandbox.connect.clickpesa.com</Kbd> and live is&nbsp;
             <Kbd>connect.clickpesa.com</Kbd>
           </p>

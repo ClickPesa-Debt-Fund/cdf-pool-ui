@@ -4,7 +4,7 @@ import { StatusTag } from "@clickpesa/components-library.status-tag";
 import Row from "antd/lib/row";
 import Col from "antd/lib/col";
 import { ArrowUpCircle } from "lucide-react";
-import { usePool, usePoolOracle, useRetroshades } from "@/services";
+import { usePool, useRetroshades } from "@/services";
 import {
   USDC_ASSET_ID,
   COLLATERAL_ASSET_CODE,
@@ -15,7 +15,6 @@ import {
   POOL_STATUS,
   SME_PORTFOLIO_SIZE,
 } from "@/constants";
-import { PoolEstimate } from "@blend-capital/blend-sdk";
 import Spinner from "@/components/other/spinner";
 import { toCompactAddress, toPercentage } from "@/utils/formatter";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +31,6 @@ const PoolDetails = () => {
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
   const { data: pool, isLoading } = usePool(safePoolId, true);
-  const { data: poolOracle } = usePoolOracle(pool);
 
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
   const collateralReserve = pool?.reserves.get(COLLATERAL_ASSET_ID);
@@ -45,13 +43,6 @@ const PoolDetails = () => {
     command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLY_PARTICIPANTS,
   });
 
-  // const { data: totalBorrowParticipants } = useRetroshades({
-  //   command: RETROSHADES_COMMANDS.TOTAL_USDC_BORROW_PARTICIPANTS,
-  // });
-
-  const { data: totalCollateralParticipants } = useRetroshades({
-    command: RETROSHADES_COMMANDS.TOTAL_COLLATERAL_SUPPLY_PARTICIPANTS,
-  });
 
   const USDCRepaidFunds = repaidFunds?.find(
     (repaidFund: { reserve_address: string }) =>
@@ -66,16 +57,9 @@ const PoolDetails = () => {
     return <></>;
   }
 
-  const marketSize =
-    poolOracle !== undefined && pool !== undefined
-      ? PoolEstimate.build(pool.reserves, poolOracle).totalSupply
-      : 0;
 
   return (
-    <SectionTemplate
-      className="md:rounded-2xl rounded-lg"
-      mode={theme}
-    >
+    <SectionTemplate className="md:rounded-2xl rounded-lg" mode={theme}>
       <Row gutter={[12, 12]} justify={"space-between"}>
         <Col md={16} span={24}>
           <Row gutter={[12, 12]} justify={"space-between"}>
@@ -120,6 +104,7 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
+            <div className="w-[30%]" />
             <DetailContentItem
               // @ts-ignore
               title={
@@ -131,7 +116,7 @@ const PoolDetails = () => {
               mode={theme}
               content={
                 <span className="text-font-semi-bold">
-                  ${formatAmount(marketSize || 0, 7)}
+                  ${formatAmount(reserve?.totalSupplyFloat() || 0, 2)}
                 </span>
               }
               style={{
@@ -149,7 +134,7 @@ const PoolDetails = () => {
               mode={theme}
               content={
                 <span className="text-font-semi-bold">
-                  {formatAmount(collateralReserve?.totalSupplyFloat() || 0, 7)}{" "}
+                  {formatAmount(collateralReserve?.totalSupplyFloat() || 0, 2)}{" "}
                   {COLLATERAL_ASSET_CODE}
                 </span>
               }
@@ -161,7 +146,7 @@ const PoolDetails = () => {
               title="Borrowed Funds"
               content={
                 <span className="text-font-semi-bold">
-                  ${formatAmount(reserve?.totalLiabilitiesFloat() || 0, 7)}
+                  ${formatAmount(reserve?.totalLiabilitiesFloat() || 0, 2)}
                 </span>
               }
               mode={theme}
@@ -173,14 +158,14 @@ const PoolDetails = () => {
               // @ts-ignore
               title={
                 <span className="inline-flex items-center gap-2">
-                  Repaid Funds{" "}
+                  Repaid Loans{" "}
                   <Info message="Total refunds in USD done by the pool" />
                 </span>
               }
               mode={theme}
               content={
                 <span className="text-font-semi-bold">
-                  ${formatAmount(USDCRepaidFunds || 0, 7)}
+                  ${formatAmount(USDCRepaidFunds || 0, 2)}
                 </span>
               }
               style={{
@@ -189,7 +174,7 @@ const PoolDetails = () => {
             />
 
             <DetailContentItem
-              title="Number of Participating Funders"
+              title="Participating Funders"
               content={
                 <span className="text-font-semi-bold">
                   {totalSupplyParticipants?.[0]?.number_of_participants || 0}
@@ -200,11 +185,11 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
-            <DetailContentItem
+            {/* <DetailContentItem
               // @ts-ignore
               title={
                 <span className="inline-flex items-center gap-2">
-                  Number of Participating Collateral Suppliers{" "}
+                  Participating Collateral Suppliers{" "}
                   <Info message="Total parties that added collateral" />
                 </span>
               }
@@ -218,9 +203,9 @@ const PoolDetails = () => {
               style={{
                 marginTop: 0,
               }}
-            />
+            /> */}
             <DetailContentItem
-              title="Number of Participating MFIs"
+              title="Participating MFIs"
               content={
                 <span className="text-font-semi-bold">
                   {PARTICIPATING_MFIs}
@@ -232,10 +217,10 @@ const PoolDetails = () => {
               }}
             />
             <DetailContentItem
-              title="SMEs Portfolio Size"
+              title="Total MFI Portfolio Size"
               content={
                 <span className="text-font-semi-bold">
-                  ${formatAmount(SME_PORTFOLIO_SIZE, 7)}
+                  ${formatAmount(SME_PORTFOLIO_SIZE, 72)}
                 </span>
               }
               mode={theme}
@@ -243,9 +228,11 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
+            <div className="w-[30%]" />
           </Row>
         </Col>
         <Col md={6} span={24} className="space-y-4">
+          <div className="h-[65px]" />
           <DetailContentItem
             title={`Pool`}
             full_width
@@ -294,7 +281,7 @@ const PoolDetails = () => {
               </div>
             }
           />
-          <DetailContentItem
+          {/* <DetailContentItem
             title={`Admin`}
             full_width
             mode={theme}
@@ -323,7 +310,7 @@ const PoolDetails = () => {
                 </Button>
               </div>
             }
-          />
+          /> */}
           <DetailContentItem
             title="Backstop"
             full_width
@@ -335,7 +322,7 @@ const PoolDetails = () => {
                   variant={"link"}
                   onClick={() => navigate("/backstop")}
                 >
-                  View Backstop
+                  Participate In Backstop
                 </Button>
               </div>
             }

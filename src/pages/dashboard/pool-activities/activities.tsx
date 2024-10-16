@@ -4,9 +4,8 @@ import Transactions from "./transactions";
 
 const Activities = ({ walletAddress }: { walletAddress?: string }) => {
   return (
-    <div>
+    <div className="mt-4">
       <Tabs
-        className="span-width"
         items={[
           {
             tabKey: "supplies",

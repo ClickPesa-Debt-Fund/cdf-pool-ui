@@ -9,12 +9,17 @@ import { usePool } from "@/services";
 import Spinner from "@/components/other/spinner";
 import YourPosition from "./components/your-position";
 import BackstopActivities from "./backstop-activities";
+import { useEffect } from "react";
 
 const Backstop = () => {
   const navigate = useNavigate();
   const { data: pool } = usePool(POOL_ID);
   const { data: backstop } = useBackstop();
   const { data: backstopPoolData } = useBackstopPool(POOL_ID);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!pool || !backstop || !backstopPoolData) {
     return <Spinner />;

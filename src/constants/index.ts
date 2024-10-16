@@ -27,6 +27,7 @@ export const COLLATERAL_ASSET_CODE =
 export const NETWORK_PASSPHRASE = import.meta.env
   .VITE_STELLAR_NETWORK_PASSPHRASE;
 export const BACKSTOP_CONTRACT = import.meta.env.VITE_BACKSTOP;
+export const RAISING_GOAL = +(import.meta.env.VITE_RAISING_GOAL || "50000");
 
 export const COLLATERAL_ASSET = new Asset(
   COLLATERAL_ASSET_CODE,
@@ -39,10 +40,10 @@ export const CONNECTION_ERROR_MESSAGE =
   "Unable to connect wallet. Please try again";
 
 export const POOL_STATUS = {
-  0: "ADMIN ACTIVE",
+  0: "ACTIVE", // ADMIN ACTIVE
   1: "ACTIVE",
-  2: "ADMIN-ON ICE",
-  3: "ON ICE",
+  2: "ACTIVE", // ADMIN-ON ICE
+  3: "ACTIVE", // ON ICE
   4: "ADMIN FROZEN",
   5: "FROZEN",
 };
