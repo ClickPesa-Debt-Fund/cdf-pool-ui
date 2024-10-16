@@ -130,9 +130,10 @@ const YourPosition = () => {
               }}
               mode={theme}
             />
+            <div className="w-[30%]" />
           </Row>
         </Col>
-        <Col md={8} span={24} className="space-y-3">
+        <Col md={6} span={24} className="space-y-3">
           <Button
             className="w-full"
             onClick={() => {

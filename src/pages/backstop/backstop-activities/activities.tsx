@@ -4,7 +4,7 @@ import Transactions from "./activities/transactions";
 
 const Activities = ({ walletAddress }: { walletAddress?: string }) => {
   return (
-    <div>
+    <div className="mt-4">
       <Tabs
         items={[
           {

@@ -77,7 +77,7 @@ const Summary = ({
 
   return (
     <div className="my-4">
-      <Row gutter={[12, 12]} justify={"space-between"}>
+      <Row gutter={[12, 12]}>
         {type === RETROSHADES_COMMANDS.BORROW_USDC_TRXS && (
           <DetailContentItem
             title="Total borrowed funds"

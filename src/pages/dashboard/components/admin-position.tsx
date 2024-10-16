@@ -143,7 +143,7 @@ const AdminPosition = () => {
                     poolUser?.[0]?.assetFloat || 0,
                     reserve?.config.decimals
                   )}{" "}
-                  CPYT
+                  {COLLATERAL_ASSET_CODE}
                 </span>
               }
               style={{
@@ -240,7 +240,7 @@ const AdminPosition = () => {
               }
             }}
           >
-            Supply Collateral
+            Supply {COLLATERAL_ASSET_CODE}
           </Button>
           <Button
             className="w-full border-red-500 hover:border-red-600 text-red-500"
@@ -288,7 +288,7 @@ const AdminPosition = () => {
             }}
             variant={"outline"}
           >
-            Repay
+            Repay USDC
           </Button>
           <Button
             className="w-full"
@@ -312,7 +312,7 @@ const AdminPosition = () => {
             }}
             variant={"outline"}
           >
-            Withdraw
+            Withdraw {COLLATERAL_ASSET_CODE}
           </Button>
         </Col>
       </Row>
