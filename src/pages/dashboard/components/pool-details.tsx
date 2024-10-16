@@ -43,7 +43,6 @@ const PoolDetails = () => {
     command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLY_PARTICIPANTS,
   });
 
-
   const USDCRepaidFunds = repaidFunds?.find(
     (repaidFund: { reserve_address: string }) =>
       repaidFund?.reserve_address === USDC_ASSET_ID
@@ -56,7 +55,6 @@ const PoolDetails = () => {
   if (!pool) {
     return <></>;
   }
-
 
   return (
     <SectionTemplate className="md:rounded-2xl rounded-lg" mode={theme}>
@@ -73,7 +71,9 @@ const PoolDetails = () => {
                     name={POOL_STATUS?.[pool?.config?.status]}
                     mode={theme}
                     color={
-                      [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
+                      [0, 1, 2, 3]?.includes(pool?.config?.status)
+                        ? "green"
+                        : "red"
                     }
                   />
                 </span>
