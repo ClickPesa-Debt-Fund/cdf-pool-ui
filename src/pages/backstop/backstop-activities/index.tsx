@@ -26,14 +26,14 @@ const BackstopActivities = () => {
             children: <Activities />,
           },
           {
-            label: "My Activities",
-            key: "my_activities",
+            label: "Your Activities",
+            key: "your_activities",
             children: <Activities walletAddress={walletAddress} />,
           },
         ]}
         activeKey={activeTab}
         onTabClick={(tab) => {
-          if (!walletAddress && tab === "my_activities") {
+          if (!walletAddress && tab === "your_activities") {
             return notification.warning({
               message: "Connect Your wallet to see activities",
             });

@@ -140,7 +140,7 @@ export const useRetroshades = ({
       enabled: !!command,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchInterval: 10000,
+      // refetchInterval: 10000,
     }
   );
   return { data, error, isLoading, refetch, isRefetching };

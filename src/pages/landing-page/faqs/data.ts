@@ -1,3 +1,5 @@
+// import { COLLATERAL_ASSET_CODE } from "@/constants";
+
 export const faqs = [
   {
     qn: "What is Debt Fund?",
@@ -9,11 +11,11 @@ export const faqs = [
     answer:
       "By providing DeFI with End-to-End transparency, accountability and traceability in the lending process.",
   },
-  {
-    qn: "How do Lenders (CPYT Token Holders) benefit from Debt Fund",
-    answer:
-      "Lenders benefit from increased transparency, which reduces risk and provides clearer insight into how their funds are being utilized.",
-  },
+  // {
+  //   qn: `How do Lenders (${COLLATERAL_ASSET_CODE} Token Holders) benefit from Debt Fund`,
+  //   answer:
+  //     "Lenders benefit from increased transparency, which reduces risk and provides clearer insight into how their funds are being utilized.",
+  // },
   {
     qn: "How do MFIs benefits from Debt Fund",
     answer:
@@ -29,11 +31,11 @@ export const faqs = [
     answer:
       "We create pools with various terms and risk profiles that provide one of the best returns on the current market.\nProfitability always comes with risk! While we don’t promise to be risk-free, our strategies focus on minimizing risk as much as possible.",
   },
-  {
-    qn: "Is Debt Fund secure?",
-    answer:
-      "Debt Fund platform follows all the industry best practices for IT security checks, data protection, access rights, and data encryption. We’re constantly raising the bar for our security standards.",
-  },
+  // {
+  //   qn: "Is Debt Fund secure?",
+  //   answer:
+  //     "Debt Fund platform follows all the industry best practices for IT security checks, data protection, access rights, and data encryption. We’re constantly raising the bar for our security standards.",
+  // },
   {
     qn: "Are the APR rates guaranteed?",
     answer:

@@ -54,10 +54,10 @@ const links = [
         name: "Support",
         to: "mailto:info@clickpesadebtfund.com",
       },
-      {
-        name: "How to Add Trustline",
-        to: "/trustline",
-      },
+      // {
+      //   name: "How to Add Trustline",
+      //   to: "/trustline",
+      // },
     ],
   },
 ];
@@ -74,7 +74,7 @@ const Footer = () => {
               className="md:h-[50px] h-[36px]"
             />
             <h1 className="font-bold text-font-bold [font-size:_clamp(20px,5vw,24px)] !text-white">
-              ClickPesa Debt Fund Token
+              DebtFund SME Pool
             </h1>
           </div>
         </div>
@@ -104,7 +104,7 @@ const Footer = () => {
           ))}
         </div>
         <div className="text-gray-500 text-font-medium">
-          ClickPesa Debt Fund &copy; {new Date().getFullYear()}
+          DebtFund SME Pool &copy; {new Date().getFullYear()}
         </div>
       </div>
     </footer>

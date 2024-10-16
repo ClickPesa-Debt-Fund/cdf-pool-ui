@@ -12,13 +12,13 @@ const Summary = ({
   const { theme } = useTheme();
   return (
     <div className="my-4">
-      <Row gutter={[12, 12]} justify={"space-between"}>
+      <Row gutter={[12, 12]}>
         {type === "DEPOSIT" && (
           <DetailContentItem
             title="Current deposit"
             content={
               <span className="text-font-semi-bold">
-                {formatAmount(120000, 7)} BLND-USDC LP
+                {formatAmount(0, 7)} BLND-USDC LP
               </span>
             }
             style={{
@@ -32,7 +32,7 @@ const Summary = ({
             title="Total deposit"
             content={
               <span className="text-font-semi-bold">
-                {formatAmount(12000, 7)} BLND-USDC LP
+                {formatAmount(0, 7)} BLND-USDC LP
               </span>
             }
             style={{
@@ -46,7 +46,7 @@ const Summary = ({
             title="Total Withdraw"
             content={
               <span className="text-font-semi-bold">
-                {formatAmount(240000, 7)} BLND-USDC LP
+                {formatAmount(0, 7)} BLND-USDC LP
               </span>
             }
             style={{

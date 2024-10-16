@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/contexts/wallet";
-import {
-  ChevronDown,
-  CopyIcon,
-  HomeIcon,
-  LogOut,
-  WalletIcon,
-} from "lucide-react";
+import { ChevronDown, CopyIcon, Home, LogOut, WalletIcon } from "lucide-react";
 import copy from "copy-to-clipboard";
 import { Link, useLocation } from "react-router-dom";
 import * as formatter from "@/utils/formatter";
@@ -81,7 +75,7 @@ const Header = () => {
     <header className="bg-white fixed top-0 left-0 w-full z-10">
       <div className="container max-w-[1270px] flex flex-wrap justify-between gap-5 items-center py-3">
         <Link to="/" className="min-w-[50px]">
-          <img src="/icons/logo.svg" alt="" />
+          <img src="/icons/logo.svg" alt="" className="h-12" />
         </Link>
         {pathname.includes("dashboard") || pathname.includes("backstop") ? (
           <>
@@ -178,8 +172,11 @@ const Header = () => {
             )}
           </>
         ) : (
-          <Link to={"/dashboard"} className="text-primary">
-            <HomeIcon strokeWidth="1" size={32} />
+          <Link to={"/dashboard"}>
+            <Button className="md:min-w-[150px] gap-2">
+              <Home size={16} />
+              View Pool
+            </Button>
           </Link>
         )}
       </div>

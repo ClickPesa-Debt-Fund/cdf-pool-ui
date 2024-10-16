@@ -16,7 +16,7 @@ const FundingProgress = ({
       {showText && (
         <div className="flex justify-between gap-4 flex-wrap">
           <span>
-            Raised {formatAmount(collected, 0)} {currency}
+            Raised {formatAmount(collected, 2)} {currency}
           </span>
           <span>
             Goal {formatAmount(goal, 0)} {currency}

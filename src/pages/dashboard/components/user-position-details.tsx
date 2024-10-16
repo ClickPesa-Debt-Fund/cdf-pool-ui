@@ -11,11 +11,13 @@ import { CONNECTION_ERROR_MESSAGE, POOL_ID } from "@/constants";
 import notification from "antd/lib/notification";
 import { useWallet } from "@/contexts/wallet";
 import { formatAmount } from "@/utils";
-import { useWindowSize } from "@/hooks/use-window-size";
 import { useTheme } from "@/contexts/theme";
 import { SectionTemplate } from "@clickpesa/components-library.section-template";
 
 const UserPositionDetails = () => {
+  const { connected, connect } = useWallet();
+  const [withdraw, setWithdraw] = useState(false);
+  const [openSupplyModal, setOpenSupplyModal] = useState(false);
   const { theme } = useTheme();
   const { data: pool } = usePool(POOL_ID);
   const { data: poolUser, isLoading } = usePoolUser(pool);
@@ -50,8 +52,8 @@ const UserPositionDetails = () => {
       )}
 
       {poolUser && (
-        <Row gutter={[12, 12]}>
-          <Col md={24} span={24}>
+        <Row gutter={[12, 12]} justify={"space-between"}>
+          <Col md={16} span={24}>
             {!suppliedAssets?.length ? (
               <PositionCard supplyApr={0} assetFloat={0} />
             ) : null}
@@ -69,78 +71,7 @@ const UserPositionDetails = () => {
               );
             })}
           </Col>
-        </Row>
-      )}
-    </SectionTemplate>
-  );
-};
-
-const PositionCard = ({
-  assetFloat,
-  supplyApr,
-}: {
-  assetFloat: number;
-  supplyApr: number;
-}) => {
-  const { width } = useWindowSize();
-  const { connected, connect } = useWallet();
-  const [withdraw, setWithdraw] = useState(false);
-  const [openSupplyModal, setOpenSupplyModal] = useState(false);
-
-  return (
-    <div>
-      <Row gutter={[12, 12]}>
-        <Col md={6} span={8}>
-          Asset
-        </Col>
-        <Col md={6} span={8}>
-          Amount Supplied
-        </Col>
-        <Col md={6} span={8}>
-          APR
-        </Col>
-        <Col md={6} span={0} className="space-y-4">
-          <Button
-            className="w-full"
-            onClick={() => {
-              if (connected) {
-                setOpenSupplyModal(true);
-              } else {
-                connect((successful: boolean) => {
-                  if (successful) {
-                    notification.success({
-                      message: "Wallet connected.",
-                    });
-                    setOpenSupplyModal(true);
-                  } else {
-                    notification.error({
-                      message: CONNECTION_ERROR_MESSAGE,
-                    });
-                  }
-                });
-              }
-            }}
-          >
-            Supply USDC
-          </Button>
-        </Col>
-      </Row>
-      <Row gutter={[12, 12]} align={"middle"} className="py-3">
-        <Col
-          md={6}
-          span={8}
-          className="text-font-semi-bold flex gap-2 items-center"
-        >
-          <CurrencyLogos name="USDC" size={24} /> USDC
-        </Col>
-        <Col md={6} span={8} className="text-font-semi-bold text-green-600">
-          ${formatAmount(assetFloat, 7)}
-        </Col>
-        <Col md={6} span={8} className="text-font-semi-bold">
-          {formatter.toPercentage(supplyApr)}
-        </Col>
-        <Col md={6} span={24} className="space-y-4">
-          {width < 767 && (
+          <Col md={6} span={0} className="space-y-3">
             <Button
               className="w-full"
               onClick={() => {
@@ -164,30 +95,59 @@ const PositionCard = ({
             >
               Supply USDC
             </Button>
-          )}
+            <Button
+              className="w-full"
+              variant={"outline"}
+              onClick={() => setWithdraw(true)}
+            >
+              Withdraw USDC
+            </Button>
+          </Col>
+        </Row>
+      )}
 
-          <Button
-            className="w-full"
-            variant={"outline"}
-            onClick={() => setWithdraw(true)}
-          >
-            Withdraw USDC
-          </Button>
+      <TransactModal
+        asset="USDC"
+        type={"WithdrawCollateral"}
+        title="Withdraw USDC"
+        open={withdraw}
+        close={() => setWithdraw(false)}
+      />
+      <TransactModal
+        asset="USDC"
+        type={"SupplyCollateral"}
+        title="Supply USDC"
+        open={openSupplyModal}
+        close={() => setOpenSupplyModal(false)}
+      />
+    </SectionTemplate>
+  );
+};
+
+const PositionCard = ({
+  assetFloat,
+  supplyApr,
+}: {
+  assetFloat: number;
+  supplyApr: number;
+}) => {
+  return (
+    <div className="space-y-3">
+      <Row gutter={[12, 12]} justify={"space-between"}>
+        <Col className="w-[30%]">Asset</Col>
+        <Col className="w-[30%]">Amount Supplied</Col>
+        <Col className="w-[30%]">APR</Col>
+      </Row>
+      <Row gutter={[12, 12]} align={"middle"} justify={"space-between"}>
+        <Col className="text-font-semi-bold w-[30%] flex gap-2 items-center">
+          <CurrencyLogos name="USDC" size={24} /> USDC
         </Col>
-        <TransactModal
-          asset="USDC"
-          type={"WithdrawCollateral"}
-          title="Withdraw USDC"
-          open={withdraw}
-          close={() => setWithdraw(false)}
-        />
-        <TransactModal
-          asset="USDC"
-          type={"SupplyCollateral"}
-          title="Supply USDC"
-          open={openSupplyModal}
-          close={() => setOpenSupplyModal(false)}
-        />
+        <Col className="text-font-semi-bold w-[30%] text-green-600">
+          ${formatAmount(assetFloat, 7)}
+        </Col>
+        <Col className="text-font-semi-bold w-[30%]">
+          {formatter.toPercentage(supplyApr)}
+        </Col>
       </Row>
     </div>
   );

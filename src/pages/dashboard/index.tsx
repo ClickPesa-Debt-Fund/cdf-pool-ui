@@ -22,8 +22,12 @@ import { Networks } from "@stellar/stellar-sdk";
 import { formatErrorMessage } from "@/utils";
 import { CurrencyLogos } from "@/components/other/currency-logos";
 import { useHorizonAccount } from "./services";
+import { useTheme } from "@/contexts/theme";
+import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 const Dashboard = () => {
+  const { theme } = useTheme();
   const safePoolId =
     typeof POOL_ID == "string" && /^[0-9A-Z]{56}$/.test(POOL_ID) ? POOL_ID : "";
 
@@ -79,6 +83,10 @@ const Dashboard = () => {
 
   const notFound = balanceError?.response?.status === 404;
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -92,10 +100,14 @@ const Dashboard = () => {
               <Alert
                 color="gold"
                 subtitle={
-                  <>
+                  <span
+                    className={cn({
+                      "text-black/90": theme === "dark",
+                    })}
+                  >
                     The wallet address {toCompactAddress(walletAddress)} does
                     not exist on the network. Please fund your account!
-                  </>
+                  </span>
                 }
               />
             )}
@@ -119,7 +131,11 @@ const Dashboard = () => {
                           }}
                           color="blue"
                           subtitle={
-                            <div className="flex justify-between">
+                            <div
+                              className={cn("flex justify-between", {
+                                "text-black/90": theme === "dark",
+                              })}
+                            >
                               Click here to receive assets for the Blend test
                               network.
                               <ArrowRight />
@@ -147,7 +163,11 @@ const Dashboard = () => {
                         }}
                         color="blue"
                         subtitle={
-                          <div className="flex justify-between">
+                          <div
+                            className={cn("flex justify-between", {
+                              "text-black/90": theme === "dark",
+                            })}
+                          >
                             Click here to receive testing CPCT tokens
                             <ArrowRight />
                           </div>
@@ -169,8 +189,8 @@ const Dashboard = () => {
         </p>
       </div>
       <PoolDetails />
-      <AdminPosition />
       <UserPositionDetails />
+      <AdminPosition />
       <PoolActivities />
     </div>
   );
