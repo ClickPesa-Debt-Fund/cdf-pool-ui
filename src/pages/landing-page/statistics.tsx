@@ -11,7 +11,7 @@ const stats = [
     content: "Distributed to MFIs since 2023",
   },
   {
-    title: "1200 SMEs",
+    title: "1800 SMEs",
     content: "Benefiting from ClickPesa Debt Fund",
   },
 ];
