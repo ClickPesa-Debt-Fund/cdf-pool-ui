@@ -18,6 +18,9 @@ import {
   WalletNetwork,
   XBULL_ID,
   xBullModule,
+  // LOBSTR_ID,
+  // FREIGHTER_ID
+  // allowAllModules,
 } from "@creit.tech/stellar-wallets-kit/index";
 import { getNetworkDetails as getFreighterNetwork } from "@stellar/freighter-api";
 import {
@@ -185,7 +188,17 @@ export const WalletProvider = ({ children = null as any }) => {
       new LobstrModule(),
       new AlbedoModule(),
     ],
+    // modules: allowAllModules(),
   });
+
+  useEffect(() => {
+    const isModuleAvailable = async () => {
+      const isFreighterAvailable = await new FreighterModule().isAvailable();
+      const isLobstr = await new LobstrModule().isAvailable();
+      console.log(isFreighterAvailable, isLobstr);
+    };
+    isModuleAvailable();
+  }, []);
 
   useEffect(() => {
     if (!connected && autoConnect !== "false") {

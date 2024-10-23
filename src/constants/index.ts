@@ -42,8 +42,8 @@ export const CONNECTION_ERROR_MESSAGE =
 export const POOL_STATUS = {
   0: "ACTIVE", // ADMIN ACTIVE
   1: "ACTIVE",
-  2: "ACTIVE", // ADMIN-ON ICE
-  3: "ACTIVE", // ON ICE
-  4: "ADMIN FROZEN",
+  2: "ON ICE", // ADMIN-ON ICE
+  3: "ON ICE",
+  4: "FROZEN", // ADMIN FROZEN
   5: "FROZEN",
 };

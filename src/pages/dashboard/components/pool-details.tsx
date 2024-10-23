@@ -71,9 +71,7 @@ const PoolDetails = () => {
                     name={POOL_STATUS?.[pool?.config?.status]}
                     mode={theme}
                     color={
-                      [0, 1, 2, 3]?.includes(pool?.config?.status)
-                        ? "green"
-                        : "red"
+                      [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
                     }
                   />
                 </span>

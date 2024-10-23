@@ -27,7 +27,7 @@
     "@clickpesa/components-library.inputs.wizard-input": "^0.0.7",
     "@clickpesa/components-library.section-template": "^0.0.12",
     "@clickpesa/components-library.status-tag": "^0.0.7",
-    "@creit.tech/stellar-wallets-kit": "^1.2.1",
+    "@creit.tech/stellar-wallets-kit": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
