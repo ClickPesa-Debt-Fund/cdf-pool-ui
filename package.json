@@ -21,6 +21,7 @@
     "@clickpesa/components-library.data-preview-table": "^0.0.17",
     "@clickpesa/components-library.details-row": "^0.0.17",
     "@clickpesa/components-library.forms.exchange-form-item": "^0.0.15",
+    "@clickpesa/components-library.inputs.date-range-picker": "^0.0.13",
     "@clickpesa/components-library.inputs.phone-input": "^0.0.5",
     "@clickpesa/components-library.inputs.select-input": "^0.0.14",
     "@clickpesa/components-library.inputs.text-input": "^0.0.4",

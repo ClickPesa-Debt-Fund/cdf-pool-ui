@@ -121,7 +121,7 @@ body.dark
     background: #2B343A
     .ant-tabs-dropdown-menu-item
       span
-         color: white
+        color: white
 
 @layer base
   :root
@@ -278,6 +278,52 @@ body.dark
     gap: 16
     h3
       color: rgba(255, 255, 255, 0.75)
+
+.clickpesa-loader
+  div
+    width: 5px
+    height: 5px
+    background-color: #1677ff
+    border-radius: 50%
+    display: inline-block
+    -webkit-animation: bouncedelay 1.4s infinite ease-in-out
+    animation: bouncedelay 1400ms ease-in-out infinite
+        /* Prevent first frame from flickering when animation starts */ 
+    -webkit-animation-fill-mode: both
+    animation-fill-mode: both
+    box-sizing: border-box
+
+    .bounce1
+      -webkit-animation-delay: -0.32s
+      animation-delay: -0.32s
+
+    .bounce2
+      -webkit-animation-delay: -0.16s
+      animation-delay: -0.16s
+
+@keyframes updown
+  0%
+    transform: translateY(0)
+    -webkit-transform: translateY(0)
+
+  100%
+    transform: translateY(-10px)
+    -webkit-transform: translateY(-10px)
+
+@keyframes bouncedelay
+  0%
+    transform: scale(0.0)
+    -webkit-transform: scale(0.0)
+
+  40%
+    transform: scale(1.0)
+    -webkit-transform: scale(1.0)
+  80%
+    transform: scale(0.0)
+    -webkit-transform: scale(0.0)
+  100%
+    transform: scale(0.0)
+    -webkit-transform: scale(0.0)
 
 .alert-container
   p

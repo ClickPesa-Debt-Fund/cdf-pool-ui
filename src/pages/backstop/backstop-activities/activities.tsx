@@ -35,7 +35,7 @@ const Activities = ({ walletAddress }: { walletAddress?: string }) => {
                 ? [
                     {
                       key: "q4w",
-                      label: "Withdrawal Queues",
+                      label: "Withdraw Queues",
                       children: <Q4w />,
                     },
                   ]
