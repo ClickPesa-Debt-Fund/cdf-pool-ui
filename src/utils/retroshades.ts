@@ -40,7 +40,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(COALESCE(amount,0))
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -74,7 +74,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -108,7 +108,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -142,7 +142,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -176,7 +176,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -210,7 +210,7 @@ export const retrosharedCommands = ({
             reserve_address,
             SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount
@@ -245,7 +245,7 @@ export const retrosharedCommands = ({
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 action_type
@@ -279,7 +279,7 @@ export const retrosharedCommands = ({
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount,
@@ -290,22 +290,22 @@ export const retrosharedCommands = ({
                 action_type = 'supply'
                 AND reserve_address = '${USDC_ASSET_ID}'
                 ${
-                    search
-                      ? `AND (${searchableFields
-                          .map((field) => `${field} ILIKE '%${search}%'`)
-                          .join(" OR ")})`
-                      : ""
-                  }
-                  ${
-                      startDate
-                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
-                      : ""
-                  }
-                  ${
-                      endDate
-                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
-                      : ""
-                  }
+                  search
+                    ? `AND (${searchableFields
+                        .map((field) => `${field} ILIKE '%${search}%'`)
+                        .join(" OR ")})`
+                    : ""
+                }
+                ${
+                    startDate
+                    ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
+                ${
+                    endDate
+                    ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
         ) AS unique_records
         GROUP BY
             reserve_address, action_type;`,
@@ -314,7 +314,7 @@ export const retrosharedCommands = ({
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 amount,
