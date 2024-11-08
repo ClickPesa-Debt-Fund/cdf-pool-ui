@@ -85,34 +85,38 @@ const SupplySummary = ({
               mode={theme}
             />
           )}
-          <DetailsRow
-            exchangeRate={{
-              label: "Borrow capacity",
-              start: {
-                value: `${curBorrowCap}`,
-                currency: "USDC",
-              },
-              end: {
-                value: `${nextBorrowCap}`,
-                currency: "USDC",
-              },
-            }}
-            mode={theme}
-          />
-          <DetailsRow
-            exchangeRate={{
-              label: "Borrow limit",
-              start: {
-                value: `${curBorrowLimit}`,
-                currency: "%" as any,
-              },
-              end: {
-                value: `${nextBorrowLimit}`,
-                currency: "%" as any,
-              },
-            }}
-            mode={theme}
-          />
+          {reserve?.tokenMetadata.symbol !== "USDC" && (
+            <>
+              <DetailsRow
+                exchangeRate={{
+                  label: "Borrow capacity",
+                  start: {
+                    value: `${curBorrowCap}`,
+                    currency: "USDC",
+                  },
+                  end: {
+                    value: `${nextBorrowCap}`,
+                    currency: "USDC",
+                  },
+                }}
+                mode={theme}
+              />
+              <DetailsRow
+                exchangeRate={{
+                  label: "Borrow limit",
+                  start: {
+                    value: `${curBorrowLimit}`,
+                    currency: "%" as any,
+                  },
+                  end: {
+                    value: `${nextBorrowLimit}`,
+                    currency: "%" as any,
+                  },
+                }}
+                mode={theme}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

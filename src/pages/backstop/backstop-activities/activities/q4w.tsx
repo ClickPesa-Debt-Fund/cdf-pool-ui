@@ -15,9 +15,7 @@ const Q4w = () => {
   if (
     backstop === undefined ||
     backstopUserData === undefined ||
-    backstopPoolData === undefined ||
-    (backstopUserData.balance.totalQ4W == BigInt(0) &&
-      backstopUserData.balance.unlockedQ4W == BigInt(0))
+    backstopPoolData === undefined
   ) {
     return <></>;
   }
@@ -25,11 +23,12 @@ const Q4w = () => {
   const sharesToTokens =
     Number(backstopPoolData.poolBalance.tokens) /
     Number(backstopPoolData.poolBalance.shares);
+
   return (
     <div className="space-y-6">
       {backstopUserData.balance.unlockedQ4W == BigInt(0) &&
       !backstopUserData.balance.q4w?.length ? (
-        <p>No Wiathdraw Queue added yet!</p>
+        <p>No Withdraw Queue added yet!</p>
       ) : null}
       {backstopUserData.balance.unlockedQ4W != BigInt(0) && (
         <Q4wItem

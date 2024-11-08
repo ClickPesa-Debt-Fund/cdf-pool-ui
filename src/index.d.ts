@@ -22,7 +22,7 @@ type TableHelperProps = {
   sorter: any;
   setLimit?: (limit: number) => void;
   setSortBy?: (sort_by: string) => void;
-  setOrderBy?: (order_by: string) => void;
+  setOrderBy?: (order_by: "DESC" | "ASC") => void;
   setSkip?: (skip: number) => void;
   limit?: number;
   pagination: any;
@@ -53,4 +53,16 @@ type HorizonAccountType = {
   }[];
   last_modified_ledger: string;
   subentry_count: number;
+};
+
+type RetroshadeParams = {
+  walletAddress?: string;
+  limit?: number;
+  skip?: number;
+  sortBy?: string;
+  orderBy?: "ASC" | "DESC";
+  search?: string;
+  filter?: Record<string, string>[];
+  startDate?: string;
+  endDate?: string;
 };

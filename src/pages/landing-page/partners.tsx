@@ -39,7 +39,7 @@ const Partners = () => {
                 src={logo}
                 alt={name + " Logo"}
                 className={cn("md:h-[50px] h-[36px]", {
-                  invert: name === "Stellar",
+                  invert: name === "Stellar" && theme === "dark",
                 })}
               />
               <span

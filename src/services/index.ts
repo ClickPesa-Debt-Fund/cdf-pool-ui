@@ -1,6 +1,6 @@
 //********** Query Client Data **********//
 
-import { MERCURY_ACCESS_TOKEN, MERCURY_API } from "@/constants";
+import { MERCURY_API, MERCURY_API_KEY } from "@/constants";
 import { useSettings } from "@/contexts/settings";
 import { useWallet } from "@/contexts/wallet";
 import { RETROSHADES_COMMANDS, retrosharedCommands } from "@/utils/retroshades";
@@ -115,22 +115,24 @@ export function usePoolUser(
 // get historical data
 export const useRetroshades = ({
   command,
-  walletAddress,
+  params,
 }: {
   command: RETROSHADES_COMMANDS;
-  walletAddress?: string;
+  params?: RetroshadeParams;
 }) => {
+  // console.log(retrosharedCommands?.({ ...params })?.[command], command, params);
+
   const { data, isLoading, error, refetch, isRefetching } = useQuery(
-    [command, walletAddress, "retroshades"],
+    [command, params, "retroshades"],
     async () => {
       const { data } = await axios.post(
         MERCURY_API,
         {
-          query: retrosharedCommands?.(walletAddress)?.[command],
+          query: retrosharedCommands?.({ ...params })?.[command],
         },
         {
           headers: {
-            Authorization: "Bearer " + MERCURY_ACCESS_TOKEN,
+            Authorization: MERCURY_API_KEY,
           },
         }
       );
@@ -140,7 +142,7 @@ export const useRetroshades = ({
       enabled: !!command,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      // refetchInterval: 10000,
+      refetchInterval: 10000,
     }
   );
   return { data, error, isLoading, refetch, isRefetching };

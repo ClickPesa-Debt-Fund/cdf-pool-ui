@@ -62,3 +62,14 @@ export const compareObjects = (x: any, y: any) => {
 
   return true;
 };
+
+export const removeDuplicates = (arr: any[], key: string) => {
+  const seen = new Set();
+  return arr.reduce((acc, current) => {
+    if (!seen.has(current[key])) {
+      seen.add(current[key]);
+      acc.push(current);
+    }
+    return acc;
+  }, []);
+};
