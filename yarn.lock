@@ -1129,6 +1129,17 @@
     antd "5.3.2"
     core-js "^3.0.0"
 
+"@clickpesa/components-library.inputs.date-range-picker@^0.0.13":
+  version "0.0.13"
+  resolved "https://node-registry.bit.cloud/@clickpesa/components-library.inputs.date-range-picker/-/components-library.inputs.date-range-picker-0.0.13.tgz#8c5563a4924946d288289e5bc6921bec8576abb0"
+  integrity sha512-cdddwvyJyvoy9jXB0+0ZR+BpSsDR7Vn1jbORVCquP9+aO54CSTpSfVrQakSq7EJCXwBuBvjbal5PNKXm+PQ/Fw==
+  dependencies:
+    "@clickpesa/components-library.close-x" "0.0.4"
+    antd "5.3.2"
+    core-js "^3.0.0"
+    dayjs "^1.11.7"
+    moment "2.29.4"
+
 "@clickpesa/components-library.inputs.phone-input@^0.0.5":
   version "0.0.5"
   resolved "https://node-registry.bit.cloud/@clickpesa/components-library.inputs.phone-input/-/components-library.inputs.phone-input-0.0.5.tgz#f009a0966adb061841f649286bdd8028499b64ed"
@@ -1199,10 +1210,10 @@
   dependencies:
     core-js "^3.0.0"
 
-"@creit.tech/stellar-wallets-kit@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@creit.tech/stellar-wallets-kit/-/stellar-wallets-kit-1.2.1.tgz#9b9973b71d3551b902ae3eb137e4da7e1d168344"
-  integrity sha512-MHvA6kwXaOFIdbQiGcYGNtn6RICpIWpnzarkdEGJq7EQkR3Is5bgv4izfcWj62QDdYwB2PqaIc+oGC/WLL1yUg==
+"@creit.tech/stellar-wallets-kit@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@creit.tech/stellar-wallets-kit/-/stellar-wallets-kit-1.2.3.tgz#4a7cb03786fdf8c4ac3da8f872e951d3e9a2c349"
+  integrity sha512-AM1fL/cQkI0i+lefJlViOPR4uxZrPDImbF+eCYST7FEIWYZrPsd/Mtne5qGVJDC6Umzdg9HqJt7CSFZTUJ2b3A==
   dependencies:
     "@albedo-link/intent" "0.12.0"
     "@creit.tech/xbull-wallet-connect" "0.3.0"
@@ -3551,6 +3562,11 @@ dayjs@^1.11.1:
   version "1.11.11"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.11.tgz#dfe0e9d54c5f8b68ccf8ca5f72ac603e7e5ed59e"
   integrity sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==
+
+dayjs@^1.11.7:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.5"

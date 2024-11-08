@@ -23,108 +23,219 @@ export enum RETROSHADES_COMMANDS {
   WITHDRAW_COLLATERAL_TRXS = "WITHDRAW_COLLATERAL_TRXS",
 }
 
-export const retrosharedCommands = (
-  walletAddress?: string
-): Record<RETROSHADES_COMMANDS, String> => {
+const searchableFields = ["reserve_address", "ledger::text", "transaction"];
+
+export const retrosharedCommands = ({
+  walletAddress,
+  skip = 0,
+  limit = 10,
+  search,
+  startDate,
+  endDate,
+  orderBy = "DESC",
+  sortBy = "timestamp",
+}: RetroshadeParams): Record<RETROSHADES_COMMANDS, String> => {
   return {
     [RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLIED]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(COALESCE(amount,0))
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'supply'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                  search
+                    ? `AND (${searchableFields
+                        .map((field) => `${field} ILIKE '%${search}%'`)
+                        .join(" OR ")})`
+                    : ""
+                }
+                ${
+                    startDate
+                    ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
+                ${
+                    endDate
+                    ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records
         GROUP BY
             reserve_address;`,
     [RETROSHADES_COMMANDS.TOTAL_COLLATERAL_SUPPLIED]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'supply'
                 AND reserve_address = '${COLLATERAL_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records
         GROUP BY
             reserve_address;`,
     [RETROSHADES_COMMANDS.TOTAL_USDC_WITHDRAW]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'withdraw'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records
         GROUP BY
             reserve_address;`,
     [RETROSHADES_COMMANDS.TOTAL_COLLATERAL_WITHDRAW]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'withdraw'
                 AND reserve_address = '${COLLATERAL_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records
         GROUP BY
             reserve_address;`,
     [RETROSHADES_COMMANDS.TOTAL_USDC_REPAID]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${BORROW_TABLE}
             WHERE
                 action_type = 'repay'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records  
         GROUP BY
             reserve_address;`,
     [RETROSHADES_COMMANDS.TOTAL_USDC_BORROWED]: `SELECT
             reserve_address,
-            SUM(usdc_amount)
+            SUM(amount)
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount
+                amount
             FROM
                 ${BORROW_TABLE}
             WHERE
                 action_type = 'borrow'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
                 ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
         ) AS unique_records
         GROUP BY
@@ -134,7 +245,7 @@ export const retrosharedCommands = (
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
                 action_type
@@ -143,6 +254,23 @@ export const retrosharedCommands = (
             WHERE
                 action_type = 'borrow'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                    search
+                      ? `AND (${searchableFields
+                          .map((field) => `${field} ILIKE '%${search}%'`)
+                          .join(" OR ")})`
+                      : ""
+                  }
+                  ${
+                      startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                      endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
         ) AS unique_records
         GROUP BY
             reserve_address, action_type;`,
@@ -151,16 +279,33 @@ export const retrosharedCommands = (
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount,
+                amount,
                 action_type
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'supply'
                 AND reserve_address = '${USDC_ASSET_ID}'
+                ${
+                  search
+                    ? `AND (${searchableFields
+                        .map((field) => `${field} ILIKE '%${search}%'`)
+                        .join(" OR ")})`
+                    : ""
+                }
+                ${
+                    startDate
+                    ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
+                ${
+                    endDate
+                    ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
         ) AS unique_records
         GROUP BY
             reserve_address, action_type;`,
@@ -169,36 +314,407 @@ export const retrosharedCommands = (
             reserve_address,
             COUNT(DISTINCT user_address) AS number_of_participants
         FROM (
-            SELECT DISTINCT
+            SELECT DISTINCT ON (transaction)
                 reserve_address,
                 user_address,
-                usdc_amount,
+                amount,
                 action_type
             FROM
                 ${COLLATERAL_SUPPLY_TABLE}
             WHERE
                 action_type = 'supply'
                 AND reserve_address = '${COLLATERAL_ASSET_ID}'
+                ${
+                  search
+                    ? `AND (${searchableFields
+                        .map((field) => `${field} ILIKE '%${search}%'`)
+                        .join(" OR ")})`
+                    : ""
+                }
+                  ${
+                    startDate
+                      ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
+                  ${
+                    endDate
+                      ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                      : ""
+                  }
         ) AS unique_records
         GROUP BY
             reserve_address, action_type;`,
-    [RETROSHADES_COMMANDS.SUPPLY_USDC_TRXS]: `SELECT * from ${COLLATERAL_SUPPLY_TABLE} WHERE reserve_address = '${USDC_ASSET_ID}' AND action_type = 'supply' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
-    [RETROSHADES_COMMANDS.SUPPLY_COLLATERAL_TRXS]: `SELECT * from ${COLLATERAL_SUPPLY_TABLE} WHERE reserve_address = '${COLLATERAL_ASSET_ID}' AND action_type = 'supply' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
-    [RETROSHADES_COMMANDS.BORROW_USDC_TRXS]: `SELECT * from ${BORROW_TABLE} WHERE reserve_address = '${USDC_ASSET_ID}' AND action_type = 'borrow' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
-    [RETROSHADES_COMMANDS.REPAY_USDC_TRXS]: `SELECT * from ${BORROW_TABLE} WHERE reserve_address = '${USDC_ASSET_ID}' AND action_type = 'repay' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
-    [RETROSHADES_COMMANDS.WITHDRAW_USDC_TRXS]: `SELECT * from ${COLLATERAL_SUPPLY_TABLE} WHERE reserve_address = '${USDC_ASSET_ID}' AND action_type = 'withdraw' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
-    [RETROSHADES_COMMANDS.WITHDRAW_COLLATERAL_TRXS]: `SELECT * from ${COLLATERAL_SUPPLY_TABLE} WHERE reserve_address = '${COLLATERAL_ASSET_ID}' AND action_type = 'withdraw' ${
-      walletAddress ? `AND user_address = '${walletAddress}'` : ""
-    }`,
+    [RETROSHADES_COMMANDS.SUPPLY_USDC_TRXS]: `WITH TotalCount AS (
+            SELECT COUNT(DISTINCT transaction) AS totalCount
+            FROM ${COLLATERAL_SUPPLY_TABLE}
+            WHERE reserve_address = '${USDC_ASSET_ID}' 
+                AND action_type = 'supply' 
+                ${
+                  search
+                    ? `AND (${searchableFields
+                        .map((field) => `${field} ILIKE '%${search}%'`)
+                        .join(" OR ")})`
+                    : ""
+                }
+                ${
+                  startDate
+                    ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
+                ${
+                  endDate
+                    ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                    : ""
+                }
+                ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${COLLATERAL_SUPPLY_TABLE}
+                WHERE reserve_address = '${USDC_ASSET_ID}' 
+                    AND action_type = 'supply' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
+    [RETROSHADES_COMMANDS.SUPPLY_COLLATERAL_TRXS]: `WITH TotalCount AS (
+        SELECT COUNT(DISTINCT transaction) AS totalCount
+        FROM ${COLLATERAL_SUPPLY_TABLE}
+        WHERE reserve_address = '${COLLATERAL_ASSET_ID}' 
+            AND action_type = 'supply' 
+            ${
+              search
+                ? `AND (${searchableFields
+                    .map((field) => `${field} ILIKE '%${search}%'`)
+                    .join(" OR ")})`
+                : ""
+            }
+            ${
+              startDate
+                ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${
+              endDate
+                ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${COLLATERAL_SUPPLY_TABLE}
+                WHERE reserve_address = '${COLLATERAL_ASSET_ID}' 
+                    AND action_type = 'supply' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
+    [RETROSHADES_COMMANDS.BORROW_USDC_TRXS]: `WITH TotalCount AS (
+        SELECT COUNT(DISTINCT transaction) AS totalCount
+        FROM ${BORROW_TABLE}
+        WHERE reserve_address = '${USDC_ASSET_ID}' 
+            AND action_type = 'borrow' 
+            ${
+              search
+                ? `AND (${searchableFields
+                    .map((field) => `${field} ILIKE '%${search}%'`)
+                    .join(" OR ")})`
+                : ""
+            }
+            ${
+              startDate
+                ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${
+              endDate
+                ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${BORROW_TABLE}
+                WHERE reserve_address = '${USDC_ASSET_ID}' 
+                    AND action_type = 'borrow' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
+    [RETROSHADES_COMMANDS.REPAY_USDC_TRXS]: `WITH TotalCount AS (
+        SELECT COUNT(DISTINCT transaction) AS totalCount
+        FROM ${BORROW_TABLE}
+        WHERE reserve_address = '${USDC_ASSET_ID}' 
+            AND action_type = 'repay' 
+            ${
+              search
+                ? `AND (${searchableFields
+                    .map((field) => `${field} ILIKE '%${search}%'`)
+                    .join(" OR ")})`
+                : ""
+            }
+            ${
+              startDate
+                ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${
+              endDate
+                ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${BORROW_TABLE}
+                WHERE reserve_address = '${USDC_ASSET_ID}' 
+                    AND action_type = 'repay' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
+    [RETROSHADES_COMMANDS.WITHDRAW_USDC_TRXS]: `WITH TotalCount AS (
+        SELECT COUNT(DISTINCT transaction) AS totalCount
+        FROM ${COLLATERAL_SUPPLY_TABLE}
+        WHERE reserve_address = '${USDC_ASSET_ID}' 
+            AND action_type = 'withdraw' 
+            ${
+              search
+                ? `AND (${searchableFields
+                    .map((field) => `${field} ILIKE '%${search}%'`)
+                    .join(" OR ")})`
+                : ""
+            }
+            ${
+              startDate
+                ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${
+              endDate
+                ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${COLLATERAL_SUPPLY_TABLE}
+                WHERE reserve_address = '${USDC_ASSET_ID}' 
+                    AND action_type = 'withdraw' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
+    [RETROSHADES_COMMANDS.WITHDRAW_COLLATERAL_TRXS]: `WITH TotalCount AS (
+        SELECT COUNT(DISTINCT transaction) AS totalCount
+        FROM ${COLLATERAL_SUPPLY_TABLE}
+        WHERE reserve_address = '${COLLATERAL_ASSET_ID}' 
+            AND action_type = 'withdraw' 
+            ${
+              search
+                ? `AND (${searchableFields
+                    .map((field) => `${field} ILIKE '%${search}%'`)
+                    .join(" OR ")})`
+                : ""
+            }
+            ${
+              startDate
+                ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${
+              endDate
+                ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                : ""
+            }
+            ${walletAddress ? `AND user_address = '${walletAddress}'` : ""}
+        ),
+        Data AS (
+            SELECT *
+            FROM (
+                SELECT DISTINCT ON (transaction) *
+                FROM ${COLLATERAL_SUPPLY_TABLE}
+                WHERE reserve_address = '${COLLATERAL_ASSET_ID}' 
+                    AND action_type = 'withdraw' 
+                    ${
+                      search
+                        ? `AND (${searchableFields
+                            .map((field) => `${field} ILIKE '%${search}%'`)
+                            .join(" OR ")})`
+                        : ""
+                    }
+                    ${
+                      startDate
+                        ? `AND timestamp >= EXTRACT(EPOCH FROM to_timestamp('${startDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      endDate
+                        ? `AND timestamp <= EXTRACT(EPOCH FROM to_timestamp('${endDate}', 'DD-MM-YYYY'))`
+                        : ""
+                    }
+                    ${
+                      walletAddress
+                        ? `AND user_address = '${walletAddress}'`
+                        : ""
+                    }
+                ORDER BY transaction
+            ) AS distinct_data
+            ORDER BY ${sortBy} ${orderBy}
+            LIMIT ${limit} OFFSET ${skip}
+        )
+        SELECT 
+            (SELECT totalCount FROM TotalCount) AS totalCount,
+            jsonb_agg(row_to_json(Data)) AS data
+        FROM Data;`,
   };
 };

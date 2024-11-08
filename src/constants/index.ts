@@ -8,7 +8,7 @@ export const RPC_URL = import.meta.env.VITE_RPC_URL;
 export const HORIZON_URL = import.meta.env.VITE_HORIZON_URL;
 export const PLAYGROUND_API = import.meta.env.VITE_PLAYGROUND_API;
 export const MERCURY_API = import.meta.env.VITE_MERCURY_API;
-export const MERCURY_ACCESS_TOKEN = import.meta.env.VITE_MERCURY_TOKEN;
+export const MERCURY_API_KEY = import.meta.env.VITE_MERCURY_API_KEY;
 export const BLND_ISSUER = import.meta.env.VITE_BLND_ASSET_ISSUER;
 export const USDC_ISSUER = import.meta.env.VITE_USDC_ASSET_ISSUER;
 export const COLLATERAL_ISSUER = import.meta.env.VITE_COLLATERAL_ASSET_ISSUER;
@@ -42,8 +42,8 @@ export const CONNECTION_ERROR_MESSAGE =
 export const POOL_STATUS = {
   0: "ACTIVE", // ADMIN ACTIVE
   1: "ACTIVE",
-  2: "ACTIVE", // ADMIN-ON ICE
-  3: "ACTIVE", // ON ICE
-  4: "ADMIN FROZEN",
+  2: "ON ICE", // ADMIN-ON ICE
+  3: "ON ICE",
+  4: "FROZEN", // ADMIN FROZEN
   5: "FROZEN",
 };

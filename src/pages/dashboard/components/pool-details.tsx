@@ -23,6 +23,7 @@ import { formatAmount } from "@/utils";
 import { RETROSHADES_COMMANDS } from "@/utils/retroshades";
 import { SectionTemplate } from "@clickpesa/components-library.section-template";
 import { useTheme } from "@/contexts/theme";
+import LoadingBubbles from "@/components/other/loading-bubbles";
 
 const PoolDetails = () => {
   const { theme } = useTheme();
@@ -35,14 +36,16 @@ const PoolDetails = () => {
   const reserve = pool?.reserves.get(USDC_ASSET_ID);
   const collateralReserve = pool?.reserves.get(COLLATERAL_ASSET_ID);
 
-  const { data: repaidFunds } = useRetroshades({
+  const { data: repaidFunds, isLoading: repaidFundsLoading } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_USDC_REPAID,
   });
 
-  const { data: totalSupplyParticipants } = useRetroshades({
+  const {
+    data: totalSupplyParticipants,
+    isLoading: totalSupplyParticipantsLoading,
+  } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLY_PARTICIPANTS,
   });
-
 
   const USDCRepaidFunds = repaidFunds?.find(
     (repaidFund: { reserve_address: string }) =>
@@ -56,7 +59,6 @@ const PoolDetails = () => {
   if (!pool) {
     return <></>;
   }
-
 
   return (
     <SectionTemplate className="md:rounded-2xl rounded-lg" mode={theme}>
@@ -73,7 +75,11 @@ const PoolDetails = () => {
                     name={POOL_STATUS?.[pool?.config?.status]}
                     mode={theme}
                     color={
-                      [0, 1]?.includes(pool?.config?.status) ? "green" : "red"
+                      [0, 1]?.includes(pool?.config?.status)
+                        ? "green"
+                        : [2, 3]?.includes(pool?.config?.status)
+                        ? "gold"
+                        : "red"
                     }
                   />
                 </span>
@@ -104,7 +110,7 @@ const PoolDetails = () => {
                 marginTop: 0,
               }}
             />
-            <div className="w-[30%]" />
+            <div className="lg:w-[30%]" />
             <DetailContentItem
               // @ts-ignore
               title={
@@ -165,7 +171,10 @@ const PoolDetails = () => {
               mode={theme}
               content={
                 <span className="text-font-semi-bold">
-                  ${formatAmount(USDCRepaidFunds || 0, 2)}
+                  {repaidFundsLoading && <LoadingBubbles />}
+                  {!repaidFundsLoading && (
+                    <>${formatAmount((USDCRepaidFunds || 0) / 10 ** 7, 2)}</>
+                  )}
                 </span>
               }
               style={{
@@ -177,7 +186,11 @@ const PoolDetails = () => {
               title="Participating Funders"
               content={
                 <span className="text-font-semi-bold">
-                  {totalSupplyParticipants?.[0]?.number_of_participants || 0}
+                  {totalSupplyParticipantsLoading ? (
+                    <LoadingBubbles />
+                  ) : (
+                    totalSupplyParticipants?.[0]?.number_of_participants || 0
+                  )}
                 </span>
               }
               mode={theme}
@@ -232,7 +245,7 @@ const PoolDetails = () => {
           </Row>
         </Col>
         <Col md={6} span={24} className="space-y-4">
-          <div className="h-[65px]" />
+          <div className="h-[65px] hidden md:block" />
           <DetailContentItem
             title={`Pool`}
             full_width

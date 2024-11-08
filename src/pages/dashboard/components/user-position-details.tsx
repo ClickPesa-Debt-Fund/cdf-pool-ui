@@ -71,7 +71,7 @@ const UserPositionDetails = () => {
               );
             })}
           </Col>
-          <Col md={6} span={0} className="space-y-3">
+          <Col md={6} span={24} className="space-y-3">
             <Button
               className="w-full"
               onClick={() => {
@@ -98,7 +98,24 @@ const UserPositionDetails = () => {
             <Button
               className="w-full"
               variant={"outline"}
-              onClick={() => setWithdraw(true)}
+              onClick={() => {
+                if (connected) {
+                  setWithdraw(true);
+                } else {
+                  connect((successful: boolean) => {
+                    if (successful) {
+                      notification.success({
+                        message: "Wallet connected.",
+                      });
+                      setWithdraw(true);
+                    } else {
+                      notification.error({
+                        message: CONNECTION_ERROR_MESSAGE,
+                      });
+                    }
+                  });
+                }
+              }}
             >
               Withdraw USDC
             </Button>

@@ -1,3 +1,4 @@
+import LoadingBubbles from "@/components/other/loading-bubbles";
 import {
   COLLATERAL_ASSET_CODE,
   COLLATERAL_ASSET_ID,
@@ -13,36 +14,77 @@ import Row from "antd/lib/row";
 const Summary = ({
   walletAddress,
   type,
+  search,
+  dateRange,
 }: {
   walletAddress?: string;
   type: RETROSHADES_COMMANDS;
+  search?: string;
+  dateRange?: string[];
 }) => {
   const { theme } = useTheme();
 
-  const { data: totalUSDCSupplied } = useRetroshades({
-    command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLIED,
-    walletAddress,
-  });
-  const { data: totalCollateralSupplied } = useRetroshades({
+  const { data: totalUSDCSupplied, isLoading: totalUSDCSuppliedLoading } =
+    useRetroshades({
+      command: RETROSHADES_COMMANDS.TOTAL_USDC_SUPPLIED,
+      params: {
+        walletAddress,
+        search,
+        startDate: dateRange?.[0],
+        endDate: dateRange?.[1],
+      },
+    });
+  const {
+    data: totalCollateralSupplied,
+    isLoading: totalCollateralSuppliedLoading,
+  } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_COLLATERAL_SUPPLIED,
-    walletAddress,
+    params: {
+      walletAddress,
+      search,
+      startDate: dateRange?.[0],
+      endDate: dateRange?.[1],
+    },
   });
-  const { data: totalUSDCWithdraw } = useRetroshades({
-    command: RETROSHADES_COMMANDS.TOTAL_USDC_WITHDRAW,
-    walletAddress,
-  });
+  const { data: totalUSDCWithdraw, isLoading: totalUSDCWithdrawLoading } =
+    useRetroshades({
+      command: RETROSHADES_COMMANDS.TOTAL_USDC_WITHDRAW,
+      params: {
+        walletAddress,
+        search,
+        startDate: dateRange?.[0],
+        endDate: dateRange?.[1],
+      },
+    });
 
-  const { data: totalCPYTWithdraw } = useRetroshades({
-    command: RETROSHADES_COMMANDS.TOTAL_COLLATERAL_WITHDRAW,
-    walletAddress,
-  });
-  const { data: totalBorrowed } = useRetroshades({
-    command: RETROSHADES_COMMANDS.TOTAL_USDC_BORROWED,
-    walletAddress,
-  });
-  const { data: repaidFunds } = useRetroshades({
+  const { data: totalCPYTWithdraw, isLoading: totalCPYTWithdrawLoading } =
+    useRetroshades({
+      command: RETROSHADES_COMMANDS.TOTAL_COLLATERAL_WITHDRAW,
+      params: {
+        walletAddress,
+        search,
+        startDate: dateRange?.[0],
+        endDate: dateRange?.[1],
+      },
+    });
+  const { data: totalBorrowed, isLoading: totalBorrowedLoading } =
+    useRetroshades({
+      command: RETROSHADES_COMMANDS.TOTAL_USDC_BORROWED,
+      params: {
+        walletAddress,
+        search,
+        startDate: dateRange?.[0],
+        endDate: dateRange?.[1],
+      },
+    });
+  const { data: repaidFunds, isLoading: repaidFundsLoading } = useRetroshades({
     command: RETROSHADES_COMMANDS.TOTAL_USDC_REPAID,
-    walletAddress,
+    params: {
+      walletAddress,
+      search,
+      startDate: dateRange?.[0],
+      endDate: dateRange?.[1],
+    },
   });
 
   const USDCRepaidFunds = repaidFunds?.find(
@@ -83,7 +125,12 @@ const Summary = ({
             title="Total borrowed funds"
             content={
               <span className="text-font-semi-bold">
-                ${formatAmount(USDCTotalBorrowedFunds || 0, 7)}
+                {totalBorrowedLoading && <LoadingBubbles />}
+                {!totalBorrowedLoading && (
+                  <>
+                    ${formatAmount(+(USDCTotalBorrowedFunds || 0) / 10 ** 7, 7)}
+                  </>
+                )}
               </span>
             }
             mode={theme}
@@ -97,7 +144,10 @@ const Summary = ({
             title="Total repaid funds"
             content={
               <span className="text-font-semi-bold">
-                ${formatAmount(USDCRepaidFunds || 0, 7)}
+                {repaidFundsLoading && <LoadingBubbles />}
+                {!repaidFundsLoading && (
+                  <>${formatAmount(+(USDCRepaidFunds || 0) / 10 ** 7, 7)}</>
+                )}
               </span>
             }
             mode={theme}
@@ -112,7 +162,12 @@ const Summary = ({
             title="Total USDC supplied funds"
             content={
               <span className="text-font-semi-bold">
-                ${formatAmount(USDCTotalSuppliedFunds || 0, 7)}
+                {totalUSDCSuppliedLoading && <LoadingBubbles />}
+                {!totalUSDCSuppliedLoading && (
+                  <>
+                    ${formatAmount(+(USDCTotalSuppliedFunds || 0) / 10 ** 7, 7)}
+                  </>
+                )}
               </span>
             }
             mode={theme}
@@ -126,8 +181,16 @@ const Summary = ({
             title="Total Collateral supplied funds"
             content={
               <span className="text-font-semi-bold">
-                {formatAmount(CollateralTotalSuppliedFunds || 0, 7)}{" "}
-                {COLLATERAL_ASSET_CODE}
+                {totalCollateralSuppliedLoading && <LoadingBubbles />}
+                {!totalCollateralSuppliedLoading && (
+                  <>
+                    {formatAmount(
+                      +(CollateralTotalSuppliedFunds || 0) / 10 ** 7,
+                      7
+                    )}{" "}
+                    {COLLATERAL_ASSET_CODE}
+                  </>
+                )}
               </span>
             }
             mode={theme}
@@ -136,40 +199,17 @@ const Summary = ({
             }}
           />
         )}
-        {/* <DetailContentItem
-          title="Current supplied funds"
-          content={
-            <span className="text-font-semi-bold">
-              $
-              {formatAmount(
-                totalSupplied?.[0]?.reserve_supply_adjusted || 0,
-                7
-              )}
-            </span>
-          }
-          mode={theme}
-          style={{
-            marginTop: 0,
-          }}
-        />
-        <DetailContentItem
-          title="Current supplied funds"
-          content={
-            <span className="text-font-semi-bold">
-              {toBalance(24000, 7)} {COLLATERAL_ASSET_CODE}
-            </span>
-          }
-          mode={theme}
-          style={{
-            marginTop: 0,
-          }}
-        /> */}
         {type === RETROSHADES_COMMANDS.WITHDRAW_USDC_TRXS && (
           <DetailContentItem
             title="Total USDC withdrawn funds"
             content={
               <span className="text-font-semi-bold">
-                ${formatAmount(USDCTotalWithdrawFunds || 0, 7)}
+                {totalUSDCWithdrawLoading && <LoadingBubbles />}
+                {!totalUSDCWithdrawLoading && (
+                  <>
+                    ${formatAmount(+(USDCTotalWithdrawFunds || 0) / 10 ** 7, 7)}
+                  </>
+                )}
               </span>
             }
             mode={theme}
@@ -183,8 +223,16 @@ const Summary = ({
             title="Total Collateral withdrawn funds"
             content={
               <span className="text-font-semi-bold">
-                {formatAmount(CollateralTotalWithdrawFunds || 0, 7)}{" "}
-                {COLLATERAL_ASSET_CODE}
+                {totalCPYTWithdrawLoading && <LoadingBubbles />}
+                {!totalCPYTWithdrawLoading && (
+                  <>
+                    {formatAmount(
+                      +(CollateralTotalWithdrawFunds || 0) / 10 ** 7,
+                      7
+                    )}{" "}
+                    {COLLATERAL_ASSET_CODE}
+                  </>
+                )}
               </span>
             }
             mode={theme}

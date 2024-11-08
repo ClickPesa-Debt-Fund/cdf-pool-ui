@@ -15,7 +15,7 @@ type TableProps = {
   limit?: number;
   setLimit?: (limit: number) => void;
   setSortBy?: (sort_by: string) => void;
-  setOrderBy?: (order_by: string) => void;
+  setOrderBy?: (order_by: "DESC" | "ASC") => void;
   customNoData?: ReactNode | string;
   onRowClick?: (record: any) => void;
   rowKey?: string;

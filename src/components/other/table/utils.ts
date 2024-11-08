@@ -11,16 +11,10 @@ export const formatTableFilters = ({
   setSkip?.((limit || 10) * (pagination.current - 1));
   if (!sorter?.order) {
     setOrderBy?.("DESC");
-    setSortBy?.("createdAt");
+    setSortBy?.("ledger");
   }
   if (sorter?.order) {
     setSortBy?.(sorter?.field);
-    setOrderBy?.(
-      sorter?.order === "ascend"
-        ? "ASC"
-        : sorter.order === "descend"
-        ? "DESC"
-        : ""
-    );
+    setOrderBy?.(sorter?.order === "ascend" ? "ASC" : "DESC");
   }
 };
